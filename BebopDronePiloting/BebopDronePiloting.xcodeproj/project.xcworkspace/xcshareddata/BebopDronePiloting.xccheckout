@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>A6D593F5-FF09-4591-AF7E-91F33ABF5464</string>
+	<key>IDESourceControlProjectName</key>
+	<string>BebopDronePiloting</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>D131187164D7F965C8F39A89419DCD9D03E1E606</key>
+		<string>https://github.com/ARDroneSDK3/Samples.git</string>
+		<key>E6C1EFC0B639D55313D78A7AFA3D09D623C45EE3</key>
+		<string>https://github.com/ARDroneSDK3/ARSDKBuildUtils.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>iOS/BebopDronePiloting/BebopDronePiloting/BebopDronePiloting.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>D131187164D7F965C8F39A89419DCD9D03E1E606</key>
+		<string>../../../../..</string>
+		<key>E6C1EFC0B639D55313D78A7AFA3D09D623C45EE3</key>
+		<string>../../../../../../ARSDKBuildUtils</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/ARDroneSDK3/Samples.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>D131187164D7F965C8F39A89419DCD9D03E1E606</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>E6C1EFC0B639D55313D78A7AFA3D09D623C45EE3</string>
+			<key>IDESourceControlWCCName</key>
+			<string>ARSDKBuildUtils</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>D131187164D7F965C8F39A89419DCD9D03E1E606</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Samples</string>
+		</dict>
+	</array>
+</dict>
+</plist>

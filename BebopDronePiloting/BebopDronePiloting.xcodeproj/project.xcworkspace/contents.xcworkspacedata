@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:DroneVideoConf.xcodeproj">
+      location = "self:BebopDronePiloting.xcodeproj">
    </FileRef>
 </Workspace>

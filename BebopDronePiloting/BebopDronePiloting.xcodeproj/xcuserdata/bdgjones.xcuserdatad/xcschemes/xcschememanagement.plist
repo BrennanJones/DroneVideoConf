@@ -4,7 +4,7 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>DroneVideoConf.xcscheme</key>
+		<key>BebopDronePiloting.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
@@ -12,12 +12,7 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>96B29CCC1AA0DADD00224BB0</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>96B29CE51AA0DADD00224BB0</key>
+		<key>1D9DF2341A6D580F000941ED</key>
 		<dict>
 			<key>primary</key>
 			<true/>

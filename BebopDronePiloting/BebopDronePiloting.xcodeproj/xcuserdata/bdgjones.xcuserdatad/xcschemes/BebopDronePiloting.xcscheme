@@ -14,24 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "96B29CCC1AA0DADD00224BB0"
-               BuildableName = "DroneVideoConf.app"
-               BlueprintName = "DroneVideoConf"
-               ReferencedContainer = "container:DroneVideoConf.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "96B29CE51AA0DADD00224BB0"
-               BuildableName = "DroneVideoConfTests.xctest"
-               BlueprintName = "DroneVideoConfTests"
-               ReferencedContainer = "container:DroneVideoConf.xcodeproj">
+               BlueprintIdentifier = "1D9DF2341A6D580F000941ED"
+               BuildableName = "BebopDronePiloting.app"
+               BlueprintName = "BebopDronePiloting"
+               ReferencedContainer = "container:BebopDronePiloting.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -42,24 +28,14 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       buildConfiguration = "Debug">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "96B29CE51AA0DADD00224BB0"
-               BuildableName = "DroneVideoConfTests.xctest"
-               BlueprintName = "DroneVideoConfTests"
-               ReferencedContainer = "container:DroneVideoConf.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "96B29CCC1AA0DADD00224BB0"
-            BuildableName = "DroneVideoConf.app"
-            BlueprintName = "DroneVideoConf"
-            ReferencedContainer = "container:DroneVideoConf.xcodeproj">
+            BlueprintIdentifier = "1D9DF2341A6D580F000941ED"
+            BuildableName = "BebopDronePiloting.app"
+            BlueprintName = "BebopDronePiloting"
+            ReferencedContainer = "container:BebopDronePiloting.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -75,10 +51,10 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "96B29CCC1AA0DADD00224BB0"
-            BuildableName = "DroneVideoConf.app"
-            BlueprintName = "DroneVideoConf"
-            ReferencedContainer = "container:DroneVideoConf.xcodeproj">
+            BlueprintIdentifier = "1D9DF2341A6D580F000941ED"
+            BuildableName = "BebopDronePiloting.app"
+            BlueprintName = "BebopDronePiloting"
+            ReferencedContainer = "container:BebopDronePiloting.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -93,10 +69,10 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "96B29CCC1AA0DADD00224BB0"
-            BuildableName = "DroneVideoConf.app"
-            BlueprintName = "DroneVideoConf"
-            ReferencedContainer = "container:DroneVideoConf.xcodeproj">
+            BlueprintIdentifier = "1D9DF2341A6D580F000941ED"
+            BuildableName = "BebopDronePiloting.app"
+            BlueprintName = "BebopDronePiloting"
+            ReferencedContainer = "container:BebopDronePiloting.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
