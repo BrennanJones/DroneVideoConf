@@ -227,8 +227,6 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
     
     BOOL failed = NO;
     
-    [self registerARCommandsCallbacks];
-    
     // need to resolve service to get the IP
     BOOL resolveSucceeded = [self resolveService];
     if (!resolveSucceeded)
@@ -255,17 +253,9 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
     
     if (!failed)
     {
-        failed = [self startVideoThread];
-    }
-    
-    if (!failed)
-    {
-        // Create and start looper thread.
-        if (ARSAL_Thread_Create(&(_looperThread), looperRun, (__bridge void *)self) != 0)
-        {
-            ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Creation of looper thread failed.");
-            failed = YES;
-        }
+        int cmdSend = 0;
+        
+        cmdSend = sendBeginStream(_netManager);
     }
     
     if (!failed)
@@ -310,6 +300,26 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
         }
     }
     
+    if (!failed)
+    {
+        failed = [self startVideo];
+    }
+    
+    if (!failed)
+    {
+        // Create and start looper thread.
+        if (ARSAL_Thread_Create(&(_looperThread), looperRun, (__bridge void *)self) != 0)
+        {
+            ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Creation of looper thread failed.");
+            failed = YES;
+        }
+    }
+    
+    if (!failed)
+    {
+        [self registerARCommandsCallbacks];
+    }
+    
     NSDate *currentDate = [NSDate date];
     if (!failed)
     {
@@ -329,6 +339,13 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
     if (!failed)
     {
         failed = ![self getInitialStates];
+    }
+    
+    if (!failed)
+    {
+        int cmdSend = 0;
+        
+        cmdSend = sendBeginStream(_netManager);
     }
     
     return failed;
@@ -523,7 +540,7 @@ eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *dataRx, 
     return failed;
 }
 
-- (BOOL) startVideoThread
+- (BOOL) startVideo
 {
     BOOL failed = NO;
     eARSTREAM_ERROR err = ARSTREAM_OK;
@@ -540,7 +557,7 @@ eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *dataRx, 
     
     if (!failed)
     {
-        _streamReader = ARSTREAM_Reader_New(_netManager, BD_NET_D2C_VIDEO_DATA, BD_NET_C2D_VIDEO_ACK, frameCompleteCallback, _videoFrame, _videoFrameSize, BD_NET_DC_VIDEO_FRAG_SIZE, 0, (__bridge void *)self, &err);
+        _streamReader = ARSTREAM_Reader_New(_netManager, BD_NET_D2C_VIDEO_DATA, BD_NET_C2D_VIDEO_ACK, frameCompleteCallback, _videoFrame, _videoFrameSize, BD_NET_DC_VIDEO_FRAG_SIZE, ARSTREAM_READER_MAX_ACK_INTERVAL_DEFAULT, (__bridge void *)self, &err);
         
         if (err != ARSTREAM_OK)
         {
@@ -567,7 +584,7 @@ eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *dataRx, 
     return failed;
 }
 
-- (void) stopVideoThread
+- (void) stopVideo
 {
     ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- Stop ARStream");
     
@@ -805,6 +822,8 @@ uint8_t *frameCompleteCallback (eARSTREAM_READER_CAUSE cause, uint8_t *frame, ui
             
             [deviceController.delegate onFrameComplete:deviceController frame:frame frameSize:frameSize];
             
+            ret = deviceController->_videoFrame;
+            
             break;
         case ARSTREAM_READER_CAUSE_FRAME_TOO_SMALL:
             /* This case should not happen, as we've allocated a frame pointer to the maximum possible size. */
@@ -820,6 +839,32 @@ uint8_t *frameCompleteCallback (eARSTREAM_READER_CAUSE cause, uint8_t *frame, ui
     }
     
     return ret;
+}
+
+int sendBeginStream(ARNETWORK_Manager_t *netManager)
+{
+    int sentStatus = 1;
+    u_int8_t cmdBuffer[128];
+    int32_t cmdSize = 0;
+    eARCOMMANDS_GENERATOR_ERROR cmdError;
+    eARNETWORK_ERROR netError = ARNETWORK_ERROR;
+    
+    ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- Send Streaming Begin");
+    
+    // Send Streaming begin command
+    cmdError = ARCOMMANDS_Generator_GenerateARDrone3MediaStreamingVideoEnable(cmdBuffer, sizeof(cmdBuffer), &cmdSize, 1);
+    if (cmdError == ARCOMMANDS_GENERATOR_OK)
+    {
+        netError = ARNETWORK_Manager_SendData(netManager, BD_NET_C2D_ACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
+    }
+    
+    if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
+    {
+        ARSAL_PRINT(ARSAL_PRINT_WARNING, TAG, "Failed to send Streaming command. cmdError:%d netError:%s", cmdError, ARNETWORK_Error_ToString(netError));
+        sentStatus = 0;
+    }
+    
+    return sentStatus;
 }
 
 eARNETWORK_MANAGER_CALLBACK_RETURN arnetworkCmdCallback(int buffer_id, uint8_t *data, void *custom, eARNETWORK_MANAGER_CALLBACK_STATUS cause)

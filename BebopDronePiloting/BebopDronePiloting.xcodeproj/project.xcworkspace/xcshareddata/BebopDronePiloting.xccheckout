@@ -10,26 +10,26 @@
 	<string>BebopDronePiloting</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>D131187164D7F965C8F39A89419DCD9D03E1E606</key>
-		<string>https://github.com/ARDroneSDK3/Samples.git</string>
 		<key>E6C1EFC0B639D55313D78A7AFA3D09D623C45EE3</key>
 		<string>https://github.com/ARDroneSDK3/ARSDKBuildUtils.git</string>
+		<key>F08318398EADA1A2008A41E28BFC18DC956979AB</key>
+		<string>https://github.com/BrennanJones/DroneVideoConf.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>iOS/BebopDronePiloting/BebopDronePiloting/BebopDronePiloting.xcodeproj</string>
+	<string>BebopDronePiloting/BebopDronePiloting.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>D131187164D7F965C8F39A89419DCD9D03E1E606</key>
-		<string>../../../../..</string>
 		<key>E6C1EFC0B639D55313D78A7AFA3D09D623C45EE3</key>
-		<string>../../../../../../ARSDKBuildUtils</string>
+		<string>../../../../ARDroneSDK3/ARSDKBuildUtils</string>
+		<key>F08318398EADA1A2008A41E28BFC18DC956979AB</key>
+		<string>../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://github.com/ARDroneSDK3/Samples.git</string>
+	<string>https://github.com/BrennanJones/DroneVideoConf.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>D131187164D7F965C8F39A89419DCD9D03E1E606</string>
+	<string>F08318398EADA1A2008A41E28BFC18DC956979AB</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
@@ -44,9 +44,9 @@
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>D131187164D7F965C8F39A89419DCD9D03E1E606</string>
+			<string>F08318398EADA1A2008A41E28BFC18DC956979AB</string>
 			<key>IDESourceControlWCCName</key>
-			<string>Samples</string>
+			<string>DroneVideoConf</string>
 		</dict>
 	</array>
 </dict>
