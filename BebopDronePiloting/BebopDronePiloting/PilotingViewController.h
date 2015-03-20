@@ -39,6 +39,8 @@
 #import <UIKit/UIKit.h>
 #import <libARDiscovery/ARDISCOVERY_BonjourDiscovery.h>
 
+#import "SocketIO.h"
+
 @interface PilotingViewController : UIViewController
 
 @property (nonatomic, strong) ARService* service;

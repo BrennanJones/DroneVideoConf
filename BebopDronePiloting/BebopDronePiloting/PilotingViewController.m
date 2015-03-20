@@ -38,6 +38,7 @@
 
 #import "PilotingViewController.h"
 #import "DeviceController.h"
+#import "SocketIOPacket.h"
 
 #define TAG "PilotingViewController"
 
