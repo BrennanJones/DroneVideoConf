@@ -28,6 +28,8 @@ io.set('log level', 1);
 
 io.sockets.on('connection', function(socket)
 {	
+	console.log('connection');
+	
 	/* HANDLERS */
 	
 	socket.on('Echo', function(data)
