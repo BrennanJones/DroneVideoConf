@@ -284,24 +284,33 @@ static const int SERVER_PORT_NUMBER = 12345;
 
 - (void) socketIO:(SocketIO *)socket onError:(NSError *)error
 {
-    // do stuff
+    _alertView = [[UIAlertView alloc] initWithTitle:[_service name] message:@"Connection with server failed."
+                                           delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+    [_alertView show];
+    
+    self.serverConnectionStatusLabel.text = @"Disconnected from server.";
+    [self.serverConnectionButton setTitle:@"Connect to server" forState:UIControlStateNormal];
+    self.serverConnectionButton.enabled = true;
+    self.serverConnectionTextField.enabled = true;
 }
 
 
 - (void) socketIODidConnect:(SocketIO *)socket
 {
-    //NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
-    //[json setObject:@"controllee" forKey:@"clientType"];
-    //[json setObject:[NSString stringWithFormat:@"%d", ballNumber] forKey:@"ballNumber"];
-    //[self.socketIO sendEvent:@"ClientConnect" withData:json];
+    [self.socketIO sendEvent:@"MobileClientConnect" withData:nil];
     
-    //self.statusLabel.text = @"Connected.";
+    self.serverConnectionStatusLabel.text = @"Connected to server.";
+    [self.serverConnectionButton setTitle:@"Disconnect from server" forState:UIControlStateNormal];
+    self.serverConnectionButton.enabled = true;
 }
 
 
 - (void) socketIODidDisconnect:(SocketIO *)socket disconnectedWithError:(NSError *)error
 {
-    // do stuff
+    self.serverConnectionStatusLabel.text = @"Disconnected from server.";
+    [self.serverConnectionButton setTitle:@"Connect to server" forState:UIControlStateNormal];
+    self.serverConnectionButton.enabled = true;
+    self.serverConnectionTextField.enabled = true;
 }
 
 
@@ -313,7 +322,7 @@ static const int SERVER_PORT_NUMBER = 12345;
     NSDictionary* arg = args[0];
     
     /*
-    if([packet.name isEqualToString:@"WallCollision"])
+    if([packet.name isEqualToString:@"SomeMessage"])
     {
         // do stuff
     }
