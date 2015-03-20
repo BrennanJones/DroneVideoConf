@@ -659,6 +659,9 @@ eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *dataRx, 
         _readerThreadsData = NULL;
     }
     
+    // Stop video thread
+    [self stopVideo];
+    
     // Stop Network
     [self stopNetwork];
 }

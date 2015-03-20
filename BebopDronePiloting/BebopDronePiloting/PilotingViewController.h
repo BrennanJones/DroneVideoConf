@@ -45,12 +45,19 @@
 
 @property (nonatomic, strong) ARService* service;
 
+@property (nonatomic, strong) SocketIO *socketIO;
+
 @property (nonatomic, strong) IBOutlet UILabel *batteryLabel;
 @property (nonatomic, strong) IBOutlet UIButton *takeoffBt;
 @property (nonatomic, strong) IBOutlet UIButton *landingBt;
 @property (strong, nonatomic) IBOutlet UILabel *latitudeLabel;
 @property (strong, nonatomic) IBOutlet UILabel *longitudeLabel;
 @property (strong, nonatomic) IBOutlet UILabel *altitudeLabel;
+@property (strong, nonatomic) IBOutlet UITextField *serverConnectionTextField;
+@property (strong, nonatomic) IBOutlet UIButton *serverConnectionButton;
+@property (strong, nonatomic) IBOutlet UILabel *serverConnectionStatusLabel;
+
+- (IBAction)connectToServerClick:(id)sender;
 
 - (IBAction)emergencyClick:(id)sender;
 - (IBAction)takeoffClick:(id)sender;

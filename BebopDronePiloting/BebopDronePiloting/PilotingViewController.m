@@ -42,6 +42,8 @@
 
 #define TAG "PilotingViewController"
 
+static const int SERVER_PORT_NUMBER = 12345;
+
 @interface PilotingViewController () <DeviceControllerDelegate>
 @property (nonatomic, strong) DeviceController* deviceController;
 @property (nonatomic, strong) UIAlertView *alertView;
@@ -62,6 +64,8 @@
     
     _alertView = [[UIAlertView alloc] initWithTitle:[_service name] message:@"Connecting ..."
                                            delegate:self cancelButtonTitle:nil otherButtonTitles:nil, nil];
+    
+    [self initializeSocketIO];
     
 }
 
@@ -100,6 +104,7 @@
     [_alertView show];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self disconnectFromServer];
         [_deviceController stop];
         [_alertView dismissWithClickedButtonIndex:0 animated:TRUE];
     });
@@ -112,6 +117,25 @@
 }
 
 #pragma mark events
+
+- (IBAction)connectToServerClick:(id)sender
+{
+    if (self.socketIO.isConnected)
+    {
+        self.serverConnectionButton.enabled = false;
+        self.serverConnectionStatusLabel.text = @"Disconnecting from server...";
+        
+        [self disconnectFromServer];
+    }
+    else
+    {
+        self.serverConnectionTextField.enabled = false;
+        self.serverConnectionButton.enabled = false;
+        self.serverConnectionStatusLabel.text = @"Connecting to server...";
+        
+        [self connectToServer:self.serverConnectionTextField.text onPort:SERVER_PORT_NUMBER];
+    }
+}
 
 - (IBAction)emergencyClick:(id)sender
 {
@@ -224,6 +248,76 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.navigationController popViewControllerAnimated:YES];
     });
+}
+
+- (void)initializeSocketIO
+{
+    if (self.socketIO == nil)
+    {
+        self.socketIO = [[SocketIO alloc]initWithDelegate:self];
+    }
+}
+
+- (BOOL)connectToServer:(NSString *)address onPort:(NSInteger)port
+{
+    [self disconnectFromServer];
+    
+    [self.socketIO connectToHost:address onPort:port];
+    
+    if (self.socketIO.isConnected)
+    {
+        return NO;
+    }
+    else
+    {
+        return YES;
+    }
+}
+
+- (void)disconnectFromServer
+{
+    if (self.socketIO.isConnected)
+    {
+        [self.socketIO disconnect];
+    }
+}
+
+- (void) socketIO:(SocketIO *)socket onError:(NSError *)error
+{
+    // do stuff
+}
+
+
+- (void) socketIODidConnect:(SocketIO *)socket
+{
+    //NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
+    //[json setObject:@"controllee" forKey:@"clientType"];
+    //[json setObject:[NSString stringWithFormat:@"%d", ballNumber] forKey:@"ballNumber"];
+    //[self.socketIO sendEvent:@"ClientConnect" withData:json];
+    
+    //self.statusLabel.text = @"Connected.";
+}
+
+
+- (void) socketIODidDisconnect:(SocketIO *)socket disconnectedWithError:(NSError *)error
+{
+    // do stuff
+}
+
+
+- (void) socketIO:(SocketIO *)socket didReceiveEvent:(SocketIOPacket *)packet
+{
+    NSLog(@"didReceiveEvent(): %@", packet.name);
+    
+    NSArray* args = packet.args;
+    NSDictionary* arg = args[0];
+    
+    /*
+    if([packet.name isEqualToString:@"WallCollision"])
+    {
+        // do stuff
+    }
+     */
 }
 
 - (void)onUpdateBattery:(DeviceController *)deviceController batteryLevel:(uint8_t)percent;
