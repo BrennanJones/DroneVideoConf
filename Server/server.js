@@ -49,6 +49,6 @@ io.sockets.on('connection', function(socket)
 	
 	socket.on('DroneVideoFrame', function(data)
 	{
-		// do stuff here
+		socket.broadcast.emit('DroneVideoFrame', data);
 	});
 });
