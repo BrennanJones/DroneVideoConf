@@ -116,6 +116,13 @@ static const int SERVER_PORT_NUMBER = 12345;
     // Dispose of any resources that can be recreated.
 }
 
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [textField resignFirstResponder];
+    
+    return YES;
+}
+
 #pragma mark events
 
 - (IBAction)connectToServerClick:(id)sender
@@ -383,6 +390,24 @@ static const int SERVER_PORT_NUMBER = 12345;
 - (void)onFrameComplete:(DeviceController *)deviceController frame:(uint8_t *)frame frameSize:(uint32_t)frameSize;
 {
     NSLog(@"onFrameComplete");
+    
+    NSMutableArray *array = [[NSMutableArray alloc] initWithCapacity:frameSize/sizeof(uint8_t)];
+    if (array)
+    {
+        for (int i = 0; i < frameSize/sizeof(uint8_t); i++)
+        {
+            [array addObject: [NSString stringWithFormat: @"%d", frame[i]]];
+        }
+        
+        //NSData *data = [NSJSONSerialization dataWithJSONObject:array options:NSJSONWritingPrettyPrinted error:nil];
+        
+        if (self.socketIO.isConnected)
+        {
+            NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
+            [json setObject:array forKey:@"data"];
+            [self.socketIO sendEvent:@"DroneVideoFrame" withData:json];
+        }
+    }
 }
 
 @end

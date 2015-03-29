@@ -41,7 +41,7 @@
 
 #import "SocketIO.h"
 
-@interface PilotingViewController : UIViewController
+@interface PilotingViewController : UIViewController <UITextFieldDelegate>
 
 @property (nonatomic, strong) ARService* service;
 
