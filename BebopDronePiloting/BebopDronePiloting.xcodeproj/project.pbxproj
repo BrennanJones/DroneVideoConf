@@ -13,6 +13,7 @@
 		962B51EC1AB3780700EFCBFE /* libARNetworkAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 962B51E61AB3780700EFCBFE /* libARNetworkAL.framework */; };
 		962B51ED1AB3780700EFCBFE /* libARSAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 962B51E71AB3780700EFCBFE /* libARSAL.framework */; };
 		962B51EE1AB3780700EFCBFE /* libARUtils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 962B51E81AB3780700EFCBFE /* libARUtils.framework */; };
+		9666B5EB1ACE023B000B5A2C /* DroneVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9666B5EA1ACE023B000B5A2C /* DroneVideoView.m */; };
 		96D61E931AB4E99A00BCB1FA /* libARStream.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96D61E921AB4E99A00BCB1FA /* libARStream.framework */; };
 		96DD80051ABC86BF00646F7D /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 96DD7FDF1ABC86BF00646F7D /* SBJsonParser.m */; };
 		96DD80061ABC86BF00646F7D /* SBJsonStreamParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 96DD7FE11ABC86BF00646F7D /* SBJsonStreamParser.m */; };
@@ -56,6 +57,8 @@
 		962B51E61AB3780700EFCBFE /* libARNetworkAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARNetworkAL.framework; path = ../../ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARNetworkAL.framework; sourceTree = "<group>"; };
 		962B51E71AB3780700EFCBFE /* libARSAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARSAL.framework; path = ../../ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARSAL.framework; sourceTree = "<group>"; };
 		962B51E81AB3780700EFCBFE /* libARUtils.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARUtils.framework; path = ../../ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARUtils.framework; sourceTree = "<group>"; };
+		9666B5E91ACE023B000B5A2C /* DroneVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DroneVideoView.h; sourceTree = SOURCE_ROOT; };
+		9666B5EA1ACE023B000B5A2C /* DroneVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DroneVideoView.m; sourceTree = SOURCE_ROOT; };
 		96D61E921AB4E99A00BCB1FA /* libARStream.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARStream.framework; path = ../../ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARStream.framework; sourceTree = "<group>"; };
 		96DD7FDD1ABC86BF00646F7D /* SBJson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJson.h; sourceTree = "<group>"; };
 		96DD7FDE1ABC86BF00646F7D /* SBJsonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonParser.h; sourceTree = "<group>"; };
@@ -263,6 +266,8 @@
 				F80F5EBC1AB2F8670002B2C6 /* PilotingViewController.m */,
 				F80F5EBD1AB2F8670002B2C6 /* ViewController.h */,
 				F80F5EBE1AB2F8670002B2C6 /* ViewController.m */,
+				9666B5E91ACE023B000B5A2C /* DroneVideoView.h */,
+				9666B5EA1ACE023B000B5A2C /* DroneVideoView.m */,
 			);
 			name = BebopDronePiloting;
 			path = BebopSample;
@@ -360,6 +365,7 @@
 				F80F5EC71AB2F8670002B2C6 /* ViewController.m in Sources */,
 				96DD80131ABC86BF00646F7D /* SocketIOTransportXHR.m in Sources */,
 				96DD80161ABC86BF00646F7D /* SRWebSocket.m in Sources */,
+				9666B5EB1ACE023B000B5A2C /* DroneVideoView.m in Sources */,
 				96DD80081ABC86BF00646F7D /* SBJsonStreamParserAdapter.m in Sources */,
 				96DD80101ABC86BF00646F7D /* SocketIOJSONSerialization.m in Sources */,
 			);

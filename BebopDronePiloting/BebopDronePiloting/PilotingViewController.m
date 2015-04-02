@@ -309,6 +309,8 @@ static const int SERVER_PORT_NUMBER = 12345;
     self.serverConnectionStatusLabel.text = @"Connected to server.";
     [self.serverConnectionButton setTitle:@"Disconnect from server" forState:UIControlStateNormal];
     self.serverConnectionButton.enabled = true;
+    
+    [self.serverConnectionTextField setAlpha:0];
 }
 
 
@@ -318,6 +320,7 @@ static const int SERVER_PORT_NUMBER = 12345;
     [self.serverConnectionButton setTitle:@"Connect to server" forState:UIControlStateNormal];
     self.serverConnectionButton.enabled = true;
     self.serverConnectionTextField.enabled = true;
+    [self.serverConnectionTextField setAlpha:1];
 }
 
 
@@ -376,6 +379,7 @@ static const int SERVER_PORT_NUMBER = 12345;
 {
     NSLog(@"onUpdatePosition");
     
+    /*
     dispatch_async(dispatch_get_main_queue(), ^{
         NSString *latText = [[NSString alloc] initWithFormat:@"%f", latitude];
         NSString *longText = [[NSString alloc] initWithFormat:@"%f", longitude];
@@ -385,6 +389,7 @@ static const int SERVER_PORT_NUMBER = 12345;
         [_longitudeLabel setText:longText];
         [_altitudeLabel setText:altText];
     });
+     */
 }
 
 - (void)onFrameComplete:(DeviceController *)deviceController frame:(uint8_t *)frame frameSize:(uint32_t)frameSize;
