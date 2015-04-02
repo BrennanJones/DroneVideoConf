@@ -70,51 +70,52 @@ io.sockets.on('connection', function(socket)
 	
 	/* COMMANDS */
 	
-	socket.on('PanLeftStart', function(data)
+	socket.on('PanLeft', function(data)
 	{
-		console.log('PanLeftStart');
-		socket.broadcast.emit('PanLeftStart', data);
+		console.log('PanLeft');
+		socket.broadcast.emit('PanLeft', data);
+		socket.emit('PanLeft', data);
 	});
 	
-	socket.on('PanLeftEnd', function(data)
+	socket.on('PanRight', function(data)
 	{
-		console.log('PanLeftEnd');
-		socket.broadcast.emit('PanLeftEnd', data);
+		console.log('PanRight');
+		socket.broadcast.emit('PanRight', data);
+		socket.emit('PanRight', data);
 	});
 	
-	socket.on('PanRightStart', function(data)
+	socket.on('ZoomIn', function(data)
 	{
-		console.log('PanRightStart');
-		socket.broadcast.emit('PanRightStart', data);
+		console.log('ZoomIn');
+		socket.broadcast.emit('ZoomIn', data);
+		socket.emit('ZoomIn', data);
 	});
 	
-	socket.on('PanRightEnd', function(data)
+	socket.on('ZoomOut', function(data)
 	{
-		console.log('PanRightEnd');
-		socket.broadcast.emit('PanRightEnd', data);
+		console.log('ZoomOut');
+		socket.broadcast.emit('ZoomOut', data);
+		socket.emit('ZoomOut', data);
 	});
 	
-	socket.on('ZoomInStart', function(data)
+	socket.on('ElevateUp', function(data)
 	{
-		console.log('ZoomInStart');
-		socket.broadcast.emit('ZoomInStart', data);
+		console.log('ElevateUp');
+		socket.broadcast.emit('ElevateUp', data);
+		socket.emit('ElevateUp', data);
 	});
 	
-	socket.on('ZoomInEnd', function(data)
+	socket.on('ElevateDown', function(data)
 	{
-		console.log('ZoomInEnd');
-		socket.broadcast.emit('ZoomInEnd', data);
+		console.log('ElevateDown');
+		socket.broadcast.emit('ElevateDown', data);
+		socket.emit('ElevateDown', data);
 	});
 	
-	socket.on('ZoomOutStart', function(data)
+	socket.on('Freeze', function(data)
 	{
-		console.log('ZoomOutStart');
-		socket.broadcast.emit('ZoomOutStart', data);
-	});
-	
-	socket.on('ZoomOutEnd', function(data)
-	{
-		console.log('ZoomOutEnd');
-		socket.broadcast.emit('ZoomOutEnd', data);
+		console.log('Freeze');
+		socket.broadcast.emit('Freeze', data);
+		socket.emit('Freeze', data);
 	});
 });
