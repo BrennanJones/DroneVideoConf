@@ -39,6 +39,7 @@
 #import <UIKit/UIKit.h>
 #import <libARDiscovery/ARDISCOVERY_BonjourDiscovery.h>
 
+#import "DroneVideoView.h"
 #import "SocketIO.h"
 
 @interface PilotingViewController : UIViewController <UITextFieldDelegate>
@@ -53,6 +54,7 @@
 @property (strong, nonatomic) IBOutlet UITextField *serverConnectionTextField;
 @property (strong, nonatomic) IBOutlet UIButton *serverConnectionButton;
 @property (strong, nonatomic) IBOutlet UILabel *serverConnectionStatusLabel;
+@property (strong, nonatomic) IBOutlet DroneVideoView *droneVideoView;
 
 - (IBAction)connectToServerClick:(id)sender;
 

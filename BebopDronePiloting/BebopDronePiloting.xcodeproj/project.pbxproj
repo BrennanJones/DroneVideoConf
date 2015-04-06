@@ -50,7 +50,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1D9DF2351A6D580F000941ED /* BebopDronePiloting.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BebopDronePiloting.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D9DF2351A6D580F000941ED /* DVC-Wizard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DVC-Wizard.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		962B51E31AB3780700EFCBFE /* libARCommands.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARCommands.framework; path = ../../ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARCommands.framework; sourceTree = "<group>"; };
 		962B51E41AB3780700EFCBFE /* libARDiscovery.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARDiscovery.framework; path = ../../ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARDiscovery.framework; sourceTree = "<group>"; };
 		962B51E51AB3780700EFCBFE /* libARNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARNetwork.framework; path = ../../ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARNetwork.framework; sourceTree = "<group>"; };
@@ -155,7 +155,7 @@
 		1D9DF2361A6D580F000941ED /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1D9DF2351A6D580F000941ED /* BebopDronePiloting.app */,
+				1D9DF2351A6D580F000941ED /* DVC-Wizard.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -290,7 +290,7 @@
 			);
 			name = BebopDronePiloting;
 			productName = RollingSpiderPiloting;
-			productReference = 1D9DF2351A6D580F000941ED /* BebopDronePiloting.app */;
+			productReference = 1D9DF2351A6D580F000941ED /* DVC-Wizard.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -456,6 +456,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks",
@@ -465,7 +466,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/BebopDronePiloting/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				ONLY_ACTIVE_ARCH = NO;
-				PRODUCT_NAME = BebopDronePiloting;
+				PRODUCT_NAME = "DVC-Wizard";
 				VALID_ARCHS = "armv7 armv7s";
 			};
 			name = Debug;
@@ -474,6 +475,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks",
@@ -482,7 +484,7 @@
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/BebopDronePiloting/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_NAME = BebopDronePiloting;
+				PRODUCT_NAME = "DVC-Wizard";
 				VALID_ARCHS = "armv7 armv7s";
 			};
 			name = Release;

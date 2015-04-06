@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "1D9DF2341A6D580F000941ED"
-               BuildableName = "BebopDronePiloting.app"
+               BuildableName = "DVZ-Wizard.app"
                BlueprintName = "BebopDronePiloting"
                ReferencedContainer = "container:BebopDronePiloting.xcodeproj">
             </BuildableReference>
@@ -33,7 +33,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1D9DF2341A6D580F000941ED"
-            BuildableName = "BebopDronePiloting.app"
+            BuildableName = "DVZ-Wizard.app"
             BlueprintName = "BebopDronePiloting"
             ReferencedContainer = "container:BebopDronePiloting.xcodeproj">
          </BuildableReference>
@@ -48,11 +48,12 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1D9DF2341A6D580F000941ED"
-            BuildableName = "BebopDronePiloting.app"
+            BuildableName = "DVZ-Wizard.app"
             BlueprintName = "BebopDronePiloting"
             ReferencedContainer = "container:BebopDronePiloting.xcodeproj">
          </BuildableReference>
@@ -66,11 +67,12 @@
       useCustomWorkingDirectory = "NO"
       buildConfiguration = "Release"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1D9DF2341A6D580F000941ED"
-            BuildableName = "BebopDronePiloting.app"
+            BuildableName = "DVZ-Wizard.app"
             BlueprintName = "BebopDronePiloting"
             ReferencedContainer = "container:BebopDronePiloting.xcodeproj">
          </BuildableReference>

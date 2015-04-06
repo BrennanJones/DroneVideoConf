@@ -65,6 +65,8 @@ static const int SERVER_PORT_NUMBER = 12345;
     _alertView = [[UIAlertView alloc] initWithTitle:[_service name] message:@"Connecting ..."
                                            delegate:self cancelButtonTitle:nil otherButtonTitles:nil, nil];
     
+    [_droneVideoView setupVideoView];
+    
     [self initializeSocketIO];
     
 }
@@ -395,6 +397,8 @@ static const int SERVER_PORT_NUMBER = 12345;
 - (void)onFrameComplete:(DeviceController *)deviceController frame:(uint8_t *)frame frameSize:(uint32_t)frameSize;
 {
     NSLog(@"onFrameComplete");
+    
+    [_droneVideoView updateVideoViewWithFrame:frame frameSize:frameSize];
     
     NSMutableArray *array = [[NSMutableArray alloc] initWithCapacity:frameSize/sizeof(uint8_t)];
     if (array)
