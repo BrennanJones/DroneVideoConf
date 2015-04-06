@@ -817,7 +817,7 @@ uint8_t *frameCompleteCallback (eARSTREAM_READER_CAUSE cause, uint8_t *frame, ui
     switch(cause)
     {
         case ARSTREAM_READER_CAUSE_FRAME_COMPLETE:
-            /* Here, the mjpeg video frame is in the "frame" pointer, with size "frameSize" bytes
+            /* Here, the H264 video frame is in the "frame" pointer, with size "frameSize" bytes
              You can do what you want, but keep it as short as possible, as the video is blocked until you return from this callback.
              Typically, you will either copy the frame and return the same buffer to the library, or store the buffer
              in a fifo for pending operations, and provide a new one.
@@ -1151,7 +1151,7 @@ eARNETWORK_MANAGER_CALLBACK_RETURN arnetworkCmdCallback(int buffer_id, uint8_t *
     ARCOMMANDS_Decoder_SetCommonSettingsStateAllSettingsChangedCallback(allSettingsCallback, (__bridge void *)self);
     ARCOMMANDS_Decoder_SetCommonCommonStateBatteryStateChangedCallback(batteryStateChangedCallback, (__bridge void *)self);
     ARCOMMANDS_Decoder_SetARDrone3PilotingStateFlyingStateChangedCallback(flyingStateChangedCallback, (__bridge void *)self);
-    ARCOMMANDS_Decoder_SetARDrone3PilotingStatePositionChangedCallback(positionChangedCallback, (__bridge void *)self);
+    //ARCOMMANDS_Decoder_SetARDrone3PilotingStatePositionChangedCallback(positionChangedCallback, (__bridge void *)self);
 }
 
 -(void) unregisterARCommandsCallbacks
@@ -1160,7 +1160,7 @@ eARNETWORK_MANAGER_CALLBACK_RETURN arnetworkCmdCallback(int buffer_id, uint8_t *
     ARCOMMANDS_Decoder_SetCommonSettingsStateAllSettingsChangedCallback(NULL, NULL);
     ARCOMMANDS_Decoder_SetCommonCommonStateBatteryStateChangedCallback (NULL, NULL);
     ARCOMMANDS_Decoder_SetARDrone3PilotingStateFlyingStateChangedCallback(NULL, NULL);
-    ARCOMMANDS_Decoder_SetARDrone3PilotingStatePositionChangedCallback(NULL, NULL);
+    //ARCOMMANDS_Decoder_SetARDrone3PilotingStatePositionChangedCallback(NULL, NULL);
 }
 
 void allStatesCallback (void *custom)

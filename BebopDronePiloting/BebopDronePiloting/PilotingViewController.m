@@ -333,12 +333,23 @@ static const int SERVER_PORT_NUMBER = 12345;
     NSArray* args = packet.args;
     NSDictionary* arg = args[0];
     
-    /*
-    if([packet.name isEqualToString:@"SomeMessage"])
+    if([packet.name isEqualToString:@"Command"])
     {
-        // do stuff
+        [self displayCommand:(NSString *)arg[@"command"]];
     }
-     */
+}
+
+- (void) displayCommand:(NSString *)command
+{
+    _incomingCommandLabel.text = command;
+    _incomingCommandLabel.alpha = 1.0;
+    _commandLabel.text = command;
+    
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationCurve:UIViewAnimationCurveEaseOut];
+    [UIView setAnimationDuration:5.0];
+    _incomingCommandLabel.alpha = 0.0;
+    [UIView commitAnimations];
 }
 
 - (void)onUpdateBattery:(DeviceController *)deviceController batteryLevel:(uint8_t)percent;
@@ -398,8 +409,6 @@ static const int SERVER_PORT_NUMBER = 12345;
 {
     NSLog(@"onFrameComplete");
     
-    [_droneVideoView updateVideoViewWithFrame:frame frameSize:frameSize];
-    
     NSMutableArray *array = [[NSMutableArray alloc] initWithCapacity:frameSize/sizeof(uint8_t)];
     if (array)
     {
@@ -417,6 +426,8 @@ static const int SERVER_PORT_NUMBER = 12345;
             [self.socketIO sendEvent:@"DroneVideoFrame" withData:json];
         }
     }
+    
+    [_droneVideoView updateVideoViewWithFrame:frame frameSize:frameSize];
 }
 
 @end

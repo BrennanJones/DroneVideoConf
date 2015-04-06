@@ -55,6 +55,8 @@
 @property (strong, nonatomic) IBOutlet UIButton *serverConnectionButton;
 @property (strong, nonatomic) IBOutlet UILabel *serverConnectionStatusLabel;
 @property (strong, nonatomic) IBOutlet DroneVideoView *droneVideoView;
+@property (strong, nonatomic) IBOutlet UILabel *commandLabel;
+@property (strong, nonatomic) IBOutlet UILabel *incomingCommandLabel;
 
 - (IBAction)connectToServerClick:(id)sender;
 
