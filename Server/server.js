@@ -70,52 +70,10 @@ io.sockets.on('connection', function(socket)
 	
 	/* COMMANDS */
 	
-	socket.on('PanLeft', function(data)
+	socket.on('Command', function(data)
 	{
-		console.log('PanLeft');
-		socket.broadcast.emit('PanLeft', data);
-		socket.emit('PanLeft', data);
-	});
-	
-	socket.on('PanRight', function(data)
-	{
-		console.log('PanRight');
-		socket.broadcast.emit('PanRight', data);
-		socket.emit('PanRight', data);
-	});
-	
-	socket.on('ZoomIn', function(data)
-	{
-		console.log('ZoomIn');
-		socket.broadcast.emit('ZoomIn', data);
-		socket.emit('ZoomIn', data);
-	});
-	
-	socket.on('ZoomOut', function(data)
-	{
-		console.log('ZoomOut');
-		socket.broadcast.emit('ZoomOut', data);
-		socket.emit('ZoomOut', data);
-	});
-	
-	socket.on('ElevateUp', function(data)
-	{
-		console.log('ElevateUp');
-		socket.broadcast.emit('ElevateUp', data);
-		socket.emit('ElevateUp', data);
-	});
-	
-	socket.on('ElevateDown', function(data)
-	{
-		console.log('ElevateDown');
-		socket.broadcast.emit('ElevateDown', data);
-		socket.emit('ElevateDown', data);
-	});
-	
-	socket.on('Freeze', function(data)
-	{
-		console.log('Freeze');
-		socket.broadcast.emit('Freeze', data);
-		socket.emit('Freeze', data);
+		console.log('Command: ' + data.command);
+		socket.broadcast.emit('Command', data);
+		socket.emit('Command', data);
 	});
 });

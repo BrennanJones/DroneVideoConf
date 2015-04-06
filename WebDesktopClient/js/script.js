@@ -41,38 +41,31 @@ jQuery(function()
 	freezeButton = jQuery('#freezeButton');
 	
 	panLeftButton.on('click', function() {		
-		// Send clear message to server.
-		socket.emit('PanLeft', {});
+		socket.emit('Command', { 'command': 'PanLeft' });
 	});
 	
 	panRightButton.on('click', function() {		
-		// Send clear message to server.
-		socket.emit('PanRight', {});
+		socket.emit('Command', { 'command': 'PanRight' });
 	});
 	
 	zoomInButton.on('click', function() {		
-		// Send clear message to server.
-		socket.emit('ZoomIn', {});
+		socket.emit('Command', { 'command': 'ZoomIn' });
 	});
 	
 	zoomOutButton.on('click', function() {		
-		// Send clear message to server.
-		socket.emit('ZoomOut', {});
+		socket.emit('Command', { 'command': 'ZoomOut' });
 	});
 	
 	elevateUpButton.on('click', function() {		
-		// Send clear message to server.
-		socket.emit('ElevateUp', {});
+		socket.emit('Command', { 'command': 'ElevateUp' });
 	});
 	
 	elevateDownButton.on('click', function() {		
-		// Send clear message to server.
-		socket.emit('ElevateDown', {});
+		socket.emit('Command', { 'command': 'ElevateDown' });
 	});
 	
 	freezeButton.on('click', function() {		
-		// Send clear message to server.
-		socket.emit('Freeze', {});
+		socket.emit('Command', { 'command': 'Freeze' });
 	});
 	
 	
