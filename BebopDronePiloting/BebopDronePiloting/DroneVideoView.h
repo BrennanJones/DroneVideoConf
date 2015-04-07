@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+//#import "PilotingViewController.h"
 
 @import AVFoundation;
 
@@ -14,6 +15,7 @@
 
 @property (nonatomic, retain) AVSampleBufferDisplayLayer *videoLayer;
 
+//-(void) setupVideoView:(PilotingViewController *)pilotingViewController;
 -(void) setupVideoView;
 -(void) updateVideoViewWithFrame:(uint8_t *)frame frameSize:(uint32_t)frameSize;
 

@@ -39,10 +39,18 @@
 #import "PilotingViewController.h"
 #import "DeviceController.h"
 #import "SocketIOPacket.h"
+#import "NSData+Conversion.h"
 
 #define TAG "PilotingViewController"
 
 static const int SERVER_PORT_NUMBER = 12345;
+
+//static const int NUM_FRAMES_PER_PACKAGE = 4;
+
+int frameCount = 0;
+//bool sendingFrame = false;
+//uint8_t *framePackage[NUM_FRAMES_PER_PACKAGE];
+//int numFramesPackaged = 0;
 
 @interface PilotingViewController () <DeviceControllerDelegate>
 @property (nonatomic, strong) DeviceController* deviceController;
@@ -65,10 +73,10 @@ static const int SERVER_PORT_NUMBER = 12345;
     _alertView = [[UIAlertView alloc] initWithTitle:[_service name] message:@"Connecting ..."
                                            delegate:self cancelButtonTitle:nil otherButtonTitles:nil, nil];
     
+    //[_droneVideoView setupVideoView:self];
     [_droneVideoView setupVideoView];
     
     [self initializeSocketIO];
-    
 }
 
 - (void) viewDidAppear:(BOOL)animated
@@ -336,6 +344,13 @@ static const int SERVER_PORT_NUMBER = 12345;
     if([packet.name isEqualToString:@"Command"])
     {
         [self displayCommand:(NSString *)arg[@"command"]];
+        
+        if (self.socketIO.isConnected)
+        {
+            NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
+            [json setObject:(NSString *)arg[@"command"] forKey:@"command"];
+            [self.socketIO sendEvent:@"CommandAcknowledged" withData:json];
+        }
     }
 }
 
@@ -407,27 +422,77 @@ static const int SERVER_PORT_NUMBER = 12345;
 
 - (void)onFrameComplete:(DeviceController *)deviceController frame:(uint8_t *)frame frameSize:(uint32_t)frameSize;
 {
-    NSLog(@"onFrameComplete");
+    NSLog(@"onFrameComplete: %d", ++frameCount);
     
-    NSMutableArray *array = [[NSMutableArray alloc] initWithCapacity:frameSize/sizeof(uint8_t)];
-    if (array)
+    if (self.socketIO.isConnected)
     {
+        NSMutableArray *array = [[NSMutableArray alloc] initWithCapacity:frameSize/sizeof(uint8_t)];
         for (int i = 0; i < frameSize/sizeof(uint8_t); i++)
         {
             [array addObject: [NSString stringWithFormat: @"%d", frame[i]]];
         }
         
-        //NSData *data = [NSJSONSerialization dataWithJSONObject:array options:NSJSONWritingPrettyPrinted error:nil];
-        
-        if (self.socketIO.isConnected)
-        {
-            NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
-            [json setObject:array forKey:@"data"];
-            [self.socketIO sendEvent:@"DroneVideoFrame" withData:json];
-        }
+        NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
+        [json setObject:array forKey:@"videoData"];
+        [self.socketIO sendEvent:@"DroneVideoFrame" withData:json];
     }
     
+    /*
+    uint8_t *copiedFrame = malloc(frameSize);
+    for (int i = 0; i < frameSize/sizeof(uint8_t); i++)
+    {
+        copiedFrame[i] = frame[i];
+    }
+    */
+    
     [_droneVideoView updateVideoViewWithFrame:frame frameSize:frameSize];
+    
+    
+    /*
+    if (sendingFrame)
+    {
+        free(copiedFrame);
+    }
+    else
+    {
+        framePackage[numFramesPackaged++] = copiedFrame;
+        if (numFramesPackaged == NUM_FRAMES_PER_PACKAGE)
+        {
+            sendingFrame = true;
+            
+            dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                NSMutableArray *outerArray = [[NSMutableArray alloc] initWithCapacity:NUM_FRAMES_PER_PACKAGE];
+                
+                for (int c = 0; c < NUM_FRAMES_PER_PACKAGE; c++)
+                {
+                    NSMutableArray *innerArray = [[NSMutableArray alloc] initWithCapacity:frameSize/sizeof(uint8_t)];
+                    for (int i = 0; i < frameSize/sizeof(uint8_t); i++)
+                    {
+                        [innerArray addObject: [NSString stringWithFormat: @"%d", framePackage[c][i]]];
+                    }
+                    
+                    [outerArray addObject:innerArray];
+                }
+                
+                if (self.socketIO.isConnected)
+                {
+                    NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
+                    [json setObject:outerArray forKey:@"videoData"];
+                    [self.socketIO sendEvent:@"DroneVideoFrame" withData:json];
+                }
+                
+                for (int c = 0; c < NUM_FRAMES_PER_PACKAGE; c++)
+                {
+                    free(framePackage[c]);
+                }
+                
+                numFramesPackaged = 0;
+                
+                sendingFrame = false;
+            });
+        }
+    }
+    */
 }
 
 @end

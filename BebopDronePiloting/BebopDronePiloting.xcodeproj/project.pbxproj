@@ -7,13 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		96245BFF1AD34D2B00A3C03B /* NSData+Conversion.m in Sources */ = {isa = PBXBuildFile; fileRef = 96245BFE1AD34D2B00A3C03B /* NSData+Conversion.m */; };
+		96245C021AD34D9000A3C03B /* DroneVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 96245C011AD34D9000A3C03B /* DroneVideoView.m */; };
+		96245C061AD3741500A3C03B /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96245C051AD3741500A3C03B /* VideoToolbox.framework */; };
 		962B51E91AB3780700EFCBFE /* libARCommands.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 962B51E31AB3780700EFCBFE /* libARCommands.framework */; };
 		962B51EA1AB3780700EFCBFE /* libARDiscovery.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 962B51E41AB3780700EFCBFE /* libARDiscovery.framework */; };
 		962B51EB1AB3780700EFCBFE /* libARNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 962B51E51AB3780700EFCBFE /* libARNetwork.framework */; };
 		962B51EC1AB3780700EFCBFE /* libARNetworkAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 962B51E61AB3780700EFCBFE /* libARNetworkAL.framework */; };
 		962B51ED1AB3780700EFCBFE /* libARSAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 962B51E71AB3780700EFCBFE /* libARSAL.framework */; };
 		962B51EE1AB3780700EFCBFE /* libARUtils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 962B51E81AB3780700EFCBFE /* libARUtils.framework */; };
-		9666B5EB1ACE023B000B5A2C /* DroneVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9666B5EA1ACE023B000B5A2C /* DroneVideoView.m */; };
 		96D61E931AB4E99A00BCB1FA /* libARStream.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96D61E921AB4E99A00BCB1FA /* libARStream.framework */; };
 		96DD80051ABC86BF00646F7D /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 96DD7FDF1ABC86BF00646F7D /* SBJsonParser.m */; };
 		96DD80061ABC86BF00646F7D /* SBJsonStreamParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 96DD7FE11ABC86BF00646F7D /* SBJsonStreamParser.m */; };
@@ -51,14 +53,17 @@
 
 /* Begin PBXFileReference section */
 		1D9DF2351A6D580F000941ED /* DVC-Wizard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DVC-Wizard.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		96245BFE1AD34D2B00A3C03B /* NSData+Conversion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSData+Conversion.m"; path = "BebopDronePiloting/NSData+Conversion.m"; sourceTree = SOURCE_ROOT; };
+		96245C001AD34D9000A3C03B /* DroneVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DroneVideoView.h; path = BebopDronePiloting/DroneVideoView.h; sourceTree = SOURCE_ROOT; };
+		96245C011AD34D9000A3C03B /* DroneVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DroneVideoView.m; path = BebopDronePiloting/DroneVideoView.m; sourceTree = SOURCE_ROOT; };
+		96245C041AD34E0D00A3C03B /* NSData+Conversion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSData+Conversion.h"; path = "BebopDronePiloting/NSData+Conversion.h"; sourceTree = SOURCE_ROOT; };
+		96245C051AD3741500A3C03B /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		962B51E31AB3780700EFCBFE /* libARCommands.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARCommands.framework; path = ../../ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARCommands.framework; sourceTree = "<group>"; };
 		962B51E41AB3780700EFCBFE /* libARDiscovery.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARDiscovery.framework; path = ../../ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARDiscovery.framework; sourceTree = "<group>"; };
 		962B51E51AB3780700EFCBFE /* libARNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARNetwork.framework; path = ../../ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARNetwork.framework; sourceTree = "<group>"; };
 		962B51E61AB3780700EFCBFE /* libARNetworkAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARNetworkAL.framework; path = ../../ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARNetworkAL.framework; sourceTree = "<group>"; };
 		962B51E71AB3780700EFCBFE /* libARSAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARSAL.framework; path = ../../ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARSAL.framework; sourceTree = "<group>"; };
 		962B51E81AB3780700EFCBFE /* libARUtils.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARUtils.framework; path = ../../ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARUtils.framework; sourceTree = "<group>"; };
-		9666B5E91ACE023B000B5A2C /* DroneVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DroneVideoView.h; sourceTree = SOURCE_ROOT; };
-		9666B5EA1ACE023B000B5A2C /* DroneVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DroneVideoView.m; sourceTree = SOURCE_ROOT; };
 		96D61E921AB4E99A00BCB1FA /* libARStream.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARStream.framework; path = ../../ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARStream.framework; sourceTree = "<group>"; };
 		96DD7FDD1ABC86BF00646F7D /* SBJson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJson.h; sourceTree = "<group>"; };
 		96DD7FDE1ABC86BF00646F7D /* SBJsonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonParser.h; sourceTree = "<group>"; };
@@ -124,6 +129,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				96245C061AD3741500A3C03B /* VideoToolbox.framework in Frameworks */,
 				96DD80201ABC8A5D00646F7D /* CFNetwork.framework in Frameworks */,
 				96DD801E1ABC8A5400646F7D /* MobileCoreServices.framework in Frameworks */,
 				96DD801C1ABC8A4A00646F7D /* SystemConfiguration.framework in Frameworks */,
@@ -163,6 +169,7 @@
 		1D9DF26B1A6D62CB000941ED /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				96245C051AD3741500A3C03B /* VideoToolbox.framework */,
 				96DD801F1ABC8A5D00646F7D /* CFNetwork.framework */,
 				96DD801D1ABC8A5400646F7D /* MobileCoreServices.framework */,
 				96DD801B1ABC8A4A00646F7D /* SystemConfiguration.framework */,
@@ -264,10 +271,12 @@
 				F80F5EBA1AB2F8670002B2C6 /* Main.storyboard */,
 				F80F5EBB1AB2F8670002B2C6 /* PilotingViewController.h */,
 				F80F5EBC1AB2F8670002B2C6 /* PilotingViewController.m */,
+				96245BFE1AD34D2B00A3C03B /* NSData+Conversion.m */,
+				96245C041AD34E0D00A3C03B /* NSData+Conversion.h */,
 				F80F5EBD1AB2F8670002B2C6 /* ViewController.h */,
 				F80F5EBE1AB2F8670002B2C6 /* ViewController.m */,
-				9666B5E91ACE023B000B5A2C /* DroneVideoView.h */,
-				9666B5EA1ACE023B000B5A2C /* DroneVideoView.m */,
+				96245C001AD34D9000A3C03B /* DroneVideoView.h */,
+				96245C011AD34D9000A3C03B /* DroneVideoView.m */,
 			);
 			name = BebopDronePiloting;
 			path = BebopSample;
@@ -350,6 +359,7 @@
 				96DD80071ABC86BF00646F7D /* SBJsonStreamParserAccumulator.m in Sources */,
 				96DD80091ABC86BF00646F7D /* SBJsonStreamParserState.m in Sources */,
 				F80F5EC41AB2F8670002B2C6 /* main.m in Sources */,
+				96245C021AD34D9000A3C03B /* DroneVideoView.m in Sources */,
 				96DD800F1ABC86BF00646F7D /* SocketIO.m in Sources */,
 				96DD80051ABC86BF00646F7D /* SBJsonParser.m in Sources */,
 				96DD80151ABC86BF00646F7D /* NSData+SRB64Additions.m in Sources */,
@@ -364,8 +374,8 @@
 				96DD80141ABC86BF00646F7D /* base64.c in Sources */,
 				F80F5EC71AB2F8670002B2C6 /* ViewController.m in Sources */,
 				96DD80131ABC86BF00646F7D /* SocketIOTransportXHR.m in Sources */,
+				96245BFF1AD34D2B00A3C03B /* NSData+Conversion.m in Sources */,
 				96DD80161ABC86BF00646F7D /* SRWebSocket.m in Sources */,
-				9666B5EB1ACE023B000B5A2C /* DroneVideoView.m in Sources */,
 				96DD80081ABC86BF00646F7D /* SBJsonStreamParserAdapter.m in Sources */,
 				96DD80101ABC86BF00646F7D /* SocketIOJSONSerialization.m in Sources */,
 			);

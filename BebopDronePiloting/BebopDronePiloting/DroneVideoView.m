@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Parrot. All rights reserved.
 //
 
+#import <VideoToolbox/VTDecompressionSession.h>
 #import "DroneVideoView.h"
 
 
@@ -47,6 +48,8 @@ static const NSString * naluTypesStrings[] = {
 
 @interface DroneVideoView ()
 
+//@property (nonatomic) PilotingViewController *pilotingViewController;
+
 @property (nonatomic) BOOL searchForSPSAndPPS;
 
 @property (nonatomic) NSData *spsData;
@@ -54,13 +57,31 @@ static const NSString * naluTypesStrings[] = {
 
 @property (nonatomic) CMVideoFormatDescriptionRef videoFormatDescr;
 
+@property (nonatomic) VTDecompressionSessionRef decompressionSession;
+
 @end
 
 
 @implementation DroneVideoView
 
--(void) setupVideoView
+
+/*
+void ReceivedDecompressedFrame(void *decompressionOutputRefCon, void *sourceFrameRefCon, OSStatus status, VTDecodeInfoFlags infoFlags, CVImageBufferRef imageBuffer, CMTime presentationTimeStamp, CMTime presentationDuration)
 {
+    NSLog(@"Decompressed frame received.");
+    
+    PilotingViewController *pilotingViewController = (__bridge PilotingViewController*)decompressionOutputRefCon;
+    
+    [pilotingViewController streamImageBufferOut:imageBuffer];
+}
+*/
+
+VTDecompressionOutputCallbackRecord *outputCallback;
+
+-(void) setupVideoView//:(PilotingViewController *)pilotingViewController
+{
+    //_pilotingViewController = pilotingViewController;
+    
     _searchForSPSAndPPS = true;
     
     self.videoLayer = [[AVSampleBufferDisplayLayer alloc] init];
@@ -142,6 +163,13 @@ static const NSString * naluTypesStrings[] = {
                 OSStatus status = CMVideoFormatDescriptionCreateFromH264ParameterSets(kCFAllocatorDefault, 2, parameterSetPointers, parameterSetSizes, 4, &_videoFormatDescr);
                 _searchForSPSAndPPS = false;
                 NSLog(@"Found all data for CMVideoFormatDescription. Creation: %@.", (status == noErr) ? @"successfully." : @"failed.");
+                
+                
+                /*
+                outputCallback = { ReceivedDecompressedFrame, self };
+                status = VTDecompressionSessionCreate(NULL, _videoFormatDescr, NULL, NULL, outputCallback, &_decompressionSession);
+                NSLog(@"Creation of VTDecompressionSession: %@.", (status == noErr) ? @"successfully." : @"failed.");
+                */
             }
         }
         
@@ -179,6 +207,12 @@ static const NSString * naluTypesStrings[] = {
             [_videoLayer setNeedsDisplay];
         });
         
+        
+        /*
+        VTDecodeInfoFlags flags;
+        status = VTDecompressionSessionDecodeFrame(_decompressionSession, sbRef, kVTDecodeFrame_EnableAsynchronousDecompression | kVTDecodeFrame_EnableTemporalProcessing, &sbRef, &flags);
+        NSLog(@"VTDecompressionSessionDecodeFrame: %@", (status == noErr) ? @"successfully." : @"failed.");
+        */
     }
 }
 
