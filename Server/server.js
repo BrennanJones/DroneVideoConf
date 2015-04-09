@@ -13,6 +13,9 @@ var app = require('http').createServer(handler),
 
 var fileServer = new static.Server('../WebDesktopClient/');
 
+var frameEchoed = false;
+var numFramesReceived = 0;
+
 app.listen(12345);
 
 // If the URL of the server is opened in a browser.
@@ -64,6 +67,13 @@ io.sockets.on('connection', function(socket)
 	
 	socket.on('DroneVideoFrame', function(data)
 	{
+		if (!frameEchoed)
+		{
+			frameEchoed = true;
+			//console.log(data.videoData);
+		}
+		numFramesReceived++;
+		console.log('Video frame received: ' + numFramesReceived);
 		socket.broadcast.emit('DroneVideoFrame', data);
 	});
 	
@@ -74,6 +84,11 @@ io.sockets.on('connection', function(socket)
 	{
 		console.log('Command: ' + data.command);
 		socket.broadcast.emit('Command', data);
-		socket.emit('Command', data);
+	});
+	
+	socket.on('CommandAcknowledged', function(data)
+	{
+		console.log('Command acknowledged: ' + data.command);
+		socket.broadcast.emit('CommandAcknowledged', data);
 	});
 });

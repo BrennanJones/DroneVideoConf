@@ -31,6 +31,8 @@ jQuery(function()
 	var doc = jQuery(document),
 	    win = jQuery(window);
 	
+	var numFramesReceived = 0;
+	
 	
 	panLeftButton = jQuery('#panLeftButton'),
 	panRightButton = jQuery('#panRightButton'),
@@ -111,66 +113,56 @@ jQuery(function()
 	
 	socket.on('DroneVideoFrame', function(data)
 	{
-		avc.decode(data.data);
+		numFramesReceived++;
+		console.log('Video frame received: ' + numFramesReceived);
+		
+		/*
+		for (var i = 0; i < 4; i++)
+			avc.decode(data.videoData[i]);
+		*/
+		avc.decode(data.videoData);
 	});
 	
 	/* COMMANDS */
 	
-	socket.on('PanLeft', function(data)
+	socket.on('CommandAcknowledged', function(data)
 	{
-		resetButtons();
-		panLeftButton.className = "btn btn-primary";
-	});
-	
-	socket.on('PanRight', function(data)
-	{
-		resetButtons();
-		panRightButton.className = "btn btn-primary";
-	});
-	
-	socket.on('ZoomIn', function(data)
-	{
-		resetButtons();
-		zoomInButton.className = "btn btn-primary";
-	});
-	
-	socket.on('ZoomOut', function(data)
-	{
-		resetButtons();
-		zoomOutButton.className = "btn btn-primary";
-	});
-	
-	socket.on('ElevateUp', function(data)
-	{
-		resetButtons();
-		elevateUpButton.className = "btn btn-primary";
-	});
-	
-	socket.on('ElevateDown', function(data)
-	{
-		resetButtons();
-		elevateDownButton.className = "btn btn-primary";
-	});
-	
-	socket.on('Freeze', function(data)
-	{
-		resetButtons();
-		freezeButton.className = "btn btn-primary";
+		console.log('Command acknowledged: ' + data.command);
+		
+		// Reset the buttons.
+		panLeftButton.css({"background-color":""}).css({"background-color":"#FFFFFF"});
+		panRightButton.css({"background-color":""}).css({"background-color":"#FFFFFF"});
+		zoomInButton.css({"background-color":""}).css({"background-color":"#FFFFFF"});
+		zoomOutButton.css({"background-color":""}).css({"background-color":"#FFFFFF"});
+		elevateUpButton.css({"background-color":""}).css({"background-color":"#FFFFFF"});
+		elevateDownButton.css({"background-color":""}).css({"background-color":"#FFFFFF"});
+		freezeButton.css({"background-color":""}).css({"background-color":"#FFFFFF"});
+		
+		switch(data.command)
+		{
+			case 'PanLeft':
+				panLeftButton.css({"background-color":""}).css({"background-color":"lightgray"});
+				break;
+			case 'PanRight':
+				panRightButton.css({"background-color":""}).css({"background-color":"lightgray"});
+				break;
+			case 'ZoomIn':
+				zoomInButton.css({"background-color":""}).css({"background-color":"lightgray"});
+				break;
+			case 'ZoomOut':
+				zoomOutButton.css({"background-color":""}).css({"background-color":"lightgray"});
+				break;
+			case 'ElevateUp':
+				elevateUpButton.css({"background-color":""}).css({"background-color":"lightgray"});
+				break;
+			case 'ElevateDown':
+				elevateDownButton.css({"background-color":""}).css({"background-color":"lightgray"});
+				break;
+			case 'Freeze':
+				freezeButton.css({"background-color":""}).css({"background-color":"lightgray"});
+				break;
+			default:
+				break;
+		}
 	});
 });
-
-
-/**
- * UTILITY FUNCTIONS
- */
-
-resetButtons = function()
-{
-	panLeftButton.className = "btn btn-default";
-	panRightButton.className = "btn btn-default";
-	zoomInButton.className = "btn btn-default";
-	zoomOutButton.className = "btn btn-default";
-	elevateUpButton.className = "btn btn-default";
-	elevateDownButton.className = "btn btn-default";
-	freezeButton.className = "btn btn-default";
-}
