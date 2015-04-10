@@ -5,7 +5,7 @@
  *
  * Written by Brennan Jones
  *
- * Last modified: 9 April 2015
+ * Last modified: 10 April 2015
  *
  */
 
@@ -42,7 +42,7 @@ jQuery(function()
 	elevateUpButton = jQuery('#elevateUpButton');
 	elevateDownButton = jQuery('#elevateDownButton');
 	
-	currentCommandText = jQuery('#currentCommandText');
+	currentCommandText = document.getElementById('currentCommandText');
 	
 	panLeftButton.on('click', function() {		
 		socket.emit('Command', { 'command': 'PanLeft' });
@@ -139,27 +139,27 @@ jQuery(function()
 		{
 			case 'PanLeft':
 				panLeftButton.css({"background-color":""}).css({"background-color":"lightgray"});
-				currentCommandText.innerHTML = "Rotation track left";
+				currentCommandText.innerHTML = "<p>Left (CW) circular track underway.</p>";
 				break;
 			case 'PanRight':
 				panRightButton.css({"background-color":""}).css({"background-color":"lightgray"});
-				currentCommandText.innerHTML = "Rotation track right";
+				currentCommandText.innerHTML = "<p>Right (CCW) circular track underway.</p>";
 				break;
 			case 'ZoomIn':
 				zoomInButton.css({"background-color":""}).css({"background-color":"lightgray"});
-				currentCommandText.innerHTML = "Track in";
+				currentCommandText.innerHTML = "<p>Track in underway.</p>";
 				break;
 			case 'ZoomOut':
 				zoomOutButton.css({"background-color":""}).css({"background-color":"lightgray"});
-				currentCommandText.innerHTML = "Track out";
+				currentCommandText.innerHTML = "<p>Track out underway.</p>";
 				break;
 			case 'ElevateUp':
 				elevateUpButton.css({"background-color":""}).css({"background-color":"lightgray"});
-				currentCommandText.innerHTML = "Elevate up";
+				currentCommandText.innerHTML = "<p>Elevate up underway.</p>";
 				break;
 			case 'ElevateDown':
 				elevateDownButton.css({"background-color":""}).css({"background-color":"lightgray"});
-				currentCommandText.innerHTML = "Elevate down";
+				currentCommandText.innerHTML = "<p>Elevate down underway.</p>";
 				break;
 			default:
 				break;
@@ -192,6 +192,6 @@ jQuery(function()
 		elevateUpButton.attr('disabled', false);
 		elevateDownButton.attr('disabled', false);
 		
-		currentCommandText.innerHTML = "";
+		currentCommandText.innerHTML = "<p></p>";
 	});
 });
