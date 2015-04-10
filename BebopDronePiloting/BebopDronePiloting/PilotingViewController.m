@@ -256,6 +256,26 @@ int frameCount = 0;
     [_deviceController setPitch:0];
 }
 
+- (IBAction)camUpClick:(id)sender
+{
+    [_deviceController setCamTilt:10];
+}
+
+- (IBAction)camDownClick:(id)sender
+{
+    [_deviceController setCamTilt:-10];
+}
+
+- (IBAction)camLeftClick:(id)sender
+{
+    [_deviceController setCamPan:-10];
+}
+
+- (IBAction)camRightClick:(id)sender
+{
+    [_deviceController setCamPan:10];
+}
+
 - (IBAction)endCommandClick:(id)sender
 {
     [self.socketIO sendEvent:@"EndCommand" withData:nil];

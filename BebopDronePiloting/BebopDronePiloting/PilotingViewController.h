@@ -91,5 +91,10 @@
 - (IBAction)pitchForwardTouchUp:(id)sender;
 - (IBAction)pitchBackTouchUp:(id)sender;
 
+- (IBAction)camUpClick:(id)sender;
+- (IBAction)camDownClick:(id)sender;
+- (IBAction)camLeftClick:(id)sender;
+- (IBAction)camRightClick:(id)sender;
+
 @end
 

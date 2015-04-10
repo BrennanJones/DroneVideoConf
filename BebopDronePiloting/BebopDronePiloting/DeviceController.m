@@ -176,6 +176,9 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
 
 @property (nonatomic) dispatch_semaphore_t resolveSemaphore;
 
+@property (nonatomic) uint8_t cameraPan;
+@property (nonatomic) uint8_t cameraTilt;
+
 @end
 
 @implementation DeviceController
@@ -211,6 +214,9 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
         _dataPCMD.yaw = 0;
         _dataPCMD.gaz = 0;
         _dataPCMD.psi = 0;
+        
+        _cameraPan = 0;
+        _cameraTilt = 0;
     }
     
     return self;
@@ -907,6 +913,16 @@ eARNETWORK_MANAGER_CALLBACK_RETURN arnetworkCmdCallback(int buffer_id, uint8_t *
     _dataPCMD.flag = flag;
 }
 
+- (void) setCamPan:(uint8_t)pan
+{
+    _cameraPan += pan;
+}
+
+- (void) setCamTilt:(int8_t)tilt
+{
+    _cameraTilt += tilt;
+}
+
 #pragma mark sending functions
 - (BOOL)getInitialSettings
 {
@@ -999,7 +1015,7 @@ eARNETWORK_MANAGER_CALLBACK_RETURN arnetworkCmdCallback(int buffer_id, uint8_t *
     eARNETWORK_ERROR netError = ARNETWORK_ERROR;
     
     // Send Posture command
-    cmdError = ARCOMMANDS_Generator_GenerateARDrone3PilotingPCMD(cmdBuffer, sizeof(cmdBuffer), &cmdSize, _dataPCMD.flag, _dataPCMD.roll, _dataPCMD.pitch, _dataPCMD.yaw, _dataPCMD.gaz, _dataPCMD.psi);
+    cmdError = ARCOMMANDS_Generator_GenerateARDrone3PilotingPCMD(cmdBuffer, sizeof(cmdBuffer), &cmdSize, _dataPCMD.flag, _dataPCMD.roll, _dataPCMD.pitch, _dataPCMD.yaw, _dataPCMD.gaz, _dataPCMD.psi) &ARCOMMANDS_Generator_GenerateARDrone3CameraOrientation (cmdBuffer, sizeof(cmdBuffer), &cmdSize, _cameraTilt, _cameraPan);
     if (cmdError == ARCOMMANDS_GENERATOR_OK)
     {
         // The commands sent in loop should be sent to a buffer not acknowledged ; here JS_NET_CD_NONACK_ID
