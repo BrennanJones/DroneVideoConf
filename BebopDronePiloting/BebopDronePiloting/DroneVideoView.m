@@ -70,15 +70,38 @@ void ReceivedDecompressedFrame(void *decompressionOutputRefCon, void *sourceFram
 {
     NSLog(@"Decompressed frame received.");
     
-    PilotingViewController *pilotingViewController = (__bridge PilotingViewController*)decompressionOutputRefCon;
-    
-    [pilotingViewController streamImageBufferOut:imageBuffer];
+    if (decompressionOutputRefCon != NULL)
+    {
+        DroneVideoView *droneVideoView = (__bridge DroneVideoView *)decompressionOutputRefCon;
+        
+        if (!droneVideoView.currentBufferLocked)
+        {
+            CVPixelBufferLockBaseAddress(imageBuffer, 0);
+            
+            if (droneVideoView.currentBufferPixels != NULL)
+                free(droneVideoView.currentBufferPixels);
+            
+            droneVideoView.currentBufferWidth = CVPixelBufferGetWidth(imageBuffer);
+            droneVideoView.currentBufferHeight = CVPixelBufferGetHeight(imageBuffer);
+            droneVideoView.currentBufferSize = (droneVideoView.currentBufferWidth * droneVideoView.currentBufferHeight) * 4 * sizeof(uint8_t);
+            
+            uint8_t *bufferPixels = (unsigned char *)CVPixelBufferGetBaseAddress(imageBuffer);
+            
+            size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
+            
+            droneVideoView.currentBufferPixels = malloc(droneVideoView.currentBufferSize);
+            for (int i = 0; i < droneVideoView.currentBufferSize / sizeof(uint8_t); i++)
+            {
+                droneVideoView.currentBufferPixels[i] = bufferPixels[i];
+            }
+            
+            CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
+        }
+    }
 }
 */
 
-VTDecompressionOutputCallbackRecord *outputCallback;
-
--(void) setupVideoView//:(PilotingViewController *)pilotingViewController
+-(void) setupVideoView
 {
     //_pilotingViewController = pilotingViewController;
     
@@ -101,6 +124,8 @@ VTDecompressionOutputCallbackRecord *outputCallback;
     // connecting the videolayer with the view
     
     [[self layer] addSublayer:_videoLayer];
+    
+    //_currentBufferLocked = false;
 }
 
 -(void) updateVideoViewWithFrame:(uint8_t *)frame frameSize:(uint32_t)frameSize
@@ -166,9 +191,17 @@ VTDecompressionOutputCallbackRecord *outputCallback;
                 
                 
                 /*
-                outputCallback = { ReceivedDecompressedFrame, self };
-                status = VTDecompressionSessionCreate(NULL, _videoFormatDescr, NULL, NULL, outputCallback, &_decompressionSession);
+                const VTDecompressionOutputCallbackRecord outputCallback = { ReceivedDecompressedFrame, (__bridge void *)self };
+                
+                CFMutableDictionaryRef destinationPixelBufferAttributes = CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+                CFDictionarySetSInt32(destinationPixelBufferAttributes, kCVPixelBufferPixelFormatTypeKey, kCVPixelFormatType_32BGRA);
+                //CFDictionarySetSInt32(destinationPixelBufferAttributes, kCVPixelBufferWidthKey, 640);
+                //CFDictionarySetSInt32(destinationPixelBufferAttributes, kCVPixelBufferHeightKey, 368);
+                
+                status = VTDecompressionSessionCreate(NULL, _videoFormatDescr, NULL, destinationPixelBufferAttributes, &outputCallback, &_decompressionSession);
                 NSLog(@"Creation of VTDecompressionSession: %@.", (status == noErr) ? @"successfully." : @"failed.");
+                
+                CFRelease(destinationPixelBufferAttributes);
                 */
             }
         }
@@ -221,6 +254,20 @@ VTDecompressionOutputCallbackRecord *outputCallback;
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect {
     // Drawing code
+}
+*/
+
+
+/* HELPER FUNCTIONS */
+
+/*
+static void CFDictionarySetSInt32(CFMutableDictionaryRef dictionary, CFStringRef key, SInt32 numberSInt32)
+{
+    CFNumberRef number;
+    
+    number = CFNumberCreate(NULL, kCFNumberSInt32Type, &numberSInt32);
+    CFDictionarySetValue(dictionary, key, number);
+    CFRelease(number);
 }
 */
 

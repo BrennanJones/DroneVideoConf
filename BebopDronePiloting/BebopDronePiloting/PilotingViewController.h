@@ -57,6 +57,7 @@
 @property (strong, nonatomic) IBOutlet DroneVideoView *droneVideoView;
 @property (strong, nonatomic) IBOutlet UILabel *commandLabel;
 @property (strong, nonatomic) IBOutlet UILabel *incomingCommandLabel;
+@property (strong, nonatomic) IBOutlet UIButton *endCommandButton;
 
 - (IBAction)connectToServerClick:(id)sender;
 
@@ -64,12 +65,13 @@
 - (IBAction)takeoffClick:(id)sender;
 - (IBAction)landingClick:(id)sender;
 
+- (IBAction)endCommandClick:(id)sender;
+
 - (IBAction)gazUpTouchDown:(id)sender;
 - (IBAction)gazDownTouchDown:(id)sender;
 
 - (IBAction)gazUpTouchUp:(id)sender;
 - (IBAction)gazDownTouchUp:(id)sender;
-
 
 - (IBAction)yawLeftTouchDown:(id)sender;
 - (IBAction)yawRightTouchDown:(id)sender;
@@ -77,13 +79,11 @@
 - (IBAction)yawLeftTouchUp:(id)sender;
 - (IBAction)yawRightTouchUp:(id)sender;
 
-
 - (IBAction)rollLeftTouchDown:(id)sender;
 - (IBAction)rollRightTouchDown:(id)sender;
 
 - (IBAction)rollLeftTouchUp:(id)sender;
 - (IBAction)rollRightTouchUp:(id)sender;
-
 
 - (IBAction)pitchForwardTouchDown:(id)sender;
 - (IBAction)pitchBackTouchDown:(id)sender;

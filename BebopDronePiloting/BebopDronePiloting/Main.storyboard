@@ -74,6 +74,124 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Gay-Hu-U3V">
+                                <rect key="frame" x="66" y="86" width="75" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <state key="normal" title="up">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="gazUpTouchDown:" destination="h7l-W5-mPq" eventType="touchDown" id="2AZ-zl-yqV"/>
+                                    <action selector="gazUpTouchUp:" destination="h7l-W5-mPq" eventType="touchUpOutside" id="NtA-E5-jTb"/>
+                                    <action selector="gazUpTouchUp:" destination="h7l-W5-mPq" eventType="touchUpInside" id="i84-u3-O6I"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="49x-rX-ZR5">
+                                <rect key="frame" x="16" y="136" width="50" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <state key="normal" title="left">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="yawLeftTouchDown:" destination="h7l-W5-mPq" eventType="touchDown" id="832-Od-VIr"/>
+                                    <action selector="yawLeftTouchUp:" destination="h7l-W5-mPq" eventType="touchUpOutside" id="8lH-5E-lUg"/>
+                                    <action selector="yawLeftTouchUp:" destination="h7l-W5-mPq" eventType="touchUpInside" id="rqg-7C-Pae"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Pu6-Ec-qxO">
+                                <rect key="frame" x="141" y="136" width="50" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <state key="normal" title="right">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="yawRightTouchDown:" destination="h7l-W5-mPq" eventType="touchDown" id="0xi-11-41Y"/>
+                                    <action selector="yawRightTouchUp:" destination="h7l-W5-mPq" eventType="touchUpOutside" id="P0t-Ta-5wD"/>
+                                    <action selector="yawRightTouchUp:" destination="h7l-W5-mPq" eventType="touchUpInside" id="Zb7-bc-c6l"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="yaw" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="hWz-eS-MoG">
+                                <rect key="frame" x="66" y="136" width="75" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Yr9-VZ-aOL">
+                                <rect key="frame" x="66" y="186" width="75" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <state key="normal" title="down">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="gazDownTouchDown:" destination="h7l-W5-mPq" eventType="touchDown" id="Ib1-tF-FVs"/>
+                                    <action selector="gazDownTouchUp:" destination="h7l-W5-mPq" eventType="touchUpOutside" id="Yv2-s1-rB3"/>
+                                    <action selector="gazDownTouchUp:" destination="h7l-W5-mPq" eventType="touchUpInside" id="nz1-BD-TMs"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="t8b-nc-QZL">
+                                <rect key="frame" x="431" y="86" width="75" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <state key="normal" title="forward">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="pitchForwardTouchDown:" destination="h7l-W5-mPq" eventType="touchDown" id="MoN-PD-r8k"/>
+                                    <action selector="pitchForwardTouchUp:" destination="h7l-W5-mPq" eventType="touchUpInside" id="GIh-2x-K0x"/>
+                                    <action selector="pitchForwardTouchUp:" destination="h7l-W5-mPq" eventType="touchUpOutside" id="hZ8-ox-UXi"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="GTu-pg-RS6">
+                                <rect key="frame" x="431" y="186" width="75" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <state key="normal" title="back">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="pitchBackTouchDown:" destination="h7l-W5-mPq" eventType="touchDown" id="ztU-De-fR4"/>
+                                    <action selector="pitchBackTouchUp:" destination="h7l-W5-mPq" eventType="touchUpOutside" id="VaI-vN-kx6"/>
+                                    <action selector="pitchBackTouchUp:" destination="h7l-W5-mPq" eventType="touchUpInside" id="jjA-VA-CKu"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="6RF-Po-K6c">
+                                <rect key="frame" x="381" y="136" width="50" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <state key="normal" title="left">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="rollLeftTouchDown:" destination="h7l-W5-mPq" eventType="touchDown" id="E9p-vB-GFx"/>
+                                    <action selector="rollLeftTouchUp:" destination="h7l-W5-mPq" eventType="touchUpOutside" id="gZp-ks-Avs"/>
+                                    <action selector="rollLeftTouchUp:" destination="h7l-W5-mPq" eventType="touchUpInside" id="kow-7A-ykm"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="rOx-el-iDw">
+                                <rect key="frame" x="506" y="136" width="50" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <state key="normal" title="right">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="rollRightTouchDown:" destination="h7l-W5-mPq" eventType="touchDown" id="K6f-Zb-9Tv"/>
+                                    <action selector="rollRightTouchUp:" destination="h7l-W5-mPq" eventType="touchUpInside" id="DEi-bN-cbv"/>
+                                    <action selector="rollRightTouchUp:" destination="h7l-W5-mPq" eventType="touchUpOutside" id="NPC-Bm-FeR"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="roll" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Cr0-hg-WI8">
+                                <rect key="frame" x="431" y="136" width="75" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="q36-ZR-DRQ">
                                 <rect key="frame" x="232" y="282" width="100" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -163,6 +281,17 @@
                                 <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="vDZ-2D-bBj">
+                                <rect key="frame" x="232" y="208" width="105" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <state key="normal" title="End Command">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="endCommandClick:" destination="h7l-W5-mPq" eventType="touchUpInside" id="Yf6-Wy-tne"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
@@ -172,6 +301,7 @@
                         <outlet property="batteryLabel" destination="xX9-x8-Ti2" id="7J8-gt-GBW"/>
                         <outlet property="commandLabel" destination="tHx-5M-Wb2" id="YTD-Rt-n2x"/>
                         <outlet property="droneVideoView" destination="BuB-VR-RSH" id="5Wd-pd-kmE"/>
+                        <outlet property="endCommandButton" destination="vDZ-2D-bBj" id="cRO-d0-NOi"/>
                         <outlet property="incomingCommandLabel" destination="F2r-QD-GVp" id="gT9-vL-AQD"/>
                         <outlet property="landingBt" destination="hN0-JW-lxw" id="K82-Pv-BIT"/>
                         <outlet property="serverConnectionButton" destination="z0V-f4-g40" id="bun-sS-QId"/>

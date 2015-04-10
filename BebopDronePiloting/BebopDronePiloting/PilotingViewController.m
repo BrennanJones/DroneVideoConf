@@ -256,6 +256,13 @@ int frameCount = 0;
     [_deviceController setPitch:0];
 }
 
+- (IBAction)endCommandClick:(id)sender
+{
+    [self.socketIO sendEvent:@"EndCommand" withData:nil];
+    [_endCommandButton setAlpha:0.0];
+    _commandLabel.text = @"";
+}
+
 #pragma mark DeviceControllerDelegate
 
 - (void)onDisconnectNetwork:(DeviceController *)deviceController
@@ -344,6 +351,8 @@ int frameCount = 0;
     if([packet.name isEqualToString:@"Command"])
     {
         [self displayCommand:(NSString *)arg[@"command"]];
+        
+        [_endCommandButton setAlpha:1.0];
         
         if (self.socketIO.isConnected)
         {
@@ -436,7 +445,7 @@ int frameCount = 0;
         [json setObject:array forKey:@"videoData"];
         [self.socketIO sendEvent:@"DroneVideoFrame" withData:json];
     }
-    
+     
     /*
     uint8_t *copiedFrame = malloc(frameSize);
     for (int i = 0; i < frameSize/sizeof(uint8_t); i++)
@@ -447,14 +456,43 @@ int frameCount = 0;
     
     [_droneVideoView updateVideoViewWithFrame:frame frameSize:frameSize];
     
-    
     /*
     if (sendingFrame)
     {
-        free(copiedFrame);
+        //free(copiedFrame);
     }
-    else
+    else if (self.socketIO.isConnected)
     {
+        if (_droneVideoView.currentBufferPixels != NULL && !_droneVideoView.currentBufferLocked)
+        {
+            sendingFrame = true;
+            
+            _droneVideoView.currentBufferLocked = true;
+            
+            dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                NSMutableArray *pixelArray = [[NSMutableArray alloc] initWithCapacity:_droneVideoView.currentBufferSize];
+                for (int i = 0; i < _droneVideoView.currentBufferSize/sizeof(uint8_t); i++)
+                {
+                    [pixelArray addObject: [NSString stringWithFormat: @"%d", _droneVideoView.currentBufferPixels[i]]];
+                }
+                
+                if (self.socketIO.isConnected)
+                {
+                    NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
+                    [json setObject:[NSNumber numberWithInt:_droneVideoView.currentBufferWidth] forKey:@"width"];
+                    [json setObject:[NSNumber numberWithInt:_droneVideoView.currentBufferHeight] forKey:@"height"];
+                    [json setObject:pixelArray forKey:@"pixels"];
+                    [self.socketIO sendEvent:@"DroneVideoFrame" withData:json];
+                }
+                
+                sendingFrame = false;
+                
+                _droneVideoView.currentBufferLocked = false;
+            });
+        }
+        
+        // ---------------
+        
         framePackage[numFramesPackaged++] = copiedFrame;
         if (numFramesPackaged == NUM_FRAMES_PER_PACKAGE)
         {
