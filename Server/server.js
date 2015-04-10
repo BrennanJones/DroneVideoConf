@@ -3,7 +3,7 @@
  * server.js
  * Node.js Server
  *
- * Last modified: 29 March 2015
+ * Last modified: 9 April 2015
  *
  */
 
@@ -13,8 +13,8 @@ var app = require('http').createServer(handler),
 
 var fileServer = new static.Server('../WebDesktopClient/');
 
-var frameEchoed = false;
-var numFramesReceived = 0;
+//var frameEchoed = false;
+//var numFramesReceived = 0;
 
 app.listen(12345);
 
@@ -67,13 +67,15 @@ io.sockets.on('connection', function(socket)
 	
 	socket.on('DroneVideoFrame', function(data)
 	{
+		/*
 		if (!frameEchoed)
 		{
 			frameEchoed = true;
 			//console.log(data.videoData);
 		}
-		numFramesReceived++;
-		console.log('Video frame received: ' + numFramesReceived);
+		*/
+		//numFramesReceived++;
+		//console.log('Video frame received: ' + numFramesReceived);
 		socket.broadcast.emit('DroneVideoFrame', data);
 	});
 	
@@ -90,5 +92,11 @@ io.sockets.on('connection', function(socket)
 	{
 		console.log('Command acknowledged: ' + data.command);
 		socket.broadcast.emit('CommandAcknowledged', data);
+	});
+	
+	socket.on('EndCommand', function(data)
+	{
+		console.log('Command ended.');
+		socket.broadcast.emit('EndCommand', data);
 	});
 });

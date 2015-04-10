@@ -5,7 +5,7 @@
  *
  * Written by Brennan Jones
  *
- * Last modified: 29 March 2015
+ * Last modified: 9 April 2015
  *
  */
 
@@ -16,7 +16,8 @@ var zoomInButton;
 var zoomOutButton;
 var elevateUpButton;
 var elevateDownButton;
-var freezeButton;
+
+var currentCommandText;
 
 
 jQuery(function()
@@ -31,16 +32,17 @@ jQuery(function()
 	var doc = jQuery(document),
 	    win = jQuery(window);
 	
-	var numFramesReceived = 0;
+	//var numFramesReceived = 0;
 	
 	
-	panLeftButton = jQuery('#panLeftButton'),
-	panRightButton = jQuery('#panRightButton'),
-	zoomInButton = jQuery('#zoomInButton'),
-	zoomOutButton = jQuery('#zoomOutButton'),
-	elevateUpButton = jQuery('#elevateUpButton'),
-	elevateDownButton = jQuery('#elevateDownButton'),
-	freezeButton = jQuery('#freezeButton');
+	panLeftButton = jQuery('#panLeftButton');
+	panRightButton = jQuery('#panRightButton');
+	zoomInButton = jQuery('#zoomInButton');
+	zoomOutButton = jQuery('#zoomOutButton');
+	elevateUpButton = jQuery('#elevateUpButton');
+	elevateDownButton = jQuery('#elevateDownButton');
+	
+	currentCommandText = jQuery('#currentCommandText');
 	
 	panLeftButton.on('click', function() {		
 		socket.emit('Command', { 'command': 'PanLeft' });
@@ -64,10 +66,6 @@ jQuery(function()
 	
 	elevateDownButton.on('click', function() {		
 		socket.emit('Command', { 'command': 'ElevateDown' });
-	});
-	
-	freezeButton.on('click', function() {		
-		socket.emit('Command', { 'command': 'Freeze' });
 	});
 	
 	
@@ -113,8 +111,8 @@ jQuery(function()
 	
 	socket.on('DroneVideoFrame', function(data)
 	{
-		numFramesReceived++;
-		console.log('Video frame received: ' + numFramesReceived);
+		//numFramesReceived++;
+		//console.log('Video frame received: ' + numFramesReceived);
 		
 		/*
 		for (var i = 0; i < 4; i++)
@@ -136,33 +134,64 @@ jQuery(function()
 		zoomOutButton.css({"background-color":""}).css({"background-color":"#FFFFFF"});
 		elevateUpButton.css({"background-color":""}).css({"background-color":"#FFFFFF"});
 		elevateDownButton.css({"background-color":""}).css({"background-color":"#FFFFFF"});
-		freezeButton.css({"background-color":""}).css({"background-color":"#FFFFFF"});
 		
 		switch(data.command)
 		{
 			case 'PanLeft':
 				panLeftButton.css({"background-color":""}).css({"background-color":"lightgray"});
+				currentCommandText.innerHTML = "Rotation track left";
 				break;
 			case 'PanRight':
 				panRightButton.css({"background-color":""}).css({"background-color":"lightgray"});
+				currentCommandText.innerHTML = "Rotation track right";
 				break;
 			case 'ZoomIn':
 				zoomInButton.css({"background-color":""}).css({"background-color":"lightgray"});
+				currentCommandText.innerHTML = "Track in";
 				break;
 			case 'ZoomOut':
 				zoomOutButton.css({"background-color":""}).css({"background-color":"lightgray"});
+				currentCommandText.innerHTML = "Track out";
 				break;
 			case 'ElevateUp':
 				elevateUpButton.css({"background-color":""}).css({"background-color":"lightgray"});
+				currentCommandText.innerHTML = "Elevate up";
 				break;
 			case 'ElevateDown':
 				elevateDownButton.css({"background-color":""}).css({"background-color":"lightgray"});
-				break;
-			case 'Freeze':
-				freezeButton.css({"background-color":""}).css({"background-color":"lightgray"});
+				currentCommandText.innerHTML = "Elevate down";
 				break;
 			default:
 				break;
 		}
+		
+		// Disable the buttons.
+		panLeftButton.attr('disabled', true);
+		panRightButton.attr('disabled', true);
+		zoomInButton.attr('disabled', true);
+		zoomOutButton.attr('disabled', true);
+		elevateUpButton.attr('disabled', true);
+		elevateDownButton.attr('disabled', true);
+	});
+	
+	socket.on('EndCommand', function(data)
+	{
+		// Reset the buttons.
+		panLeftButton.css({"background-color":""}).css({"background-color":"#FFFFFF"});
+		panRightButton.css({"background-color":""}).css({"background-color":"#FFFFFF"});
+		zoomInButton.css({"background-color":""}).css({"background-color":"#FFFFFF"});
+		zoomOutButton.css({"background-color":""}).css({"background-color":"#FFFFFF"});
+		elevateUpButton.css({"background-color":""}).css({"background-color":"#FFFFFF"});
+		elevateDownButton.css({"background-color":""}).css({"background-color":"#FFFFFF"});
+		
+		// Re-enable the buttons.
+		panLeftButton.attr('disabled', false);
+		panRightButton.attr('disabled', false);
+		zoomInButton.attr('disabled', false);
+		zoomOutButton.attr('disabled', false);
+		elevateUpButton.attr('disabled', false);
+		elevateDownButton.attr('disabled', false);
+		
+		currentCommandText.innerHTML = "";
 	});
 });
