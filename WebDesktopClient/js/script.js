@@ -5,19 +5,7 @@
  *
  * Written by Brennan Jones
  *
- * Last modified: 10 April 2015
- *
  */
-
-
-var panLeftButton;
-var panRightButton;
-var zoomInButton;
-var zoomOutButton;
-var elevateUpButton;
-var elevateDownButton;
-
-var currentCommandText;
 
 
 jQuery(function()
@@ -34,15 +22,17 @@ jQuery(function()
 	
 	//var numFramesReceived = 0;
 	
+	var peer = new Peer({key: 'lwjd5qra8257b9'});
 	
-	panLeftButton = jQuery('#panLeftButton');
-	panRightButton = jQuery('#panRightButton');
-	zoomInButton = jQuery('#zoomInButton');
-	zoomOutButton = jQuery('#zoomOutButton');
-	elevateUpButton = jQuery('#elevateUpButton');
-	elevateDownButton = jQuery('#elevateDownButton');
 	
-	currentCommandText = document.getElementById('currentCommandText');
+	var panLeftButton = jQuery('#panLeftButton');
+	var panRightButton = jQuery('#panRightButton');
+	var zoomInButton = jQuery('#zoomInButton');
+	var zoomOutButton = jQuery('#zoomOutButton');
+	var elevateUpButton = jQuery('#elevateUpButton');
+	var elevateDownButton = jQuery('#elevateDownButton');
+	
+	var currentCommandText = document.getElementById('currentCommandText');
 	
 	panLeftButton.on('click', function() {		
 		socket.emit('Command', { 'command': 'PanLeft' });
@@ -193,5 +183,14 @@ jQuery(function()
 		elevateDownButton.attr('disabled', false);
 		
 		currentCommandText.innerHTML = "<p></p>";
+	});
+	
+	
+	/**
+	 * PEERJS WEBRTC HANDLERS
+	 */
+	
+	peer.on('open', function(id) {
+		console.log('My peer ID is: ' + id);
 	});
 });
