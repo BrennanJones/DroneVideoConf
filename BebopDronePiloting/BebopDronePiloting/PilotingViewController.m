@@ -463,106 +463,12 @@ int frameCount = 0;
     
     if (_socket.connected)
     {
-//        NSMutableArray *array = [[NSMutableArray alloc] initWithCapacity:frameSize/sizeof(uint8_t)];
-//        for (int i = 0; i < frameSize/sizeof(uint8_t); i++)
-//        {
-//            [array addObject: [NSString stringWithFormat: @"%d", frame[i]]];
-//        }
-//        
-//        NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
-//        [json setObject:array forKey:@"videoData"];
-//        [self.socketIO sendEvent:@"DroneVideoFrame" withData:json];
-        
         NSData *data = [[NSData alloc] initWithBytes:frame length:frameSize];
         NSArray *args = [[NSArray alloc] initWithObjects:data, nil];
         [_socket emit:@"DroneVideoFrame" withItems:args];
     }
-     
-    /*
-    uint8_t *copiedFrame = malloc(frameSize);
-    for (int i = 0; i < frameSize/sizeof(uint8_t); i++)
-    {
-        copiedFrame[i] = frame[i];
-    }
-    */
     
     [_droneVideoView updateVideoViewWithFrame:frame frameSize:frameSize];
-    
-    /*
-    if (sendingFrame)
-    {
-        //free(copiedFrame);
-    }
-    else if (self.socketIO.isConnected)
-    {
-        if (_droneVideoView.currentBufferPixels != NULL && !_droneVideoView.currentBufferLocked)
-        {
-            sendingFrame = true;
-            
-            _droneVideoView.currentBufferLocked = true;
-            
-            dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                NSMutableArray *pixelArray = [[NSMutableArray alloc] initWithCapacity:_droneVideoView.currentBufferSize];
-                for (int i = 0; i < _droneVideoView.currentBufferSize/sizeof(uint8_t); i++)
-                {
-                    [pixelArray addObject: [NSString stringWithFormat: @"%d", _droneVideoView.currentBufferPixels[i]]];
-                }
-                
-                if (self.socketIO.isConnected)
-                {
-                    NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
-                    [json setObject:[NSNumber numberWithInt:_droneVideoView.currentBufferWidth] forKey:@"width"];
-                    [json setObject:[NSNumber numberWithInt:_droneVideoView.currentBufferHeight] forKey:@"height"];
-                    [json setObject:pixelArray forKey:@"pixels"];
-                    [self.socketIO sendEvent:@"DroneVideoFrame" withData:json];
-                }
-                
-                sendingFrame = false;
-                
-                _droneVideoView.currentBufferLocked = false;
-            });
-        }
-        
-        // ---------------
-        
-        framePackage[numFramesPackaged++] = copiedFrame;
-        if (numFramesPackaged == NUM_FRAMES_PER_PACKAGE)
-        {
-            sendingFrame = true;
-            
-            dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                NSMutableArray *outerArray = [[NSMutableArray alloc] initWithCapacity:NUM_FRAMES_PER_PACKAGE];
-                
-                for (int c = 0; c < NUM_FRAMES_PER_PACKAGE; c++)
-                {
-                    NSMutableArray *innerArray = [[NSMutableArray alloc] initWithCapacity:frameSize/sizeof(uint8_t)];
-                    for (int i = 0; i < frameSize/sizeof(uint8_t); i++)
-                    {
-                        [innerArray addObject: [NSString stringWithFormat: @"%d", framePackage[c][i]]];
-                    }
-                    
-                    [outerArray addObject:innerArray];
-                }
-                
-                if (self.socketIO.isConnected)
-                {
-                    NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
-                    [json setObject:outerArray forKey:@"videoData"];
-                    [self.socketIO sendEvent:@"DroneVideoFrame" withData:json];
-                }
-                
-                for (int c = 0; c < NUM_FRAMES_PER_PACKAGE; c++)
-                {
-                    free(framePackage[c]);
-                }
-                
-                numFramesPackaged = 0;
-                
-                sendingFrame = false;
-            });
-        }
-    }
-    */
 }
 
 @end
