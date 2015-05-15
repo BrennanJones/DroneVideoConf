@@ -40,13 +40,15 @@
 #import <libARDiscovery/ARDISCOVERY_BonjourDiscovery.h>
 
 #import "DroneVideoView.h"
-#import "SocketIO.h"
+//#import "SocketIO.h"
+#import "DVC-Swift.h"
 
 @interface PilotingViewController : UIViewController <UITextFieldDelegate>
 
 @property (nonatomic, strong) ARService* service;
 
-@property (nonatomic, strong) SocketIO *socketIO;
+//@property (nonatomic, strong) SocketIO *socketIO;
+@property (nonatomic, strong) SocketIOClient* socket;
 
 @property (nonatomic, strong) IBOutlet UILabel *batteryLabel;
 @property (nonatomic, strong) IBOutlet UIButton *takeoffBt;
@@ -58,6 +60,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *commandLabel;
 @property (strong, nonatomic) IBOutlet UILabel *incomingCommandLabel;
 @property (strong, nonatomic) IBOutlet UIButton *endCommandButton;
+@property (strong, nonatomic) IBOutlet UILabel *yawLabel;
 
 - (IBAction)connectToServerClick:(id)sender;
 

@@ -7,6 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		96112B101B05547D002C08C0 /* SocketAckManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B031B05547D002C08C0 /* SocketAckManager.swift */; };
+		96112B111B05547D002C08C0 /* SocketAnyEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B041B05547D002C08C0 /* SocketAnyEvent.swift */; };
+		96112B121B05547D002C08C0 /* SocketEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B051B05547D002C08C0 /* SocketEngine.swift */; };
+		96112B131B05547D002C08C0 /* SocketEngineClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B061B05547D002C08C0 /* SocketEngineClient.swift */; };
+		96112B141B05547D002C08C0 /* SocketEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B071B05547D002C08C0 /* SocketEventHandler.swift */; };
+		96112B151B05547D002C08C0 /* SocketFixUTF8.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B081B05547D002C08C0 /* SocketFixUTF8.swift */; };
+		96112B161B05547D002C08C0 /* SocketIOClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B091B05547D002C08C0 /* SocketIOClient.swift */; };
+		96112B171B05547D002C08C0 /* SocketLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B0A1B05547D002C08C0 /* SocketLogger.swift */; };
+		96112B181B05547D002C08C0 /* SocketPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B0B1B05547D002C08C0 /* SocketPacket.swift */; };
+		96112B191B05547D002C08C0 /* SocketParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B0C1B05547D002C08C0 /* SocketParser.swift */; };
+		96112B1A1B05547D002C08C0 /* SocketTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B0D1B05547D002C08C0 /* SocketTypes.swift */; };
+		96112B1B1B05547D002C08C0 /* SwiftRegex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B0E1B05547D002C08C0 /* SwiftRegex.swift */; };
+		96112B1C1B05547D002C08C0 /* WebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B0F1B05547D002C08C0 /* WebSocket.swift */; };
 		96245BFF1AD34D2B00A3C03B /* NSData+Conversion.m in Sources */ = {isa = PBXBuildFile; fileRef = 96245BFE1AD34D2B00A3C03B /* NSData+Conversion.m */; };
 		96245C021AD34D9000A3C03B /* DroneVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 96245C011AD34D9000A3C03B /* DroneVideoView.m */; };
 		96245C061AD3741500A3C03B /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96245C051AD3741500A3C03B /* VideoToolbox.framework */; };
@@ -52,7 +65,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1D9DF2351A6D580F000941ED /* DVC-Wizard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DVC-Wizard.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D9DF2351A6D580F000941ED /* DVC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DVC.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		96112B031B05547D002C08C0 /* SocketAckManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketAckManager.swift; sourceTree = "<group>"; };
+		96112B041B05547D002C08C0 /* SocketAnyEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketAnyEvent.swift; sourceTree = "<group>"; };
+		96112B051B05547D002C08C0 /* SocketEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketEngine.swift; sourceTree = "<group>"; };
+		96112B061B05547D002C08C0 /* SocketEngineClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketEngineClient.swift; sourceTree = "<group>"; };
+		96112B071B05547D002C08C0 /* SocketEventHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketEventHandler.swift; sourceTree = "<group>"; };
+		96112B081B05547D002C08C0 /* SocketFixUTF8.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketFixUTF8.swift; sourceTree = "<group>"; };
+		96112B091B05547D002C08C0 /* SocketIOClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketIOClient.swift; sourceTree = "<group>"; };
+		96112B0A1B05547D002C08C0 /* SocketLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketLogger.swift; sourceTree = "<group>"; };
+		96112B0B1B05547D002C08C0 /* SocketPacket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketPacket.swift; sourceTree = "<group>"; };
+		96112B0C1B05547D002C08C0 /* SocketParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketParser.swift; sourceTree = "<group>"; };
+		96112B0D1B05547D002C08C0 /* SocketTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketTypes.swift; sourceTree = "<group>"; };
+		96112B0E1B05547D002C08C0 /* SwiftRegex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftRegex.swift; sourceTree = "<group>"; };
+		96112B0F1B05547D002C08C0 /* WebSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocket.swift; sourceTree = "<group>"; };
 		96245BFE1AD34D2B00A3C03B /* NSData+Conversion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSData+Conversion.m"; path = "BebopDronePiloting/NSData+Conversion.m"; sourceTree = SOURCE_ROOT; };
 		96245C001AD34D9000A3C03B /* DroneVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DroneVideoView.h; path = BebopDronePiloting/DroneVideoView.h; sourceTree = SOURCE_ROOT; };
 		96245C011AD34D9000A3C03B /* DroneVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DroneVideoView.m; path = BebopDronePiloting/DroneVideoView.m; sourceTree = SOURCE_ROOT; };
@@ -151,6 +177,7 @@
 		1D9DF22C1A6D580F000941ED = {
 			isa = PBXGroup;
 			children = (
+				96112B021B05547D002C08C0 /* SocketIOClientSwift */,
 				96DD7FDB1ABC86BF00646F7D /* socketio.objc */,
 				F8C6053D1A9F06AC000D2804 /* BebopDronePiloting */,
 				1D9DF26B1A6D62CB000941ED /* Frameworks */,
@@ -161,7 +188,7 @@
 		1D9DF2361A6D580F000941ED /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1D9DF2351A6D580F000941ED /* DVC-Wizard.app */,
+				1D9DF2351A6D580F000941ED /* DVC.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -184,6 +211,26 @@
 				962B51E81AB3780700EFCBFE /* libARUtils.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		96112B021B05547D002C08C0 /* SocketIOClientSwift */ = {
+			isa = PBXGroup;
+			children = (
+				96112B031B05547D002C08C0 /* SocketAckManager.swift */,
+				96112B041B05547D002C08C0 /* SocketAnyEvent.swift */,
+				96112B051B05547D002C08C0 /* SocketEngine.swift */,
+				96112B061B05547D002C08C0 /* SocketEngineClient.swift */,
+				96112B071B05547D002C08C0 /* SocketEventHandler.swift */,
+				96112B081B05547D002C08C0 /* SocketFixUTF8.swift */,
+				96112B091B05547D002C08C0 /* SocketIOClient.swift */,
+				96112B0A1B05547D002C08C0 /* SocketLogger.swift */,
+				96112B0B1B05547D002C08C0 /* SocketPacket.swift */,
+				96112B0C1B05547D002C08C0 /* SocketParser.swift */,
+				96112B0D1B05547D002C08C0 /* SocketTypes.swift */,
+				96112B0E1B05547D002C08C0 /* SwiftRegex.swift */,
+				96112B0F1B05547D002C08C0 /* WebSocket.swift */,
+			);
+			path = SocketIOClientSwift;
 			sourceTree = "<group>";
 		};
 		96DD7FDB1ABC86BF00646F7D /* socketio.objc */ = {
@@ -299,7 +346,7 @@
 			);
 			name = BebopDronePiloting;
 			productName = RollingSpiderPiloting;
-			productReference = 1D9DF2351A6D580F000941ED /* DVC-Wizard.app */;
+			productReference = 1D9DF2351A6D580F000941ED /* DVC.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -353,21 +400,30 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				96112B1B1B05547D002C08C0 /* SwiftRegex.swift in Sources */,
 				F80F5EC61AB2F8670002B2C6 /* PilotingViewController.m in Sources */,
 				96DD800E1ABC86BF00646F7D /* SBJsonWriter.m in Sources */,
+				96112B111B05547D002C08C0 /* SocketAnyEvent.swift in Sources */,
 				F80F5EBF1AB2F8670002B2C6 /* AppDelegate.m in Sources */,
+				96112B131B05547D002C08C0 /* SocketEngineClient.swift in Sources */,
 				96DD80071ABC86BF00646F7D /* SBJsonStreamParserAccumulator.m in Sources */,
 				96DD80091ABC86BF00646F7D /* SBJsonStreamParserState.m in Sources */,
 				F80F5EC41AB2F8670002B2C6 /* main.m in Sources */,
 				96245C021AD34D9000A3C03B /* DroneVideoView.m in Sources */,
 				96DD800F1ABC86BF00646F7D /* SocketIO.m in Sources */,
+				96112B1A1B05547D002C08C0 /* SocketTypes.swift in Sources */,
 				96DD80051ABC86BF00646F7D /* SBJsonParser.m in Sources */,
+				96112B1C1B05547D002C08C0 /* WebSocket.swift in Sources */,
 				96DD80151ABC86BF00646F7D /* NSData+SRB64Additions.m in Sources */,
+				96112B141B05547D002C08C0 /* SocketEventHandler.swift in Sources */,
 				96DD80111ABC86BF00646F7D /* SocketIOPacket.m in Sources */,
 				96DD80061ABC86BF00646F7D /* SBJsonStreamParser.m in Sources */,
+				96112B161B05547D002C08C0 /* SocketIOClient.swift in Sources */,
 				96DD800D1ABC86BF00646F7D /* SBJsonStreamWriterState.m in Sources */,
 				96DD800B1ABC86BF00646F7D /* SBJsonStreamWriter.m in Sources */,
+				96112B101B05547D002C08C0 /* SocketAckManager.swift in Sources */,
 				96DD80121ABC86BF00646F7D /* SocketIOTransportWebsocket.m in Sources */,
+				96112B171B05547D002C08C0 /* SocketLogger.swift in Sources */,
 				96DD800C1ABC86BF00646F7D /* SBJsonStreamWriterAccumulator.m in Sources */,
 				96DD800A1ABC86BF00646F7D /* SBJsonStreamTokeniser.m in Sources */,
 				F80F5EC01AB2F8670002B2C6 /* DeviceController.m in Sources */,
@@ -375,8 +431,12 @@
 				F80F5EC71AB2F8670002B2C6 /* ViewController.m in Sources */,
 				96DD80131ABC86BF00646F7D /* SocketIOTransportXHR.m in Sources */,
 				96245BFF1AD34D2B00A3C03B /* NSData+Conversion.m in Sources */,
+				96112B121B05547D002C08C0 /* SocketEngine.swift in Sources */,
 				96DD80161ABC86BF00646F7D /* SRWebSocket.m in Sources */,
+				96112B151B05547D002C08C0 /* SocketFixUTF8.swift in Sources */,
+				96112B191B05547D002C08C0 /* SocketParser.swift in Sources */,
 				96DD80081ABC86BF00646F7D /* SBJsonStreamParserAdapter.m in Sources */,
+				96112B181B05547D002C08C0 /* SocketPacket.swift in Sources */,
 				96DD80101ABC86BF00646F7D /* SocketIOJSONSerialization.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -476,7 +536,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/BebopDronePiloting/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				ONLY_ACTIVE_ARCH = NO;
-				PRODUCT_NAME = "DVC-Wizard";
+				PRODUCT_NAME = DVC;
 				VALID_ARCHS = "armv7 armv7s";
 			};
 			name = Debug;
@@ -494,7 +554,7 @@
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/BebopDronePiloting/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_NAME = "DVC-Wizard";
+				PRODUCT_NAME = DVC;
 				VALID_ARCHS = "armv7 armv7s";
 			};
 			name = Release;

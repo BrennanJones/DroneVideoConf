@@ -10,7 +10,7 @@
 
 jQuery(function()
 {
-	/* NOTE: Change this to the server's IP address / domain name and any port number you'd like.
+	/* NOTE: Change this to the server's IP address/domain name and any port number you'd like.
 	    (Maybe grab server information dynamically later.) */
 	// var url = "http://10.11.78.44:8080";
 	var url = "http://127.0.0.1:12345";
@@ -19,10 +19,9 @@ jQuery(function()
 	
 	var doc = jQuery(document),
 	    win = jQuery(window);
-	
-	//var numFramesReceived = 0;
-	
-	var peer = new Peer({key: 'lwjd5qra8257b9'});
+
+
+	var numFramesReceived = 0;
 	
 	
 	var panLeftButton = jQuery('#panLeftButton');
@@ -35,37 +34,30 @@ jQuery(function()
 	var currentCommandText = document.getElementById('currentCommandText');
 	
 	panLeftButton.on('click', function() {		
-		socket.emit('Command', { 'command': 'PanLeft' });
+		socket.emit('Command', 'PanLeft');
 	});
 	
 	panRightButton.on('click', function() {		
-		socket.emit('Command', { 'command': 'PanRight' });
+		socket.emit('Command', 'PanRight');
 	});
 	
 	zoomInButton.on('click', function() {		
-		socket.emit('Command', { 'command': 'ZoomIn' });
+		socket.emit('Command', 'ZoomIn');
 	});
 	
 	zoomOutButton.on('click', function() {		
-		socket.emit('Command', { 'command': 'ZoomOut' });
+		socket.emit('Command', 'ZoomOut');
 	});
 	
 	elevateUpButton.on('click', function() {		
-		socket.emit('Command', { 'command': 'ElevateUp' });
+		socket.emit('Command', 'ElevateUp');
 	});
 	
 	elevateDownButton.on('click', function() {		
-		socket.emit('Command', { 'command': 'ElevateDown' });
+		socket.emit('Command', 'ElevateDown');
 	});
 	
 	
-	var defaultConfig = {
-        filter: "original",
-        filterHorLuma: "optimized",
-        filterVerLumaEdge: "optimized",
-        getBoundaryStrengthsA: "optimized"
-    };
-		
 	var div = jQuery('#videoFrameContainer');
 	var canvas = document.createElement('canvas');
 	canvas.style.background = 'black';
@@ -74,13 +66,19 @@ jQuery(function()
 	div.append(canvas);
 	
 	var avc = new Avc();
-	avc.configure(defaultConfig);
-	avc.onPictureDecoded = function (buffer, width, height)
+	avc.configure({
+        filter: "original",
+        filterHorLuma: "optimized",
+        filterVerLumaEdge: "optimized",
+        getBoundaryStrengthsA: "optimized"
+    });
+	avc.onPictureDecoded = function(buffer, width, height)
 	{
-		//console.log("onPictureDecoded: W: " + width + " H: " + height);
+		console.log("onPictureDecoded: W: " + width + " H: " + height);
 		
 		// Paint decoded buffer.
-		if (!buffer) {
+		if (!buffer)
+		{
             return;
         }
         var lumaSize = width * height;
@@ -101,21 +99,17 @@ jQuery(function()
 	
 	socket.on('DroneVideoFrame', function(data)
 	{
-		//numFramesReceived++;
-		//console.log('Video frame received: ' + numFramesReceived);
-		
-		/*
-		for (var i = 0; i < 4; i++)
-			avc.decode(data.videoData[i]);
-		*/
-		avc.decode(data.videoData);
+		numFramesReceived++;
+		console.log('Video frame received: ' + numFramesReceived);
+
+		avc.decode(new Uint8Array(data));
 	});
 	
 	/* COMMANDS */
 	
 	socket.on('CommandAcknowledged', function(data)
 	{
-		console.log('Command acknowledged: ' + data.command);
+		console.log('Command acknowledged: ' + data[0]);
 		
 		// Reset the buttons.
 		panLeftButton.css({"background-color":""}).css({"background-color":"#FFFFFF"});
@@ -125,7 +119,7 @@ jQuery(function()
 		elevateUpButton.css({"background-color":""}).css({"background-color":"#FFFFFF"});
 		elevateDownButton.css({"background-color":""}).css({"background-color":"#FFFFFF"});
 		
-		switch(data.command)
+		switch(data)
 		{
 			case 'PanLeft':
 				panLeftButton.css({"background-color":""}).css({"background-color":"lightgray"});
@@ -183,14 +177,5 @@ jQuery(function()
 		elevateDownButton.attr('disabled', false);
 		
 		currentCommandText.innerHTML = "<p></p>";
-	});
-	
-	
-	/**
-	 * PEERJS WEBRTC HANDLERS
-	 */
-	
-	peer.on('open', function(id) {
-		console.log('My peer ID is: ' + id);
 	});
 });

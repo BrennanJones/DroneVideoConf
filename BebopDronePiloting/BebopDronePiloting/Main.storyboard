@@ -343,6 +343,13 @@
                                     <action selector="endCommandClick:" destination="h7l-W5-mPq" eventType="touchUpInside" id="Yf6-Wy-tne"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="C02-Wi-RlA">
+                                <rect key="frame" x="263" y="219" width="42" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
@@ -359,6 +366,7 @@
                         <outlet property="serverConnectionStatusLabel" destination="4UN-tG-MXW" id="Zbq-92-dhs"/>
                         <outlet property="serverConnectionTextField" destination="tU8-PJ-x0U" id="7YP-Bv-pEs"/>
                         <outlet property="takeoffBt" destination="F5K-IH-4TR" id="Bbh-zZ-PeL"/>
+                        <outlet property="yawLabel" destination="C02-Wi-RlA" id="b3M-62-6m6"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sha-9N-qNc" userLabel="First Responder" sceneMemberID="firstResponder"/>

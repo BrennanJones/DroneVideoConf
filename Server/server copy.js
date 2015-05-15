@@ -3,27 +3,31 @@
  * server.js
  * Node.js Server
  *
+ * Last modified: 9 April 2015
+ *
  */
 
 var app = require('http').createServer(handler),
-	io = require('socket.io')(app),
-	static = require('node-static'),
-	fs = new static.Server('../WebDesktopClient/');
+	io = require('socket.io').listen(app),
+	static = require('node-static');
+
+var fileServer = new static.Server('../WebDesktopClient/');
+
+//var frameEchoed = false;
+//var numFramesReceived = 0;
+
+app.listen(12345);
 
 // If the URL of the server is opened in a browser.
 function handler(request, response)
 {
 	request.addListener('end', function() {
-		fs.serve(request, response);
+		fileServer.serve(request, response);
 	}).resume();
 }
 
-app.listen(12345);
-
-console.log('Server started.');
-
-
-//var numFramesReceived = 0;
+// Comment this line to see debug messages.
+io.set('log level', 1);
 
 io.sockets.on('connection', function(socket)
 {	
@@ -63,13 +67,15 @@ io.sockets.on('connection', function(socket)
 	
 	socket.on('DroneVideoFrame', function(data)
 	{
+		/*
+		if (!frameEchoed)
+		{
+			frameEchoed = true;
+			//console.log(data.videoData);
+		}
+		*/
 		//numFramesReceived++;
-		//if (numFramesReceived == 1)
-		//{
-		//	console.log(data);
-		//}
 		//console.log('Video frame received: ' + numFramesReceived);
-
 		socket.broadcast.emit('DroneVideoFrame', data);
 	});
 	

@@ -1168,6 +1168,7 @@ eARNETWORK_MANAGER_CALLBACK_RETURN arnetworkCmdCallback(int buffer_id, uint8_t *
     ARCOMMANDS_Decoder_SetCommonCommonStateBatteryStateChangedCallback(batteryStateChangedCallback, (__bridge void *)self);
     ARCOMMANDS_Decoder_SetARDrone3PilotingStateFlyingStateChangedCallback(flyingStateChangedCallback, (__bridge void *)self);
     //ARCOMMANDS_Decoder_SetARDrone3PilotingStatePositionChangedCallback(positionChangedCallback, (__bridge void *)self);
+    ARCOMMANDS_Decoder_SetARDrone3PilotingStateAttitudeChangedCallback(attitudeChangedCallback, (__bridge void *)self);
 }
 
 -(void) unregisterARCommandsCallbacks
@@ -1242,6 +1243,13 @@ static void positionChangedCallback(double latitude, double longitude, double al
     
     
     [deviceController.delegate onPositionChanged:deviceController latitude:latitude longitude:longitude altitude:altitude];
+}
+
+static void attitudeChangedCallback(float roll, float pitch, float yaw, void *custom)
+{
+    DeviceController *deviceController = (__bridge DeviceController*)custom;
+    
+    [deviceController.delegate onAttitudeChanged:deviceController roll:roll pitch:pitch yaw:yaw];
 }
 
 #pragma mark resolveService

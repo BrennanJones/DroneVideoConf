@@ -43,8 +43,6 @@
 
 #define TAG "PilotingViewController"
 
-static const int SERVER_PORT_NUMBER = 12345;
-
 //static const int NUM_FRAMES_PER_PACKAGE = 4;
 
 int frameCount = 0;
@@ -76,7 +74,7 @@ int frameCount = 0;
     //[_droneVideoView setupVideoView:self];
     [_droneVideoView setupVideoView];
     
-    [self initializeSocketIO];
+    //[self initializeSocketIO];
 }
 
 - (void) viewDidAppear:(BOOL)animated
@@ -137,7 +135,7 @@ int frameCount = 0;
 
 - (IBAction)connectToServerClick:(id)sender
 {
-    if (self.socketIO.isConnected)
+    if (_socket.connected)
     {
         self.serverConnectionButton.enabled = false;
         self.serverConnectionStatusLabel.text = @"Disconnecting from server...";
@@ -150,7 +148,7 @@ int frameCount = 0;
         self.serverConnectionButton.enabled = false;
         self.serverConnectionStatusLabel.text = @"Connecting to server...";
         
-        [self connectToServer:self.serverConnectionTextField.text onPort:SERVER_PORT_NUMBER];
+        [self connectToServer:self.serverConnectionTextField.text];
     }
 }
 
@@ -278,7 +276,9 @@ int frameCount = 0;
 
 - (IBAction)endCommandClick:(id)sender
 {
-    [self.socketIO sendEvent:@"EndCommand" withData:nil];
+    //[self.socketIO sendEvent:@"EndCommand" withData:nil];
+    [_socket emit:@"EndCommand" withItems:[[NSArray alloc] init]];
+    
     [_endCommandButton setAlpha:0.0];
     _commandLabel.text = @"";
 }
@@ -294,94 +294,91 @@ int frameCount = 0;
     });
 }
 
-- (void)initializeSocketIO
-{
-    if (self.socketIO == nil)
-    {
-        self.socketIO = [[SocketIO alloc]initWithDelegate:self];
-    }
-}
+//- (void)initializeSocketIO
+//{
+//    if (self.socketIO == nil)
+//    {
+//        self.socketIO = [[SocketIO alloc]initWithDelegate:self];
+//    }
+//}
 
-- (BOOL)connectToServer:(NSString *)address onPort:(NSInteger)port
+- (void)connectToServer:(NSString *)address
 {
     [self disconnectFromServer];
     
-    [self.socketIO connectToHost:address onPort:port];
     
-    if (self.socketIO.isConnected)
-    {
-        return NO;
-    }
-    else
-    {
-        return YES;
-    }
+    _socket = [[SocketIOClient alloc] initWithSocketURL:address options:nil];
+    
+    
+    [_socket on:@"connect" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+        NSLog(@"socket connected");
+        
+        [_socket emit:@"MobileClientConnected" withItems:[[NSArray alloc] init]];
+        
+        self.serverConnectionStatusLabel.text = @"Connected to server.";
+        [self.serverConnectionButton setTitle:@"Disconnect from server" forState:UIControlStateNormal];
+        self.serverConnectionButton.enabled = true;
+        
+        [self.serverConnectionTextField setAlpha:0];
+    }];
+    
+    [_socket on:@"disconnect" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+        NSLog(@"socket disconnect");
+        
+        self.serverConnectionStatusLabel.text = @"Disconnected from server.";
+        [self.serverConnectionButton setTitle:@"Connect to server" forState:UIControlStateNormal];
+        self.serverConnectionButton.enabled = true;
+        self.serverConnectionTextField.enabled = true;
+        [self.serverConnectionTextField setAlpha:1];
+    }];
+    
+    [_socket on:@"error" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+        NSLog(@"socket error");
+        
+        _alertView = [[UIAlertView alloc] initWithTitle:[_service name] message:@"Connection with server failed." delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+        [_alertView show];
+        
+        self.serverConnectionStatusLabel.text = @"Disconnected from server.";
+        [self.serverConnectionButton setTitle:@"Connect to server" forState:UIControlStateNormal];
+        self.serverConnectionButton.enabled = true;
+        self.serverConnectionTextField.enabled = true;
+    }];
+    
+    
+    [_socket on:@"Command" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+        [self displayCommand:[data objectAtIndex:0]];
+        
+        [_endCommandButton setAlpha:1.0];
+        
+        if (_socket.connected)
+        {
+            NSArray *args = [[NSArray alloc] initWithObjects:[data objectAtIndex:0], nil];
+            [_socket emit:@"CommandAcknowledged" withItems:args];
+        }
+    }];
+    
+//    [_socket on:@"currentAmount" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+//        double cur = [[data objectAtIndex:0] floatValue];
+//        
+//        [_socket emitWithAck:@"canUpdate" withItems:@[@(cur)]](0, ^(NSArray* data) {
+//            [_socket emit:@"update" withItems:@[@{@"amount": @(cur + 2.50)}]];
+//        });
+//        
+//        ack(@[@"Got your currentAmount, ", @"dude"]);
+//    }];
+    
+    
+    [_socket connect];
 }
 
 - (void)disconnectFromServer
 {
-    if (self.socketIO.isConnected)
+    if (_socket != nil && _socket.connected)
     {
-        [self.socketIO disconnect];
+        [_socket closeWithFast:false];
     }
 }
 
-- (void) socketIO:(SocketIO *)socket onError:(NSError *)error
-{
-    _alertView = [[UIAlertView alloc] initWithTitle:[_service name] message:@"Connection with server failed."
-                                           delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
-    [_alertView show];
-    
-    self.serverConnectionStatusLabel.text = @"Disconnected from server.";
-    [self.serverConnectionButton setTitle:@"Connect to server" forState:UIControlStateNormal];
-    self.serverConnectionButton.enabled = true;
-    self.serverConnectionTextField.enabled = true;
-}
-
-
-- (void) socketIODidConnect:(SocketIO *)socket
-{
-    [self.socketIO sendEvent:@"MobileClientConnect" withData:nil];
-    
-    self.serverConnectionStatusLabel.text = @"Connected to server.";
-    [self.serverConnectionButton setTitle:@"Disconnect from server" forState:UIControlStateNormal];
-    self.serverConnectionButton.enabled = true;
-    
-    [self.serverConnectionTextField setAlpha:0];
-}
-
-
-- (void) socketIODidDisconnect:(SocketIO *)socket disconnectedWithError:(NSError *)error
-{
-    self.serverConnectionStatusLabel.text = @"Disconnected from server.";
-    [self.serverConnectionButton setTitle:@"Connect to server" forState:UIControlStateNormal];
-    self.serverConnectionButton.enabled = true;
-    self.serverConnectionTextField.enabled = true;
-    [self.serverConnectionTextField setAlpha:1];
-}
-
-
-- (void) socketIO:(SocketIO *)socket didReceiveEvent:(SocketIOPacket *)packet
-{
-    NSLog(@"didReceiveEvent(): %@", packet.name);
-    
-    NSArray* args = packet.args;
-    NSDictionary* arg = args[0];
-    
-    if([packet.name isEqualToString:@"Command"])
-    {
-        [self displayCommand:(NSString *)arg[@"command"]];
-        
-        [_endCommandButton setAlpha:1.0];
-        
-        if (self.socketIO.isConnected)
-        {
-            NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
-            [json setObject:(NSString *)arg[@"command"] forKey:@"command"];
-            [self.socketIO sendEvent:@"CommandAcknowledged" withData:json];
-        }
-    }
-}
 
 - (void) displayCommand:(NSString *)command
 {
@@ -449,21 +446,36 @@ int frameCount = 0;
      */
 }
 
+- (void)onAttitudeChanged:(DeviceController *)deviceController roll:(float)roll pitch:(float)pitch yaw:(float)yaw;
+{
+    NSLog(@"onUpdatePosition");
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *yawText = [[NSString alloc] initWithFormat:@"%f", yaw];
+        
+        [_yawLabel setText:yawText];
+    });
+}
+
 - (void)onFrameComplete:(DeviceController *)deviceController frame:(uint8_t *)frame frameSize:(uint32_t)frameSize;
 {
     NSLog(@"onFrameComplete: %d", ++frameCount);
     
-    if (self.socketIO.isConnected)
+    if (_socket.connected)
     {
-        NSMutableArray *array = [[NSMutableArray alloc] initWithCapacity:frameSize/sizeof(uint8_t)];
-        for (int i = 0; i < frameSize/sizeof(uint8_t); i++)
-        {
-            [array addObject: [NSString stringWithFormat: @"%d", frame[i]]];
-        }
+//        NSMutableArray *array = [[NSMutableArray alloc] initWithCapacity:frameSize/sizeof(uint8_t)];
+//        for (int i = 0; i < frameSize/sizeof(uint8_t); i++)
+//        {
+//            [array addObject: [NSString stringWithFormat: @"%d", frame[i]]];
+//        }
+//        
+//        NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
+//        [json setObject:array forKey:@"videoData"];
+//        [self.socketIO sendEvent:@"DroneVideoFrame" withData:json];
         
-        NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
-        [json setObject:array forKey:@"videoData"];
-        [self.socketIO sendEvent:@"DroneVideoFrame" withData:json];
+        NSData *data = [[NSData alloc] initWithBytes:frame length:frameSize];
+        NSArray *args = [[NSArray alloc] initWithObjects:data, nil];
+        [_socket emit:@"DroneVideoFrame" withItems:args];
     }
      
     /*
