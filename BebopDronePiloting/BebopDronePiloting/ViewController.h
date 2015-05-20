@@ -28,6 +28,7 @@
     OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
     SUCH DAMAGE.
 */
+
 //
 //  ViewController.h
 //  BebopDronePiloting
@@ -36,8 +37,10 @@
 //  Copyright (c) 2015 Parrot. All rights reserved.
 //
 
+
 #import <UIKit/UIKit.h>
 #import <libARDiscovery/ARDISCOVERY_BonjourDiscovery.h>
+
 
 @interface ViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 
@@ -45,10 +48,10 @@
 
 @end
 
+
 @interface CellData : NSObject
 
 @property (nonatomic, strong) ARService* service;
 @property (nonatomic, strong) NSString* name;
 
 @end
-

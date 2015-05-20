@@ -28,6 +28,7 @@
     OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
     SUCH DAMAGE.
 */
+
 //
 //  PilotingViewController.h
 //  BebopDronePiloting
@@ -36,19 +37,22 @@
 //  Copyright (c) 2015 Parrot. All rights reserved.
 //
 
+
 #import <UIKit/UIKit.h>
+#import <CoreLocation/CoreLocation.h>
 #import <libARDiscovery/ARDISCOVERY_BonjourDiscovery.h>
 
 #import "DroneVideoView.h"
-//#import "SocketIO.h"
 #import "DVC-Swift.h"
 
-@interface PilotingViewController : UIViewController <UITextFieldDelegate>
 
-@property (nonatomic, strong) ARService* service;
+@interface PilotingViewController : UIViewController <UITextFieldDelegate, CLLocationManagerDelegate>
 
-//@property (nonatomic, strong) SocketIO *socketIO;
-@property (nonatomic, strong) SocketIOClient* socket;
+@property (nonatomic, strong) ARService *service;
+
+@property (nonatomic, strong) SocketIOClient *socket;
+
+@property (nonatomic, strong) CLLocationManager *locationManager;
 
 @property (nonatomic, strong) IBOutlet UILabel *batteryLabel;
 @property (nonatomic, strong) IBOutlet UIButton *takeoffBt;
@@ -100,4 +104,3 @@
 - (IBAction)camRightClick:(id)sender;
 
 @end
-

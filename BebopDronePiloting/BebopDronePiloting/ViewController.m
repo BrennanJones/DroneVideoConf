@@ -28,6 +28,7 @@
     OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
     SUCH DAMAGE.
 */
+
 //
 //  ViewController.m
 //  BebopDronePiloting
@@ -36,21 +37,26 @@
 //  Copyright (c) 2015 Parrot. All rights reserved.
 //
 
+
 #import "ViewController.h"
 #import <libARDiscovery/ARDISCOVERY_BonjourDiscovery.h>
 #import "PilotingViewController.h"
 
+
 @interface CellData ()
 @end
 
+
 @implementation CellData
 @end
+
 
 @interface ViewController ()
 
 @property (nonatomic, strong) ARService *serviceSelected;
 
 @end
+
 
 @implementation ViewController
 {
@@ -68,8 +74,6 @@
     
     tableData = [NSArray array];
     _serviceSelected = nil;
-    
-    
 }
 
 - (void)didReceiveMemoryWarning

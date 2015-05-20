@@ -28,6 +28,7 @@
     OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
     SUCH DAMAGE.
 */
+
 //
 //  PilotingViewController.m
 //  BebopDronePiloting
@@ -36,30 +37,34 @@
 //  Copyright (c) 2015 Parrot. All rights reserved.
 //
 
+
+#import <CoreLocation/CoreLocation.h>
+
 #import "PilotingViewController.h"
 #import "DeviceController.h"
-#import "SocketIOPacket.h"
-#import "NSData+Conversion.h"
+
 
 #define TAG "PilotingViewController"
 
-//static const int NUM_FRAMES_PER_PACKAGE = 4;
 
 int frameCount = 0;
-//bool sendingFrame = false;
-//uint8_t *framePackage[NUM_FRAMES_PER_PACKAGE];
-//int numFramesPackaged = 0;
+
 
 @interface PilotingViewController () <DeviceControllerDelegate>
-@property (nonatomic, strong) DeviceController* deviceController;
+
+@property (nonatomic, strong) DeviceController *deviceController;
 @property (nonatomic, strong) UIAlertView *alertView;
 
 @end
+
 
 @implementation PilotingViewController
 
 @synthesize service = _service;
 @synthesize batteryLabel = _batteryLabel;
+
+
+#pragma mark Initialization Methods
 
 - (void)viewDidLoad
 {
@@ -71,13 +76,12 @@ int frameCount = 0;
     _alertView = [[UIAlertView alloc] initWithTitle:[_service name] message:@"Connecting ..."
                                            delegate:self cancelButtonTitle:nil otherButtonTitles:nil, nil];
     
-    //[_droneVideoView setupVideoView:self];
     [_droneVideoView setupVideoView];
     
-    //[self initializeSocketIO];
+    [self initializePhoneGPS];
 }
 
-- (void) viewDidAppear:(BOOL)animated
+- (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
 
@@ -105,11 +109,13 @@ int frameCount = 0;
     });
 }
 
-- (void) viewDidDisappear:(BOOL)animated
+- (void)viewDidDisappear:(BOOL)animated
 {
     _alertView = [[UIAlertView alloc] initWithTitle:[_service name] message:@"Disconnecting ..."
                                            delegate:self cancelButtonTitle:nil otherButtonTitles:nil, nil];
     [_alertView show];
+    
+    [_locationManager stopUpdatingLocation];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self disconnectFromServer];
@@ -131,7 +137,221 @@ int frameCount = 0;
     return YES;
 }
 
-#pragma mark events
+- (void)initializePhoneGPS
+{
+    if (_locationManager == nil)
+    {
+        _locationManager = [[CLLocationManager alloc] init];
+    }
+    
+    _locationManager.delegate = self;
+    
+    if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
+    {
+        [_locationManager requestWhenInUseAuthorization];
+    }
+    
+    _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    
+    // Set a movement threshold for new events.
+    _locationManager.distanceFilter = 0; // metres
+    
+    [_locationManager startUpdatingLocation];
+}
+
+
+#pragma mark Drone Event Handler Methods
+
+- (void)onUpdateBattery:(DeviceController *)deviceController batteryLevel:(uint8_t)percent;
+{
+    NSLog(@"onUpdateBattery");
+    
+    // update battery label on the UI thread
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *text = [[NSString alloc] initWithFormat:@"%d%%", percent];
+        [_batteryLabel setText:text];
+    });
+}
+
+-(void)onFlyingStateChanged:(DeviceController *)deviceController flyingState:(eARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE)state
+{
+    NSLog(@"onFlyingStateChanged");
+    
+    // on the UI thread, disable and enable buttons according to flying state
+    dispatch_async(dispatch_get_main_queue(), ^{
+        switch (state) {
+            case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_LANDED:
+                [_takeoffBt setEnabled:YES];
+                [_landingBt setEnabled:NO];
+                break;
+            case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_HOVERING:
+            case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_FLYING:
+                [_takeoffBt setEnabled:NO];
+                [_landingBt setEnabled:YES];
+                break;
+            default:
+                // in all other cases, take of and landing are not enabled
+                [_takeoffBt setEnabled:NO];
+                [_landingBt setEnabled:NO];
+                break;
+        }
+    });
+}
+
+- (void)onPositionChanged:(DeviceController *)deviceController latitude:(double)latitude longitude:(double)longitude altitude:(double)altitude;
+{
+    NSLog(@"onUpdatePosition");
+    
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        NSString *latText = [[NSString alloc] initWithFormat:@"%f", latitude];
+//        NSString *longText = [[NSString alloc] initWithFormat:@"%f", longitude];
+//        NSString *altText = [[NSString alloc] initWithFormat:@"%f", altitude];
+//        
+//        [_latitudeLabel setText:latText];
+//        [_longitudeLabel setText:longText];
+//        [_altitudeLabel setText:altText];
+//    });
+}
+
+- (void)onAttitudeChanged:(DeviceController *)deviceController roll:(float)roll pitch:(float)pitch yaw:(float)yaw;
+{
+    NSLog(@"onUpdatePosition");
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *yawText = [[NSString alloc] initWithFormat:@"%f", yaw];
+        
+        [_yawLabel setText:yawText];
+    });
+}
+
+- (void)onFrameComplete:(DeviceController *)deviceController frame:(uint8_t *)frame frameSize:(uint32_t)frameSize;
+{
+    NSLog(@"onFrameComplete: %d", ++frameCount);
+    
+    if (_socket.connected)
+    {
+        NSData *data = [[NSData alloc] initWithBytes:frame length:frameSize];
+        NSArray *args = [[NSArray alloc] initWithObjects:data, nil];
+        [_socket emit:@"DroneVideoFrame" withItems:args];
+    }
+    
+    [_droneVideoView updateVideoViewWithFrame:frame frameSize:frameSize];
+}
+
+- (void)onDisconnectNetwork:(DeviceController *)deviceController
+{
+    NSLog(@"onDisconnect ...");
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.navigationController popViewControllerAnimated:YES];
+    });
+}
+
+
+#pragma mark Phone Location Event Handler Methods
+
+//- (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
+//{
+//    NSLog(@"HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+//}
+
+// Delegate method from the CLLocationManagerDelegate protocol.
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
+{
+    NSLog(@"HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    
+    // If it's a relatively recent event, turn off updates to save power.
+    CLLocation* location = [locations lastObject];
+    NSDate* eventDate = location.timestamp;
+    NSTimeInterval howRecent = [eventDate timeIntervalSinceNow];
+    
+    if (abs(howRecent) < 15.0)
+    {
+        // If the event is recent, do something with it.
+        NSLog(@"latitude %+.6f, longitude %+.6f\n", location.coordinate.latitude, location.coordinate.longitude);
+    }
+}
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
+{
+    NSLog(@"didFailWithError: %@", error);
+    UIAlertView *errorAlert = [[UIAlertView alloc]
+                               initWithTitle:@"Error" message:@"Failed to Get Your Location" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [errorAlert show];
+}
+
+
+#pragma mark Server Connection Methods
+
+- (void)connectToServer:(NSString *)address
+{
+    [self disconnectFromServer];
+    
+    
+    _socket = [[SocketIOClient alloc] initWithSocketURL:address options:nil];
+    
+    
+    [_socket on:@"connect" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+        NSLog(@"socket connected");
+        
+        [_socket emit:@"MobileClientConnected" withItems:[[NSArray alloc] init]];
+        
+        self.serverConnectionStatusLabel.text = @"Connected to server.";
+        [self.serverConnectionButton setTitle:@"Disconnect from server" forState:UIControlStateNormal];
+        self.serverConnectionButton.enabled = true;
+        
+        [self.serverConnectionTextField setAlpha:0];
+    }];
+    
+    [_socket on:@"disconnect" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+        NSLog(@"socket disconnect");
+        
+        self.serverConnectionStatusLabel.text = @"Disconnected from server.";
+        [self.serverConnectionButton setTitle:@"Connect to server" forState:UIControlStateNormal];
+        self.serverConnectionButton.enabled = true;
+        self.serverConnectionTextField.enabled = true;
+        [self.serverConnectionTextField setAlpha:1];
+    }];
+    
+    [_socket on:@"error" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+        NSLog(@"socket error");
+        
+        _alertView = [[UIAlertView alloc] initWithTitle:[_service name] message:@"Connection with server failed." delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+        [_alertView show];
+        
+        self.serverConnectionStatusLabel.text = @"Disconnected from server.";
+        [self.serverConnectionButton setTitle:@"Connect to server" forState:UIControlStateNormal];
+        self.serverConnectionButton.enabled = true;
+        self.serverConnectionTextField.enabled = true;
+    }];
+    
+    
+//    [_socket on:@"Command" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+//        [self displayCommand:[data objectAtIndex:0]];
+//        
+//        [_endCommandButton setAlpha:1.0];
+//        
+//        if (_socket.connected)
+//        {
+//            NSArray *args = [[NSArray alloc] initWithObjects:[data objectAtIndex:0], nil];
+//            [_socket emit:@"CommandAcknowledged" withItems:args];
+//        }
+//    }];
+    
+    
+    [_socket connect];
+}
+
+- (void)disconnectFromServer
+{
+    if (_socket != nil && _socket.connected)
+    {
+        [_socket closeWithFast:false];
+    }
+}
+
+
+#pragma mark UI Event Handler Methods
 
 - (IBAction)connectToServerClick:(id)sender
 {
@@ -276,199 +496,10 @@ int frameCount = 0;
 
 - (IBAction)endCommandClick:(id)sender
 {
-    //[self.socketIO sendEvent:@"EndCommand" withData:nil];
     [_socket emit:@"EndCommand" withItems:[[NSArray alloc] init]];
     
     [_endCommandButton setAlpha:0.0];
     _commandLabel.text = @"";
-}
-
-#pragma mark DeviceControllerDelegate
-
-- (void)onDisconnectNetwork:(DeviceController *)deviceController
-{
-    NSLog(@"onDisconnect ...");
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.navigationController popViewControllerAnimated:YES];
-    });
-}
-
-//- (void)initializeSocketIO
-//{
-//    if (self.socketIO == nil)
-//    {
-//        self.socketIO = [[SocketIO alloc]initWithDelegate:self];
-//    }
-//}
-
-- (void)connectToServer:(NSString *)address
-{
-    [self disconnectFromServer];
-    
-    
-    _socket = [[SocketIOClient alloc] initWithSocketURL:address options:nil];
-    
-    
-    [_socket on:@"connect" callback:^(NSArray* data, void (^ack)(NSArray*)) {
-        NSLog(@"socket connected");
-        
-        [_socket emit:@"MobileClientConnected" withItems:[[NSArray alloc] init]];
-        
-        self.serverConnectionStatusLabel.text = @"Connected to server.";
-        [self.serverConnectionButton setTitle:@"Disconnect from server" forState:UIControlStateNormal];
-        self.serverConnectionButton.enabled = true;
-        
-        [self.serverConnectionTextField setAlpha:0];
-    }];
-    
-    [_socket on:@"disconnect" callback:^(NSArray* data, void (^ack)(NSArray*)) {
-        NSLog(@"socket disconnect");
-        
-        self.serverConnectionStatusLabel.text = @"Disconnected from server.";
-        [self.serverConnectionButton setTitle:@"Connect to server" forState:UIControlStateNormal];
-        self.serverConnectionButton.enabled = true;
-        self.serverConnectionTextField.enabled = true;
-        [self.serverConnectionTextField setAlpha:1];
-    }];
-    
-    [_socket on:@"error" callback:^(NSArray* data, void (^ack)(NSArray*)) {
-        NSLog(@"socket error");
-        
-        _alertView = [[UIAlertView alloc] initWithTitle:[_service name] message:@"Connection with server failed." delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
-        [_alertView show];
-        
-        self.serverConnectionStatusLabel.text = @"Disconnected from server.";
-        [self.serverConnectionButton setTitle:@"Connect to server" forState:UIControlStateNormal];
-        self.serverConnectionButton.enabled = true;
-        self.serverConnectionTextField.enabled = true;
-    }];
-    
-    
-    [_socket on:@"Command" callback:^(NSArray* data, void (^ack)(NSArray*)) {
-        [self displayCommand:[data objectAtIndex:0]];
-        
-        [_endCommandButton setAlpha:1.0];
-        
-        if (_socket.connected)
-        {
-            NSArray *args = [[NSArray alloc] initWithObjects:[data objectAtIndex:0], nil];
-            [_socket emit:@"CommandAcknowledged" withItems:args];
-        }
-    }];
-    
-//    [_socket on:@"currentAmount" callback:^(NSArray* data, void (^ack)(NSArray*)) {
-//        double cur = [[data objectAtIndex:0] floatValue];
-//        
-//        [_socket emitWithAck:@"canUpdate" withItems:@[@(cur)]](0, ^(NSArray* data) {
-//            [_socket emit:@"update" withItems:@[@{@"amount": @(cur + 2.50)}]];
-//        });
-//        
-//        ack(@[@"Got your currentAmount, ", @"dude"]);
-//    }];
-    
-    
-    [_socket connect];
-}
-
-- (void)disconnectFromServer
-{
-    if (_socket != nil && _socket.connected)
-    {
-        [_socket closeWithFast:false];
-    }
-}
-
-
-- (void) displayCommand:(NSString *)command
-{
-    _incomingCommandLabel.text = command;
-    _incomingCommandLabel.alpha = 1.0;
-    _commandLabel.text = command;
-    
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationCurve:UIViewAnimationCurveEaseOut];
-    [UIView setAnimationDuration:5.0];
-    _incomingCommandLabel.alpha = 0.0;
-    [UIView commitAnimations];
-}
-
-- (void)onUpdateBattery:(DeviceController *)deviceController batteryLevel:(uint8_t)percent;
-{
-    NSLog(@"onUpdateBattery");
-    
-    // update battery label on the UI thread
-    dispatch_async(dispatch_get_main_queue(), ^{
-        NSString *text = [[NSString alloc] initWithFormat:@"%d%%", percent];
-        [_batteryLabel setText:text];
-    });
-}
-
--(void)onFlyingStateChanged:(DeviceController *)deviceController flyingState:(eARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE)state
-{
-    NSLog(@"onFlyingStateChanged");
-    
-    // on the UI thread, disable and enable buttons according to flying state
-    dispatch_async(dispatch_get_main_queue(), ^{
-        switch (state) {
-            case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_LANDED:
-                [_takeoffBt setEnabled:YES];
-                [_landingBt setEnabled:NO];
-                break;
-            case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_HOVERING:
-            case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_FLYING:
-                [_takeoffBt setEnabled:NO];
-                [_landingBt setEnabled:YES];
-                break;
-            default:
-                // in all other cases, take of and landing are not enabled
-                [_takeoffBt setEnabled:NO];
-                [_landingBt setEnabled:NO];
-                break;
-        }
-    });
-}
-
-- (void)onPositionChanged:(DeviceController *)deviceController latitude:(double)latitude longitude:(double)longitude altitude:(double)altitude;
-{
-    NSLog(@"onUpdatePosition");
-    
-    /*
-    dispatch_async(dispatch_get_main_queue(), ^{
-        NSString *latText = [[NSString alloc] initWithFormat:@"%f", latitude];
-        NSString *longText = [[NSString alloc] initWithFormat:@"%f", longitude];
-        NSString *altText = [[NSString alloc] initWithFormat:@"%f", altitude];
-        
-        [_latitudeLabel setText:latText];
-        [_longitudeLabel setText:longText];
-        [_altitudeLabel setText:altText];
-    });
-     */
-}
-
-- (void)onAttitudeChanged:(DeviceController *)deviceController roll:(float)roll pitch:(float)pitch yaw:(float)yaw;
-{
-    NSLog(@"onUpdatePosition");
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        NSString *yawText = [[NSString alloc] initWithFormat:@"%f", yaw];
-        
-        [_yawLabel setText:yawText];
-    });
-}
-
-- (void)onFrameComplete:(DeviceController *)deviceController frame:(uint8_t *)frame frameSize:(uint32_t)frameSize;
-{
-    NSLog(@"onFrameComplete: %d", ++frameCount);
-    
-    if (_socket.connected)
-    {
-        NSData *data = [[NSData alloc] initWithBytes:frame length:frameSize];
-        NSArray *args = [[NSArray alloc] initWithObjects:data, nil];
-        [_socket emit:@"DroneVideoFrame" withItems:args];
-    }
-    
-    [_droneVideoView updateVideoViewWithFrame:frame frameSize:frameSize];
 }
 
 @end
