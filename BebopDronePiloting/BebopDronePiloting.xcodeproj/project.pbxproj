@@ -360,6 +360,7 @@
 				TargetAttributes = {
 					1D9DF2341A6D580F000941ED = {
 						CreatedOnToolsVersion = 6.1.1;
+						DevelopmentTeam = C83LCGDPF3;
 					};
 				};
 			};
@@ -527,6 +528,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks",
@@ -537,6 +539,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = DVC;
+				PROVISIONING_PROFILE = "";
 				VALID_ARCHS = "armv7 armv7s";
 			};
 			name = Debug;
@@ -546,6 +549,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks",
@@ -555,6 +559,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/BebopDronePiloting/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = DVC;
+				PROVISIONING_PROFILE = "";
 				VALID_ARCHS = "armv7 armv7s";
 			};
 			name = Release;
