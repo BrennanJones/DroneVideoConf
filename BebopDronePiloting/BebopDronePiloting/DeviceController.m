@@ -1242,7 +1242,7 @@ static void positionChangedCallback(double latitude, double longitude, double al
     //[[NSNotificationCenter defaultCenter] postNotificationName:ARDrone3DeviceControllerPilotingStatePositionChangedNotification object:deviceController userInfo:dict];
     
     
-    [deviceController.delegate onPositionChanged:deviceController latitude:latitude longitude:longitude altitude:altitude];
+    [deviceController.delegate onDronePositionChanged:deviceController latitude:latitude longitude:longitude altitude:altitude];
 }
 
 static void attitudeChangedCallback(float roll, float pitch, float yaw, void *custom)

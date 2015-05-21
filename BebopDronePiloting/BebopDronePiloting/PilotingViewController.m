@@ -49,6 +49,14 @@
 
 int frameCount = 0;
 
+double latPhone;
+double lonPhone;
+
+double latDrone;
+double lonDrone;
+
+double yawDrone;
+
 
 @interface PilotingViewController () <DeviceControllerDelegate>
 
@@ -198,9 +206,9 @@ int frameCount = 0;
     });
 }
 
-- (void)onPositionChanged:(DeviceController *)deviceController latitude:(double)latitude longitude:(double)longitude altitude:(double)altitude;
+- (void)onDronePositionChanged:(DeviceController *)deviceController latitude:(double)latitude longitude:(double)longitude altitude:(double)altitude;
 {
-    NSLog(@"onUpdatePosition");
+    NSLog(@"onDronePositionChanged");
     
 //    dispatch_async(dispatch_get_main_queue(), ^{
 //        NSString *latText = [[NSString alloc] initWithFormat:@"%f", latitude];
@@ -211,17 +219,22 @@ int frameCount = 0;
 //        [_longitudeLabel setText:longText];
 //        [_altitudeLabel setText:altText];
 //    });
+    
+    latDrone = latitude;
+    lonDrone = longitude;
 }
 
 - (void)onAttitudeChanged:(DeviceController *)deviceController roll:(float)roll pitch:(float)pitch yaw:(float)yaw;
 {
     NSLog(@"onUpdatePosition");
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        NSString *yawText = [[NSString alloc] initWithFormat:@"%f", yaw];
-        
-        [_yawLabel setText:yawText];
-    });
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        NSString *yawText = [[NSString alloc] initWithFormat:@"%f", yaw];
+//        
+//        [_yawLabel setText:yawText];
+//    });
+    
+    yawDrone = yaw;
 }
 
 - (void)onFrameComplete:(DeviceController *)deviceController frame:(uint8_t *)frame frameSize:(uint32_t)frameSize;
@@ -250,16 +263,9 @@ int frameCount = 0;
 
 #pragma mark Phone Location Event Handler Methods
 
-//- (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
-//{
-//    NSLog(@"HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-//}
-
 // Delegate method from the CLLocationManagerDelegate protocol.
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
-    NSLog(@"HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    
     // If it's a relatively recent event, turn off updates to save power.
     CLLocation* location = [locations lastObject];
     NSDate* eventDate = location.timestamp;
@@ -269,6 +275,9 @@ int frameCount = 0;
     {
         // If the event is recent, do something with it.
         NSLog(@"latitude %+.6f, longitude %+.6f\n", location.coordinate.latitude, location.coordinate.longitude);
+        
+        latPhone = location.coordinate.latitude;
+        lonPhone = location.coordinate.longitude;
     }
 }
 
@@ -348,6 +357,15 @@ int frameCount = 0;
     {
         [_socket closeWithFast:false];
     }
+}
+
+
+#pragma mark Drone Control Methods
+
+- (void)droneAdjustHeading
+{
+    // The required heading, in radians.
+    double heading = atan2( sin(lonPhone-lonDrone)*cos(latPhone), cos(latDrone)*sin(latPhone) - sin(latDrone)*cos(latPhone)*cos(lonPhone-lonDrone) );
 }
 
 
