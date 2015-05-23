@@ -7,34 +7,32 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		96112B101B05547D002C08C0 /* SocketAckManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B031B05547D002C08C0 /* SocketAckManager.swift */; };
-		96112B111B05547D002C08C0 /* SocketAnyEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B041B05547D002C08C0 /* SocketAnyEvent.swift */; };
-		96112B121B05547D002C08C0 /* SocketEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B051B05547D002C08C0 /* SocketEngine.swift */; };
-		96112B131B05547D002C08C0 /* SocketEngineClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B061B05547D002C08C0 /* SocketEngineClient.swift */; };
-		96112B141B05547D002C08C0 /* SocketEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B071B05547D002C08C0 /* SocketEventHandler.swift */; };
-		96112B151B05547D002C08C0 /* SocketFixUTF8.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B081B05547D002C08C0 /* SocketFixUTF8.swift */; };
-		96112B161B05547D002C08C0 /* SocketIOClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B091B05547D002C08C0 /* SocketIOClient.swift */; };
-		96112B171B05547D002C08C0 /* SocketLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B0A1B05547D002C08C0 /* SocketLogger.swift */; };
-		96112B181B05547D002C08C0 /* SocketPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B0B1B05547D002C08C0 /* SocketPacket.swift */; };
-		96112B191B05547D002C08C0 /* SocketParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B0C1B05547D002C08C0 /* SocketParser.swift */; };
-		96112B1A1B05547D002C08C0 /* SocketTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B0D1B05547D002C08C0 /* SocketTypes.swift */; };
-		96112B1B1B05547D002C08C0 /* SwiftRegex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B0E1B05547D002C08C0 /* SwiftRegex.swift */; };
-		96112B1C1B05547D002C08C0 /* WebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96112B0F1B05547D002C08C0 /* WebSocket.swift */; };
 		96245C021AD34D9000A3C03B /* DroneVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 96245C011AD34D9000A3C03B /* DroneVideoView.m */; };
 		96245C061AD3741500A3C03B /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96245C051AD3741500A3C03B /* VideoToolbox.framework */; };
-		962B51E91AB3780700EFCBFE /* libARCommands.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 962B51E31AB3780700EFCBFE /* libARCommands.framework */; };
-		962B51EA1AB3780700EFCBFE /* libARDiscovery.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 962B51E41AB3780700EFCBFE /* libARDiscovery.framework */; };
-		962B51EB1AB3780700EFCBFE /* libARNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 962B51E51AB3780700EFCBFE /* libARNetwork.framework */; };
-		962B51EC1AB3780700EFCBFE /* libARNetworkAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 962B51E61AB3780700EFCBFE /* libARNetworkAL.framework */; };
-		962B51ED1AB3780700EFCBFE /* libARSAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 962B51E71AB3780700EFCBFE /* libARSAL.framework */; };
-		962B51EE1AB3780700EFCBFE /* libARUtils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 962B51E81AB3780700EFCBFE /* libARUtils.framework */; };
 		963AF21E1B0D3B3A0018B4FE /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 963AF21D1B0D3B3A0018B4FE /* CoreLocation.framework */; };
-		96D61E931AB4E99A00BCB1FA /* libARStream.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96D61E921AB4E99A00BCB1FA /* libARStream.framework */; };
 		96DD80181ABC8A3400646F7D /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 96DD80171ABC8A3300646F7D /* libicucore.dylib */; };
 		96DD801A1ABC8A3F00646F7D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96DD80191ABC8A3F00646F7D /* Security.framework */; };
 		96DD801C1ABC8A4A00646F7D /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96DD801B1ABC8A4A00646F7D /* SystemConfiguration.framework */; };
 		96DD801E1ABC8A5400646F7D /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96DD801D1ABC8A5400646F7D /* MobileCoreServices.framework */; };
 		96DD80201ABC8A5D00646F7D /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96DD801F1ABC8A5D00646F7D /* CFNetwork.framework */; };
+		E9A397411B0F923100E9A0F9 /* SocketAckMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A397361B0F923100E9A0F9 /* SocketAckMap.swift */; };
+		E9A397421B0F923100E9A0F9 /* SocketAnyEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A397371B0F923100E9A0F9 /* SocketAnyEvent.swift */; };
+		E9A397431B0F923100E9A0F9 /* SocketEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A397381B0F923100E9A0F9 /* SocketEngine.swift */; };
+		E9A397441B0F923100E9A0F9 /* SocketEngineClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A397391B0F923100E9A0F9 /* SocketEngineClient.swift */; };
+		E9A397451B0F923100E9A0F9 /* SocketEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A3973A1B0F923100E9A0F9 /* SocketEventHandler.swift */; };
+		E9A397461B0F923100E9A0F9 /* SocketFixUTF8.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A3973B1B0F923100E9A0F9 /* SocketFixUTF8.swift */; };
+		E9A397471B0F923100E9A0F9 /* SocketIOClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A3973C1B0F923100E9A0F9 /* SocketIOClient.swift */; };
+		E9A397481B0F923100E9A0F9 /* SocketPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A3973D1B0F923100E9A0F9 /* SocketPacket.swift */; };
+		E9A397491B0F923100E9A0F9 /* SocketParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A3973E1B0F923100E9A0F9 /* SocketParser.swift */; };
+		E9A3974A1B0F923100E9A0F9 /* SwiftRegex.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A3973F1B0F923100E9A0F9 /* SwiftRegex.swift */; };
+		E9A3974B1B0F923100E9A0F9 /* WebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A397401B0F923100E9A0F9 /* WebSocket.swift */; };
+		E9A3974D1B0F936100E9A0F9 /* libARSAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9A3974C1B0F936100E9A0F9 /* libARSAL.framework */; };
+		E9A397541B0F942300E9A0F9 /* libARCommands.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9A3974E1B0F942300E9A0F9 /* libARCommands.framework */; };
+		E9A397551B0F942300E9A0F9 /* libARDiscovery.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9A3974F1B0F942300E9A0F9 /* libARDiscovery.framework */; };
+		E9A397561B0F942300E9A0F9 /* libARNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9A397501B0F942300E9A0F9 /* libARNetwork.framework */; };
+		E9A397571B0F942300E9A0F9 /* libARNetworkAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9A397511B0F942300E9A0F9 /* libARNetworkAL.framework */; };
+		E9A397581B0F942300E9A0F9 /* libARStream.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9A397521B0F942300E9A0F9 /* libARStream.framework */; };
+		E9A397591B0F942300E9A0F9 /* libARUtils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9A397531B0F942300E9A0F9 /* libARUtils.framework */; };
 		F80F5EBF1AB2F8670002B2C6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F80F5EB21AB2F8670002B2C6 /* AppDelegate.m */; };
 		F80F5EC01AB2F8670002B2C6 /* DeviceController.m in Sources */ = {isa = PBXBuildFile; fileRef = F80F5EB51AB2F8670002B2C6 /* DeviceController.m */; };
 		F80F5EC11AB2F8670002B2C6 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F80F5EB61AB2F8670002B2C6 /* Images.xcassets */; };
@@ -48,35 +46,33 @@
 
 /* Begin PBXFileReference section */
 		1D9DF2351A6D580F000941ED /* DVC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DVC.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		96112B031B05547D002C08C0 /* SocketAckManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketAckManager.swift; sourceTree = "<group>"; };
-		96112B041B05547D002C08C0 /* SocketAnyEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketAnyEvent.swift; sourceTree = "<group>"; };
-		96112B051B05547D002C08C0 /* SocketEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketEngine.swift; sourceTree = "<group>"; };
-		96112B061B05547D002C08C0 /* SocketEngineClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketEngineClient.swift; sourceTree = "<group>"; };
-		96112B071B05547D002C08C0 /* SocketEventHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketEventHandler.swift; sourceTree = "<group>"; };
-		96112B081B05547D002C08C0 /* SocketFixUTF8.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketFixUTF8.swift; sourceTree = "<group>"; };
-		96112B091B05547D002C08C0 /* SocketIOClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketIOClient.swift; sourceTree = "<group>"; };
-		96112B0A1B05547D002C08C0 /* SocketLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketLogger.swift; sourceTree = "<group>"; };
-		96112B0B1B05547D002C08C0 /* SocketPacket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketPacket.swift; sourceTree = "<group>"; };
-		96112B0C1B05547D002C08C0 /* SocketParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketParser.swift; sourceTree = "<group>"; };
-		96112B0D1B05547D002C08C0 /* SocketTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketTypes.swift; sourceTree = "<group>"; };
-		96112B0E1B05547D002C08C0 /* SwiftRegex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftRegex.swift; sourceTree = "<group>"; };
-		96112B0F1B05547D002C08C0 /* WebSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocket.swift; sourceTree = "<group>"; };
 		96245C001AD34D9000A3C03B /* DroneVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DroneVideoView.h; path = BebopDronePiloting/DroneVideoView.h; sourceTree = SOURCE_ROOT; };
 		96245C011AD34D9000A3C03B /* DroneVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DroneVideoView.m; path = BebopDronePiloting/DroneVideoView.m; sourceTree = SOURCE_ROOT; };
 		96245C051AD3741500A3C03B /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
-		962B51E31AB3780700EFCBFE /* libARCommands.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARCommands.framework; path = ../../ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARCommands.framework; sourceTree = "<group>"; };
-		962B51E41AB3780700EFCBFE /* libARDiscovery.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARDiscovery.framework; path = ../../ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARDiscovery.framework; sourceTree = "<group>"; };
-		962B51E51AB3780700EFCBFE /* libARNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARNetwork.framework; path = ../../ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARNetwork.framework; sourceTree = "<group>"; };
-		962B51E61AB3780700EFCBFE /* libARNetworkAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARNetworkAL.framework; path = ../../ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARNetworkAL.framework; sourceTree = "<group>"; };
-		962B51E71AB3780700EFCBFE /* libARSAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARSAL.framework; path = ../../ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARSAL.framework; sourceTree = "<group>"; };
-		962B51E81AB3780700EFCBFE /* libARUtils.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARUtils.framework; path = ../../ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARUtils.framework; sourceTree = "<group>"; };
 		963AF21D1B0D3B3A0018B4FE /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
-		96D61E921AB4E99A00BCB1FA /* libARStream.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARStream.framework; path = ../../ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARStream.framework; sourceTree = "<group>"; };
 		96DD80171ABC8A3300646F7D /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
 		96DD80191ABC8A3F00646F7D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		96DD801B1ABC8A4A00646F7D /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		96DD801D1ABC8A5400646F7D /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		96DD801F1ABC8A5D00646F7D /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		E9A397361B0F923100E9A0F9 /* SocketAckMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketAckMap.swift; sourceTree = "<group>"; };
+		E9A397371B0F923100E9A0F9 /* SocketAnyEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketAnyEvent.swift; sourceTree = "<group>"; };
+		E9A397381B0F923100E9A0F9 /* SocketEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketEngine.swift; sourceTree = "<group>"; };
+		E9A397391B0F923100E9A0F9 /* SocketEngineClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketEngineClient.swift; sourceTree = "<group>"; };
+		E9A3973A1B0F923100E9A0F9 /* SocketEventHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketEventHandler.swift; sourceTree = "<group>"; };
+		E9A3973B1B0F923100E9A0F9 /* SocketFixUTF8.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketFixUTF8.swift; sourceTree = "<group>"; };
+		E9A3973C1B0F923100E9A0F9 /* SocketIOClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketIOClient.swift; sourceTree = "<group>"; };
+		E9A3973D1B0F923100E9A0F9 /* SocketPacket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketPacket.swift; sourceTree = "<group>"; };
+		E9A3973E1B0F923100E9A0F9 /* SocketParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketParser.swift; sourceTree = "<group>"; };
+		E9A3973F1B0F923100E9A0F9 /* SwiftRegex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftRegex.swift; sourceTree = "<group>"; };
+		E9A397401B0F923100E9A0F9 /* WebSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocket.swift; sourceTree = "<group>"; };
+		E9A3974C1B0F936100E9A0F9 /* libARSAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libARSAL.framework; sourceTree = "<group>"; };
+		E9A3974E1B0F942300E9A0F9 /* libARCommands.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libARCommands.framework; sourceTree = "<group>"; };
+		E9A3974F1B0F942300E9A0F9 /* libARDiscovery.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libARDiscovery.framework; sourceTree = "<group>"; };
+		E9A397501B0F942300E9A0F9 /* libARNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libARNetwork.framework; sourceTree = "<group>"; };
+		E9A397511B0F942300E9A0F9 /* libARNetworkAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libARNetworkAL.framework; sourceTree = "<group>"; };
+		E9A397521B0F942300E9A0F9 /* libARStream.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libARStream.framework; sourceTree = "<group>"; };
+		E9A397531B0F942300E9A0F9 /* libARUtils.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libARUtils.framework; sourceTree = "<group>"; };
 		F80F5EB11AB2F8670002B2C6 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = BebopDronePiloting/AppDelegate.h; sourceTree = SOURCE_ROOT; };
 		F80F5EB21AB2F8670002B2C6 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = BebopDronePiloting/AppDelegate.m; sourceTree = SOURCE_ROOT; };
 		F80F5EB41AB2F8670002B2C6 /* DeviceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DeviceController.h; path = BebopDronePiloting/DeviceController.h; sourceTree = SOURCE_ROOT; };
@@ -97,20 +93,20 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E9A397541B0F942300E9A0F9 /* libARCommands.framework in Frameworks */,
 				963AF21E1B0D3B3A0018B4FE /* CoreLocation.framework in Frameworks */,
+				E9A397561B0F942300E9A0F9 /* libARNetwork.framework in Frameworks */,
+				E9A397551B0F942300E9A0F9 /* libARDiscovery.framework in Frameworks */,
 				96245C061AD3741500A3C03B /* VideoToolbox.framework in Frameworks */,
+				E9A397571B0F942300E9A0F9 /* libARNetworkAL.framework in Frameworks */,
+				E9A397581B0F942300E9A0F9 /* libARStream.framework in Frameworks */,
 				96DD80201ABC8A5D00646F7D /* CFNetwork.framework in Frameworks */,
 				96DD801E1ABC8A5400646F7D /* MobileCoreServices.framework in Frameworks */,
 				96DD801C1ABC8A4A00646F7D /* SystemConfiguration.framework in Frameworks */,
 				96DD801A1ABC8A3F00646F7D /* Security.framework in Frameworks */,
 				96DD80181ABC8A3400646F7D /* libicucore.dylib in Frameworks */,
-				96D61E931AB4E99A00BCB1FA /* libARStream.framework in Frameworks */,
-				962B51E91AB3780700EFCBFE /* libARCommands.framework in Frameworks */,
-				962B51EA1AB3780700EFCBFE /* libARDiscovery.framework in Frameworks */,
-				962B51EB1AB3780700EFCBFE /* libARNetwork.framework in Frameworks */,
-				962B51EC1AB3780700EFCBFE /* libARNetworkAL.framework in Frameworks */,
-				962B51ED1AB3780700EFCBFE /* libARSAL.framework in Frameworks */,
-				962B51EE1AB3780700EFCBFE /* libARUtils.framework in Frameworks */,
+				E9A3974D1B0F936100E9A0F9 /* libARSAL.framework in Frameworks */,
+				E9A397591B0F942300E9A0F9 /* libARUtils.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,10 +116,10 @@
 		1D9DF22C1A6D580F000941ED = {
 			isa = PBXGroup;
 			children = (
-				96112B021B05547D002C08C0 /* SocketIOClientSwift */,
 				F8C6053D1A9F06AC000D2804 /* BebopDronePiloting */,
 				1D9DF26B1A6D62CB000941ED /* Frameworks */,
 				1D9DF2361A6D580F000941ED /* Products */,
+				E9A397351B0F923100E9A0F9 /* SwiftIO */,
 			);
 			sourceTree = "<group>";
 		};
@@ -138,6 +134,13 @@
 		1D9DF26B1A6D62CB000941ED /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E9A3974E1B0F942300E9A0F9 /* libARCommands.framework */,
+				E9A3974F1B0F942300E9A0F9 /* libARDiscovery.framework */,
+				E9A397501B0F942300E9A0F9 /* libARNetwork.framework */,
+				E9A397511B0F942300E9A0F9 /* libARNetworkAL.framework */,
+				E9A397521B0F942300E9A0F9 /* libARStream.framework */,
+				E9A397531B0F942300E9A0F9 /* libARUtils.framework */,
+				E9A3974C1B0F936100E9A0F9 /* libARSAL.framework */,
 				963AF21D1B0D3B3A0018B4FE /* CoreLocation.framework */,
 				96245C051AD3741500A3C03B /* VideoToolbox.framework */,
 				96DD801F1ABC8A5D00646F7D /* CFNetwork.framework */,
@@ -145,35 +148,26 @@
 				96DD801B1ABC8A4A00646F7D /* SystemConfiguration.framework */,
 				96DD80191ABC8A3F00646F7D /* Security.framework */,
 				96DD80171ABC8A3300646F7D /* libicucore.dylib */,
-				96D61E921AB4E99A00BCB1FA /* libARStream.framework */,
-				962B51E31AB3780700EFCBFE /* libARCommands.framework */,
-				962B51E41AB3780700EFCBFE /* libARDiscovery.framework */,
-				962B51E51AB3780700EFCBFE /* libARNetwork.framework */,
-				962B51E61AB3780700EFCBFE /* libARNetworkAL.framework */,
-				962B51E71AB3780700EFCBFE /* libARSAL.framework */,
-				962B51E81AB3780700EFCBFE /* libARUtils.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		96112B021B05547D002C08C0 /* SocketIOClientSwift */ = {
+		E9A397351B0F923100E9A0F9 /* SwiftIO */ = {
 			isa = PBXGroup;
 			children = (
-				96112B031B05547D002C08C0 /* SocketAckManager.swift */,
-				96112B041B05547D002C08C0 /* SocketAnyEvent.swift */,
-				96112B051B05547D002C08C0 /* SocketEngine.swift */,
-				96112B061B05547D002C08C0 /* SocketEngineClient.swift */,
-				96112B071B05547D002C08C0 /* SocketEventHandler.swift */,
-				96112B081B05547D002C08C0 /* SocketFixUTF8.swift */,
-				96112B091B05547D002C08C0 /* SocketIOClient.swift */,
-				96112B0A1B05547D002C08C0 /* SocketLogger.swift */,
-				96112B0B1B05547D002C08C0 /* SocketPacket.swift */,
-				96112B0C1B05547D002C08C0 /* SocketParser.swift */,
-				96112B0D1B05547D002C08C0 /* SocketTypes.swift */,
-				96112B0E1B05547D002C08C0 /* SwiftRegex.swift */,
-				96112B0F1B05547D002C08C0 /* WebSocket.swift */,
+				E9A397361B0F923100E9A0F9 /* SocketAckMap.swift */,
+				E9A397371B0F923100E9A0F9 /* SocketAnyEvent.swift */,
+				E9A397381B0F923100E9A0F9 /* SocketEngine.swift */,
+				E9A397391B0F923100E9A0F9 /* SocketEngineClient.swift */,
+				E9A3973A1B0F923100E9A0F9 /* SocketEventHandler.swift */,
+				E9A3973B1B0F923100E9A0F9 /* SocketFixUTF8.swift */,
+				E9A3973C1B0F923100E9A0F9 /* SocketIOClient.swift */,
+				E9A3973D1B0F923100E9A0F9 /* SocketPacket.swift */,
+				E9A3973E1B0F923100E9A0F9 /* SocketParser.swift */,
+				E9A3973F1B0F923100E9A0F9 /* SwiftRegex.swift */,
+				E9A397401B0F923100E9A0F9 /* WebSocket.swift */,
 			);
-			path = SocketIOClientSwift;
+			path = SwiftIO;
 			sourceTree = "<group>";
 		};
 		F80F5EB31AB2F8670002B2C6 /* Base.lproj */ = {
@@ -279,25 +273,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				96112B1B1B05547D002C08C0 /* SwiftRegex.swift in Sources */,
 				F80F5EC61AB2F8670002B2C6 /* PilotingViewController.m in Sources */,
-				96112B111B05547D002C08C0 /* SocketAnyEvent.swift in Sources */,
 				F80F5EBF1AB2F8670002B2C6 /* AppDelegate.m in Sources */,
-				96112B131B05547D002C08C0 /* SocketEngineClient.swift in Sources */,
+				E9A397421B0F923100E9A0F9 /* SocketAnyEvent.swift in Sources */,
+				E9A3974B1B0F923100E9A0F9 /* WebSocket.swift in Sources */,
+				E9A3974A1B0F923100E9A0F9 /* SwiftRegex.swift in Sources */,
+				E9A397441B0F923100E9A0F9 /* SocketEngineClient.swift in Sources */,
 				F80F5EC41AB2F8670002B2C6 /* main.m in Sources */,
+				E9A397451B0F923100E9A0F9 /* SocketEventHandler.swift in Sources */,
 				96245C021AD34D9000A3C03B /* DroneVideoView.m in Sources */,
-				96112B1A1B05547D002C08C0 /* SocketTypes.swift in Sources */,
-				96112B1C1B05547D002C08C0 /* WebSocket.swift in Sources */,
-				96112B141B05547D002C08C0 /* SocketEventHandler.swift in Sources */,
-				96112B161B05547D002C08C0 /* SocketIOClient.swift in Sources */,
-				96112B101B05547D002C08C0 /* SocketAckManager.swift in Sources */,
-				96112B171B05547D002C08C0 /* SocketLogger.swift in Sources */,
+				E9A397411B0F923100E9A0F9 /* SocketAckMap.swift in Sources */,
+				E9A397431B0F923100E9A0F9 /* SocketEngine.swift in Sources */,
+				E9A397461B0F923100E9A0F9 /* SocketFixUTF8.swift in Sources */,
+				E9A397481B0F923100E9A0F9 /* SocketPacket.swift in Sources */,
+				E9A397491B0F923100E9A0F9 /* SocketParser.swift in Sources */,
+				E9A397471B0F923100E9A0F9 /* SocketIOClient.swift in Sources */,
 				F80F5EC01AB2F8670002B2C6 /* DeviceController.m in Sources */,
 				F80F5EC71AB2F8670002B2C6 /* ViewController.m in Sources */,
-				96112B121B05547D002C08C0 /* SocketEngine.swift in Sources */,
-				96112B151B05547D002C08C0 /* SocketFixUTF8.swift in Sources */,
-				96112B191B05547D002C08C0 /* SocketParser.swift in Sources */,
-				96112B181B05547D002C08C0 /* SocketPacket.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -393,6 +385,7 @@
 					"$(SRCROOT)/../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks",
 					/Users/d.bertrand/Documents/SDK/ARSDKBuildUtils/Targets/iOS/Install/Frameworks,
 					/Users/bdgjones/Projects/ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks,
+					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/BebopDronePiloting/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
@@ -416,6 +409,7 @@
 					"$(SRCROOT)/../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks",
 					/Users/d.bertrand/Documents/SDK/ARSDKBuildUtils/Targets/iOS/Install/Frameworks,
 					/Users/bdgjones/Projects/ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks,
+					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/BebopDronePiloting/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;

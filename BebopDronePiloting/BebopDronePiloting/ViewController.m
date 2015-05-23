@@ -142,15 +142,15 @@
     
     for (ARService *service in services)
     {
-        // only display ARDISCOVERY_PRODUCT_ARDRONE (Bebop drone) in the list
-        //if (service.product == ARDISCOVERY_PRODUCT_ARDRONE)
-        //{
+        // only display ARDISCOVERY_PRODUCT_ARDRONE (Bebop drone) and ARDISCOVERY_PRODUCT_SKYCONTROLLER (SkyController) in the list
+        if (service.product == ARDISCOVERY_PRODUCT_ARDRONE || service.product == ARDISCOVERY_PRODUCT_SKYCONTROLLER)
+        {
             CellData *cellData = [[CellData alloc]init];
             
             [cellData setService:service];
             [cellData setName:service.name];
             [serviceArray addObject:cellData];
-        //}
+        }
     }
     
     tableData = serviceArray;

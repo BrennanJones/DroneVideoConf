@@ -64,7 +64,13 @@
 @property (strong, nonatomic) IBOutlet UILabel *commandLabel;
 @property (strong, nonatomic) IBOutlet UILabel *incomingCommandLabel;
 @property (strong, nonatomic) IBOutlet UIButton *endCommandButton;
-@property (strong, nonatomic) IBOutlet UILabel *yawLabel;
+
+@property (weak, nonatomic) IBOutlet UILabel *latPhoneLabel;
+@property (weak, nonatomic) IBOutlet UILabel *lonPhoneLabel;
+@property (weak, nonatomic) IBOutlet UILabel *latDroneLabel;
+@property (weak, nonatomic) IBOutlet UILabel *lonDroneLabel;
+@property (strong, nonatomic) IBOutlet UILabel *headingDroneLabel;
+@property (weak, nonatomic) IBOutlet UILabel *requiredBearingDroneLabel;
 
 - (IBAction)connectToServerClick:(id)sender;
 
@@ -102,5 +108,7 @@
 - (IBAction)camDownClick:(id)sender;
 - (IBAction)camLeftClick:(id)sender;
 - (IBAction)camRightClick:(id)sender;
+
+- (IBAction)resetNorthClick:(id)sender;
 
 @end

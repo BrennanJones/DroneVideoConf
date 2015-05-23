@@ -49,6 +49,7 @@
 
 int frameCount = 0;
 
+
 double latPhone;
 double lonPhone;
 
@@ -56,6 +57,16 @@ double latDrone;
 double lonDrone;
 
 double yawDrone;
+double headingDrone;
+
+double compassDisplacement = 0;
+
+double requiredBearingDrone;
+
+BOOL posPhoneSet = false;
+BOOL posDroneSet = false;
+BOOL headingDroneSet = false;
+BOOL requiredBearingDroneSet = false;
 
 
 @interface PilotingViewController () <DeviceControllerDelegate>
@@ -210,31 +221,45 @@ double yawDrone;
 {
     NSLog(@"onDronePositionChanged");
     
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        NSString *latText = [[NSString alloc] initWithFormat:@"%f", latitude];
-//        NSString *longText = [[NSString alloc] initWithFormat:@"%f", longitude];
-//        NSString *altText = [[NSString alloc] initWithFormat:@"%f", altitude];
-//        
-//        [_latitudeLabel setText:latText];
-//        [_longitudeLabel setText:longText];
-//        [_altitudeLabel setText:altText];
-//    });
-    
-    latDrone = latitude;
-    lonDrone = longitude;
+    if (latitude >= -90 && latitude <= 90 && longitude >= -180 && longitude <= 180)
+    {
+        latDrone = latitude;
+        lonDrone = longitude;
+        
+        posDroneSet = true;
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSString *latText = [[NSString alloc] initWithFormat:@"%f", latDrone];
+            NSString *longText = [[NSString alloc] initWithFormat:@"%f", lonDrone];
+            
+            [_latDroneLabel setText:latText];
+            [_lonDroneLabel setText:longText];
+        });
+        
+        [self droneAdjustBearing];
+    }
 }
 
 - (void)onAttitudeChanged:(DeviceController *)deviceController roll:(float)roll pitch:(float)pitch yaw:(float)yaw;
 {
     NSLog(@"onUpdatePosition");
     
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        NSString *yawText = [[NSString alloc] initWithFormat:@"%f", yaw];
-//        
-//        [_yawLabel setText:yawText];
-//    });
-    
     yawDrone = yaw;
+    headingDrone = yawDrone - compassDisplacement;
+    if (headingDrone <= -1 * M_PI)
+        headingDrone += 2 * M_PI;
+    else if (headingDrone > M_PI)
+        headingDrone -= 2 * M_PI;
+    
+    headingDroneSet = true;
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *headingText = [[NSString alloc] initWithFormat:@"%f", headingDrone];
+        
+        [_headingDroneLabel setText:headingText];
+    });
+    
+    [self droneAdjustBearing];
 }
 
 - (void)onFrameComplete:(DeviceController *)deviceController frame:(uint8_t *)frame frameSize:(uint32_t)frameSize;
@@ -245,7 +270,7 @@ double yawDrone;
     {
         NSData *data = [[NSData alloc] initWithBytes:frame length:frameSize];
         NSArray *args = [[NSArray alloc] initWithObjects:data, nil];
-        [_socket emit:@"DroneVideoFrame" withItems:args];
+        [_socket emitObjc:@"DroneVideoFrame" withItems:args];
     }
     
     [_droneVideoView updateVideoViewWithFrame:frame frameSize:frameSize];
@@ -278,6 +303,18 @@ double yawDrone;
         
         latPhone = location.coordinate.latitude;
         lonPhone = location.coordinate.longitude;
+        
+        posPhoneSet = true;
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSString *latText = [[NSString alloc] initWithFormat:@"%f", latPhone];
+            NSString *longText = [[NSString alloc] initWithFormat:@"%f", lonPhone];
+            
+            [_latPhoneLabel setText:latText];
+            [_lonPhoneLabel setText:longText];
+        });
+        
+        [self droneAdjustBearing];
     }
 }
 
@@ -303,23 +340,20 @@ double yawDrone;
     [_socket on:@"connect" callback:^(NSArray* data, void (^ack)(NSArray*)) {
         NSLog(@"socket connected");
         
-        [_socket emit:@"MobileClientConnected" withItems:[[NSArray alloc] init]];
+        [_socket emitObjc:@"MobileClientConnected" withItems:[[NSArray alloc] init]];
         
         self.serverConnectionStatusLabel.text = @"Connected to server.";
-        [self.serverConnectionButton setTitle:@"Disconnect from server" forState:UIControlStateNormal];
+        [self.serverConnectionButton setTitle:@"Disconnect" forState:UIControlStateNormal];
         self.serverConnectionButton.enabled = true;
-        
-        [self.serverConnectionTextField setAlpha:0];
     }];
     
     [_socket on:@"disconnect" callback:^(NSArray* data, void (^ack)(NSArray*)) {
         NSLog(@"socket disconnect");
         
         self.serverConnectionStatusLabel.text = @"Disconnected from server.";
-        [self.serverConnectionButton setTitle:@"Connect to server" forState:UIControlStateNormal];
+        [self.serverConnectionButton setTitle:@"Connect" forState:UIControlStateNormal];
         self.serverConnectionButton.enabled = true;
         self.serverConnectionTextField.enabled = true;
-        [self.serverConnectionTextField setAlpha:1];
     }];
     
     [_socket on:@"error" callback:^(NSArray* data, void (^ack)(NSArray*)) {
@@ -329,7 +363,7 @@ double yawDrone;
         [_alertView show];
         
         self.serverConnectionStatusLabel.text = @"Disconnected from server.";
-        [self.serverConnectionButton setTitle:@"Connect to server" forState:UIControlStateNormal];
+        [self.serverConnectionButton setTitle:@"Connect" forState:UIControlStateNormal];
         self.serverConnectionButton.enabled = true;
         self.serverConnectionTextField.enabled = true;
     }];
@@ -362,10 +396,43 @@ double yawDrone;
 
 #pragma mark Drone Control Methods
 
-- (void)droneAdjustHeading
+- (void)droneAdjustBearing
 {
-    // The required heading, in radians.
-    double heading = atan2( sin(lonPhone-lonDrone)*cos(latPhone), cos(latDrone)*sin(latPhone) - sin(latDrone)*cos(latPhone)*cos(lonPhone-lonDrone) );
+    if (posPhoneSet && posDroneSet && headingDroneSet)
+    {
+        NSLog(@"droneAdjustBearing");
+        
+        // The required bearing, in radians.
+        requiredBearingDrone = atan2( sin(lonPhone-lonDrone)*cos(latPhone), cos(latDrone)*sin(latPhone) - sin(latDrone)*cos(latPhone)*cos(lonPhone-lonDrone) );
+        
+        requiredBearingDroneSet = true;
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSString *requiredBearingText = [[NSString alloc] initWithFormat:@"%f", requiredBearingDrone];
+            
+            [_requiredBearingDroneLabel setText:requiredBearingText];
+        });
+        
+        if (abs(requiredBearingDrone - headingDrone) > 0.3)
+        {
+            if ((requiredBearingDrone - headingDrone > 0 && requiredBearingDrone - headingDrone <= M_PI) || requiredBearingDrone - headingDrone < -1*M_PI)
+            {
+                [_deviceController setYaw:10];
+            }
+            else if ((requiredBearingDrone - headingDrone < 0 && requiredBearingDrone - headingDrone >= -1*M_PI) || requiredBearingDrone - headingDrone > M_PI)
+            {
+                [_deviceController setYaw:-10];
+            }
+//            else
+//            {
+//                [_deviceController setYaw:0];
+//            }
+        }
+        else
+        {
+            [_deviceController setYaw:0];
+        }
+    }
 }
 
 
@@ -514,10 +581,15 @@ double yawDrone;
 
 - (IBAction)endCommandClick:(id)sender
 {
-    [_socket emit:@"EndCommand" withItems:[[NSArray alloc] init]];
+    [_socket emitObjc:@"EndCommand" withItems:[[NSArray alloc] init]];
     
     [_endCommandButton setAlpha:0.0];
     _commandLabel.text = @"";
+}
+
+- (IBAction)resetNorthClick:(id)sender
+{
+    compassDisplacement = yawDrone;
 }
 
 @end
