@@ -30,6 +30,10 @@ jQuery(function()
 	var zoomOutButton = jQuery('#zoomOutButton');
 	var elevateUpButton = jQuery('#elevateUpButton');
 	var elevateDownButton = jQuery('#elevateDownButton');
+	var camLeftButton = jQuery('#camLeftButton');
+	var camRightButton = jQuery('#camRightButton');
+	var camUpButton = jQuery('#camUpButton');
+	var camDownButton = jQuery('#camDownButton');
 	
 	var currentCommandText = document.getElementById('currentCommandText');
 	
@@ -55,6 +59,22 @@ jQuery(function()
 	
 	elevateDownButton.on('click', function() {		
 		socket.emit('Command', 'ElevateDown');
+	});
+
+	camLeftButton.on('click', function() {
+		socket.emit('Command', 'CamLeft');
+	});
+
+	camRightButton.on('click', function() {
+		socket.emit('Command', 'CamRight');
+	});
+
+	camUpButton.on('click', function() {
+		socket.emit('Command', 'CamUp');
+	});
+
+	camDownButton.on('click', function() {
+		socket.emit('Command', 'CamDown');
 	});
 	
 	

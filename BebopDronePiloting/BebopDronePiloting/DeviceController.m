@@ -1015,7 +1015,32 @@ eARNETWORK_MANAGER_CALLBACK_RETURN arnetworkCmdCallback(int buffer_id, uint8_t *
     eARNETWORK_ERROR netError = ARNETWORK_ERROR;
     
     // Send Posture command
-    cmdError = ARCOMMANDS_Generator_GenerateARDrone3PilotingPCMD(cmdBuffer, sizeof(cmdBuffer), &cmdSize, _dataPCMD.flag, _dataPCMD.roll, _dataPCMD.pitch, _dataPCMD.yaw, _dataPCMD.gaz, _dataPCMD.psi) &ARCOMMANDS_Generator_GenerateARDrone3CameraOrientation (cmdBuffer, sizeof(cmdBuffer), &cmdSize, _cameraTilt, _cameraPan);
+    cmdError = ARCOMMANDS_Generator_GenerateARDrone3PilotingPCMD(cmdBuffer, sizeof(cmdBuffer), &cmdSize, _dataPCMD.flag, _dataPCMD.roll, _dataPCMD.pitch, _dataPCMD.yaw, _dataPCMD.gaz, _dataPCMD.psi) & ARCOMMANDS_Generator_GenerateARDrone3CameraOrientation (cmdBuffer, sizeof(cmdBuffer), &cmdSize, _cameraTilt, _cameraPan);
+    if (cmdError == ARCOMMANDS_GENERATOR_OK)
+    {
+        // The commands sent in loop should be sent to a buffer not acknowledged ; here JS_NET_CD_NONACK_ID
+        netError = ARNETWORK_Manager_SendData(_netManager, BD_NET_C2D_NONACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
+    }
+    
+    if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
+    {
+        sentStatus = NO;
+    }
+    
+    return sentStatus;
+}
+
+- (BOOL) setHomeWithLatitude:(double)latitude withLongitude:(double)longitude withAltitude:(double)altitude
+{
+    BOOL sentStatus = YES;
+    u_int8_t cmdBuffer[128];
+    int32_t cmdSize = 0;
+    eARCOMMANDS_GENERATOR_ERROR cmdError;
+    eARNETWORK_ERROR netError = ARNETWORK_ERROR;
+    
+    // Send SetHome command
+    sentStatus = NO;
+    cmdError = ARCOMMANDS_Generator_GenerateARDrone3GPSSettingsSetHome(cmdBuffer, sizeof(cmdBuffer), &cmdSize, latitude, longitude, altitude);
     if (cmdError == ARCOMMANDS_GENERATOR_OK)
     {
         // The commands sent in loop should be sent to a buffer not acknowledged ; here JS_NET_CD_NONACK_ID

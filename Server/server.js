@@ -78,7 +78,7 @@ io.sockets.on('connection', function(socket)
 	
 	socket.on('Command', function(data)
 	{
-		console.log('Command: ' + data.command);
+		console.log('Command: ' + data);
 		socket.broadcast.emit('Command', data);
 	});
 	

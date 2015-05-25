@@ -92,6 +92,8 @@ typedef struct
 - (void) setCamPan:(uint8_t)pan;
 - (void) setCamTilt:(int8_t)tilt;
 
+- (BOOL) setHomeWithLatitude:(double)latitude withLongitude:(double)longitude withAltitude:(double)altitude;
+
 - (BOOL) sendEmergency;
 - (BOOL) sendTakeoff;
 - (BOOL) sendLanding;

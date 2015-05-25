@@ -55,9 +55,10 @@ double lonPhone;
 
 double latDrone;
 double lonDrone;
+double altDrone;
 
 double yawDrone;
-double headingDrone;
+double bearingDrone;
 
 double compassDisplacement = 0;
 
@@ -65,7 +66,7 @@ double requiredBearingDrone;
 
 BOOL posPhoneSet = false;
 BOOL posDroneSet = false;
-BOOL headingDroneSet = false;
+BOOL bearingDroneSet = false;
 BOOL requiredBearingDroneSet = false;
 
 
@@ -225,6 +226,7 @@ BOOL requiredBearingDroneSet = false;
     {
         latDrone = latitude;
         lonDrone = longitude;
+        altDrone = altitude;
         
         posDroneSet = true;
         
@@ -245,18 +247,18 @@ BOOL requiredBearingDroneSet = false;
     NSLog(@"onUpdatePosition");
     
     yawDrone = yaw;
-    headingDrone = yawDrone - compassDisplacement;
-    if (headingDrone <= -1 * M_PI)
-        headingDrone += 2 * M_PI;
-    else if (headingDrone > M_PI)
-        headingDrone -= 2 * M_PI;
+    bearingDrone = yawDrone - compassDisplacement;
+    if (bearingDrone <= -1 * M_PI)
+        bearingDrone += 2 * M_PI;
+    else if (bearingDrone > M_PI)
+        bearingDrone -= 2 * M_PI;
     
-    headingDroneSet = true;
+    bearingDroneSet = true;
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSString *headingText = [[NSString alloc] initWithFormat:@"%f", headingDrone];
+        NSString *bearingText = [[NSString alloc] initWithFormat:@"%f", bearingDrone];
         
-        [_headingDroneLabel setText:headingText];
+        [_bearingDroneLabel setText:bearingText];
     });
     
     [self droneAdjustBearing];
@@ -369,7 +371,7 @@ BOOL requiredBearingDroneSet = false;
     }];
     
     
-//    [_socket on:@"Command" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+    [_socket on:@"Command" callback:^(NSArray* data, void (^ack)(NSArray*)) {
 //        [self displayCommand:[data objectAtIndex:0]];
 //        
 //        [_endCommandButton setAlpha:1.0];
@@ -379,7 +381,24 @@ BOOL requiredBearingDroneSet = false;
 //            NSArray *args = [[NSArray alloc] initWithObjects:[data objectAtIndex:0], nil];
 //            [_socket emit:@"CommandAcknowledged" withItems:args];
 //        }
-//    }];
+        
+        if([(NSString *)data[0] isEqualToString:@"CamLeft"])
+        {
+            [_deviceController setCamPan:-10];
+        }
+        if([(NSString *)data[0] isEqualToString:@"CamRight"])
+        {
+            [_deviceController setCamPan:10];
+        }
+        if([(NSString *)data[0] isEqualToString:@"CamUp"])
+        {
+            [_deviceController setCamTilt:10];
+        }
+        if([(NSString *)data[0] isEqualToString:@"CamDown"])
+        {
+            [_deviceController setCamTilt:-10];
+        }
+    }];
     
     
     [_socket connect];
@@ -398,7 +417,7 @@ BOOL requiredBearingDroneSet = false;
 
 - (void)droneAdjustBearing
 {
-    if (posPhoneSet && posDroneSet && headingDroneSet)
+    if (posPhoneSet && posDroneSet && bearingDroneSet)
     {
         NSLog(@"droneAdjustBearing");
         
@@ -413,13 +432,13 @@ BOOL requiredBearingDroneSet = false;
             [_requiredBearingDroneLabel setText:requiredBearingText];
         });
         
-        if (abs(requiredBearingDrone - headingDrone) > 0.3)
+        if (abs(requiredBearingDrone - bearingDrone) > 0.3)
         {
-            if ((requiredBearingDrone - headingDrone > 0 && requiredBearingDrone - headingDrone <= M_PI) || requiredBearingDrone - headingDrone < -1*M_PI)
+            if ((requiredBearingDrone - bearingDrone > 0 && requiredBearingDrone - bearingDrone <= M_PI) || requiredBearingDrone - bearingDrone < -1*M_PI)
             {
                 [_deviceController setYaw:10];
             }
-            else if ((requiredBearingDrone - headingDrone < 0 && requiredBearingDrone - headingDrone >= -1*M_PI) || requiredBearingDrone - headingDrone > M_PI)
+            else if ((requiredBearingDrone - bearingDrone < 0 && requiredBearingDrone - bearingDrone >= -1*M_PI) || requiredBearingDrone - bearingDrone > M_PI)
             {
                 [_deviceController setYaw:-10];
             }
@@ -590,6 +609,11 @@ BOOL requiredBearingDroneSet = false;
 - (IBAction)resetNorthClick:(id)sender
 {
     compassDisplacement = yawDrone;
+}
+
+- (IBAction)resetHomeClick:(id)sender
+{
+    [_deviceController setHomeWithLatitude:latDrone withLongitude:lonDrone withAltitude:altDrone];
 }
 
 @end

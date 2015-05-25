@@ -69,7 +69,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *lonPhoneLabel;
 @property (weak, nonatomic) IBOutlet UILabel *latDroneLabel;
 @property (weak, nonatomic) IBOutlet UILabel *lonDroneLabel;
-@property (strong, nonatomic) IBOutlet UILabel *headingDroneLabel;
+@property (strong, nonatomic) IBOutlet UILabel *bearingDroneLabel;
 @property (weak, nonatomic) IBOutlet UILabel *requiredBearingDroneLabel;
 
 - (IBAction)connectToServerClick:(id)sender;
@@ -110,5 +110,7 @@
 - (IBAction)camRightClick:(id)sender;
 
 - (IBAction)resetNorthClick:(id)sender;
+
+- (IBAction)resetHomeClick:(id)sender;
 
 @end
