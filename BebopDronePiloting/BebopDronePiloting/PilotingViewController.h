@@ -71,6 +71,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *lonDroneLabel;
 @property (strong, nonatomic) IBOutlet UILabel *bearingDroneLabel;
 @property (weak, nonatomic) IBOutlet UILabel *requiredBearingDroneLabel;
+@property (weak, nonatomic) IBOutlet UILabel *droneYawDirectionLabel;
+@property (weak, nonatomic) IBOutlet UILabel *droneToPhoneDistanceLabel;
 
 - (IBAction)connectToServerClick:(id)sender;
 

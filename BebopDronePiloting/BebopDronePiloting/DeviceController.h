@@ -89,7 +89,7 @@ typedef struct
 - (void) setGaz:(int8_t)gaz;
 - (void) setFlag:(uint8_t)flag;
 
-- (void) setCamPan:(uint8_t)pan;
+- (void) setCamPan:(int8_t)pan;
 - (void) setCamTilt:(int8_t)tilt;
 
 - (BOOL) setHomeWithLatitude:(double)latitude withLongitude:(double)longitude withAltitude:(double)altitude;

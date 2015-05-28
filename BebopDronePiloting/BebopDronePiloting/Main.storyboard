@@ -319,6 +319,20 @@
                                     <action selector="resetHomeClick:" destination="h7l-W5-mPq" eventType="touchUpInside" id="4id-g8-MrU"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Still" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="6Rj-Si-KDq">
+                                <rect key="frame" x="170" y="195" width="29" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="ygG-nA-gwb">
+                                <rect key="frame" x="207" y="195" width="97" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
@@ -327,7 +341,9 @@
                     <connections>
                         <outlet property="batteryLabel" destination="xX9-x8-Ti2" id="7J8-gt-GBW"/>
                         <outlet property="bearingDroneLabel" destination="vHN-4s-Ja6" id="BXk-We-bJc"/>
+                        <outlet property="droneToPhoneDistanceLabel" destination="ygG-nA-gwb" id="qRX-pU-JoV"/>
                         <outlet property="droneVideoView" destination="BuB-VR-RSH" id="5Wd-pd-kmE"/>
+                        <outlet property="droneYawDirectionLabel" destination="6Rj-Si-KDq" id="Bvb-qj-Ajt"/>
                         <outlet property="landingBt" destination="hN0-JW-lxw" id="K82-Pv-BIT"/>
                         <outlet property="latDroneLabel" destination="fwJ-3G-Vfm" id="jKB-0X-Gpl"/>
                         <outlet property="latPhoneLabel" destination="80Q-uN-0CX" id="HfY-Km-qK3"/>

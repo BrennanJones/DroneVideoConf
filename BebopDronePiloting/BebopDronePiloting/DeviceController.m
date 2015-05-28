@@ -36,6 +36,7 @@
 //  Copyright (c) 2015 Parrot. All rights reserved.
 //
 
+
 #import "DeviceController.h"
 
 #import <libARSAL/ARSAL.h>
@@ -43,6 +44,7 @@
 #import <libARNetwork/ARNetwork.h>
 #import <libARNetworkAL/ARNetworkAL.h>
 #import <libARCommands/ARCommands.h>
+
 
 static const char* TAG = "DeviceController";
 
@@ -60,6 +62,7 @@ static const int BD_NET_DC_VIDEO_MAX_NUMBER_OF_FRAG = 128;
 static const int D2C_PORT = 43210;  // fixed by the app, but should be sent to drone in json
 
 static const int PCMD_LOOP_IN_MS = 25000; // piloting command sending interval
+//static const int PCMD_LOOP_IN_MS = 50000; // piloting command sending interval
 
 static ARNETWORK_IOBufferParam_t C2D_PARAMS[] = {
     {
@@ -145,6 +148,7 @@ static int COMMAND_BUFFER_IDS[] = {
 };
 static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / sizeof(int);
 
+
 @interface DeviceController ()
 
 @property (nonatomic, assign) ARNETWORKAL_Manager_t *alManager;
@@ -176,12 +180,15 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
 
 @property (nonatomic) dispatch_semaphore_t resolveSemaphore;
 
-@property (nonatomic) uint8_t cameraPan;
-@property (nonatomic) uint8_t cameraTilt;
+@property (nonatomic) int8_t cameraPan;
+@property (nonatomic) int8_t cameraTilt;
 
 @end
 
+
 @implementation DeviceController
+
+#pragma mark Initialization Methods
 
 - (id)initWithARService:(ARService*)service
 {
@@ -357,112 +364,6 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
     return failed;
 }
 
-- (BOOL)ardiscoveryConnect
-{
-    int failed = 0;
-    
-    ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- ARDiscovery Connection");
-    
-    eARDISCOVERY_ERROR err = ARDISCOVERY_OK;
-    
-    ARDISCOVERY_Connection_ConnectionData_t *discoveryData = ARDISCOVERY_Connection_New (ARDISCOVERY_Connection_SendJsonCallback, ARDISCOVERY_Connection_ReceiveJsonCallback, (__bridge void *)self, &err);
-    if (discoveryData == NULL || err != ARDISCOVERY_OK)
-    {
-        ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Error while creating discoveryData : %s", ARDISCOVERY_Error_ToString(err));
-        failed = 1;
-    }
-    
-    if (!failed)
-    {
-        NSString *ip = [[ARDiscovery sharedInstance] convertNSNetServiceToIp:_service];
-        int port = [(NSNetService *)_service.service port];
-        if (ip)
-        {
-            eARDISCOVERY_ERROR err = ARDISCOVERY_Connection_ControllerConnection(discoveryData, port, [ip UTF8String]);
-            if (err != ARDISCOVERY_OK)
-            {
-                ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Error while opening discovery connection : %s", ARDISCOVERY_Error_ToString(err));
-                failed = 1;
-            }
-        }
-        else
-        {
-            ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "IP of service is null");
-            failed = 1;
-        }
-    }
-    
-    ARDISCOVERY_Connection_Delete(&discoveryData);
-    
-    return failed;
-}
-
-eARDISCOVERY_ERROR ARDISCOVERY_Connection_SendJsonCallback (uint8_t *dataTx, uint32_t *dataTxSize, void *customData)
-{
-    eARDISCOVERY_ERROR err = ARDISCOVERY_OK;
-    
-    if ((dataTx != NULL) && (dataTxSize != NULL))
-    {
-        *dataTxSize = sprintf((char *)dataTx, "{ \"%s\": %d,\n \"%s\": \"%s\",\n \"%s\": \"%s\" }",
-                              ARDISCOVERY_CONNECTION_JSON_D2CPORT_KEY, D2C_PORT,
-                              ARDISCOVERY_CONNECTION_JSON_CONTROLLER_NAME_KEY, "bebopDroneSample",
-                              ARDISCOVERY_CONNECTION_JSON_CONTROLLER_TYPE_KEY, "iOSController") + 1;
-    }
-    else
-    {
-        err = ARDISCOVERY_ERROR;
-    }
-    
-    return err;
-}
-
-eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *dataRx, uint32_t dataRxSize, char *ip, void *customData)
-{
-    DeviceController *deviceController = (__bridge DeviceController *)customData;
-    eARDISCOVERY_ERROR err = ARDISCOVERY_OK;
-    
-    if ((dataRx != NULL) && (dataRxSize != 0))
-    {
-        char *json = malloc(dataRxSize + 1);
-        strncpy(json, (char *)dataRx, dataRxSize);
-        json[dataRxSize] = '\0';
-        
-        //read c2dPort ...
-        NSString *strResponse = [NSString stringWithCString:(const char *)json encoding:NSUTF8StringEncoding];
-
-        [deviceController readJson:strResponse];
-        
-        ARSAL_PRINT(ARSAL_PRINT_DEBUG, TAG, "    - ReceiveJson:%s ", json);
-        
-        free(json);
-    }
-    else
-    {
-        err = ARDISCOVERY_ERROR;
-    }
-    
-    return err;
-}
-
-- (void)readJson:(NSString*)jsonStr
-{
-    NSError *err;
-    id jsonobj = nil;
-    
-    if (jsonStr != nil)
-    {
-        jsonobj = [NSJSONSerialization JSONObjectWithData:[jsonStr dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
-    }
-    else
-    {
-        NSLog(@"error json = nil");
-    }
-    
-    NSDictionary *jsonDict = (NSDictionary *)jsonobj;
-    NSNumber *c2dPortData = [jsonDict objectForKey:[NSString stringWithCString:ARDISCOVERY_CONNECTION_JSON_C2DPORT_KEY encoding:NSUTF8StringEncoding]];
-    _c2dPort = c2dPortData.intValue;
-}
-
 - (BOOL)startNetwork
 {
     BOOL failed = NO;
@@ -590,38 +491,34 @@ eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *dataRx, 
     return failed;
 }
 
-- (void) stopVideo
+int sendBeginStream(ARNETWORK_Manager_t *netManager)
 {
-    ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- Stop ARStream");
+    int sentStatus = 1;
+    u_int8_t cmdBuffer[128];
+    int32_t cmdSize = 0;
+    eARCOMMANDS_GENERATOR_ERROR cmdError;
+    eARNETWORK_ERROR netError = ARNETWORK_ERROR;
     
-    if (_streamReader)
+    ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- Send Streaming Begin");
+    
+    // Send Streaming begin command
+    cmdError = ARCOMMANDS_Generator_GenerateARDrone3MediaStreamingVideoEnable(cmdBuffer, sizeof(cmdBuffer), &cmdSize, 1);
+    if (cmdError == ARCOMMANDS_GENERATOR_OK)
     {
-        ARSTREAM_Reader_StopReader(_streamReader);
-        
-        ARNETWORKAL_Manager_Unlock(_alManager);
-        
-        if (_videoRxThread != NULL)
-        {
-            ARSAL_Thread_Join(_videoRxThread, NULL);
-            ARSAL_Thread_Destroy(&(_videoRxThread));
-            _videoRxThread = NULL;
-        }
-        if (_videoTxThread != NULL)
-        {
-            ARSAL_Thread_Join(_videoTxThread, NULL);
-            ARSAL_Thread_Destroy(&(_videoTxThread));
-            _videoTxThread = NULL;
-        }
-        
-        ARSTREAM_Reader_Delete (&(_streamReader));
+        netError = ARNETWORK_Manager_SendData(netManager, BD_NET_C2D_ACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
     }
     
-    if (_videoFrame)
+    if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
     {
-        free (_videoFrame);
-        _videoFrame = NULL;
+        ARSAL_PRINT(ARSAL_PRINT_WARNING, TAG, "Failed to send Streaming command. cmdError:%d netError:%s", cmdError, ARNETWORK_Error_ToString(netError));
+        sentStatus = 0;
     }
+    
+    return sentStatus;
 }
+
+
+#pragma mark Termination Methods
 
 - (void)stop
 {
@@ -706,21 +603,150 @@ eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *dataRx, 
     ARNETWORKAL_Manager_Delete(&(_alManager));
 }
 
-/**
- * @brief fuction called on disconnect
- * @param manager The manager
- */
-void onDisconnectNetwork (ARNETWORK_Manager_t *manager, ARNETWORKAL_Manager_t *alManager, void *customData)
+- (void) stopVideo
 {
-    DeviceController *deviceController = (__bridge DeviceController*)customData;
+    ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- Stop ARStream");
     
-    NSLog(@"onDisconnectNetwork ... %@ : %@", deviceController, [deviceController delegate]);
-    
-    if ((deviceController != nil) && (deviceController.delegate != nil))
+    if (_streamReader)
     {
-        [deviceController.delegate onDisconnectNetwork:deviceController];
+        ARSTREAM_Reader_StopReader(_streamReader);
+        
+        ARNETWORKAL_Manager_Unlock(_alManager);
+        
+        if (_videoRxThread != NULL)
+        {
+            ARSAL_Thread_Join(_videoRxThread, NULL);
+            ARSAL_Thread_Destroy(&(_videoRxThread));
+            _videoRxThread = NULL;
+        }
+        if (_videoTxThread != NULL)
+        {
+            ARSAL_Thread_Join(_videoTxThread, NULL);
+            ARSAL_Thread_Destroy(&(_videoTxThread));
+            _videoTxThread = NULL;
+        }
+        
+        ARSTREAM_Reader_Delete (&(_streamReader));
+    }
+    
+    if (_videoFrame)
+    {
+        free (_videoFrame);
+        _videoFrame = NULL;
     }
 }
+
+
+#pragma mark Discovery Methods
+
+- (BOOL)ardiscoveryConnect
+{
+    int failed = 0;
+    
+    ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- ARDiscovery Connection");
+    
+    eARDISCOVERY_ERROR err = ARDISCOVERY_OK;
+    
+    ARDISCOVERY_Connection_ConnectionData_t *discoveryData = ARDISCOVERY_Connection_New (ARDISCOVERY_Connection_SendJsonCallback, ARDISCOVERY_Connection_ReceiveJsonCallback, (__bridge void *)self, &err);
+    if (discoveryData == NULL || err != ARDISCOVERY_OK)
+    {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Error while creating discoveryData : %s", ARDISCOVERY_Error_ToString(err));
+        failed = 1;
+    }
+    
+    if (!failed)
+    {
+        NSString *ip = [[ARDiscovery sharedInstance] convertNSNetServiceToIp:_service];
+        int port = [(NSNetService *)_service.service port];
+        if (ip)
+        {
+            eARDISCOVERY_ERROR err = ARDISCOVERY_Connection_ControllerConnection(discoveryData, port, [ip UTF8String]);
+            if (err != ARDISCOVERY_OK)
+            {
+                ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Error while opening discovery connection : %s", ARDISCOVERY_Error_ToString(err));
+                failed = 1;
+            }
+        }
+        else
+        {
+            ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "IP of service is null");
+            failed = 1;
+        }
+    }
+    
+    ARDISCOVERY_Connection_Delete(&discoveryData);
+    
+    return failed;
+}
+
+eARDISCOVERY_ERROR ARDISCOVERY_Connection_SendJsonCallback (uint8_t *dataTx, uint32_t *dataTxSize, void *customData)
+{
+    eARDISCOVERY_ERROR err = ARDISCOVERY_OK;
+    
+    if ((dataTx != NULL) && (dataTxSize != NULL))
+    {
+        *dataTxSize = sprintf((char *)dataTx, "{ \"%s\": %d,\n \"%s\": \"%s\",\n \"%s\": \"%s\" }",
+                              ARDISCOVERY_CONNECTION_JSON_D2CPORT_KEY, D2C_PORT,
+                              ARDISCOVERY_CONNECTION_JSON_CONTROLLER_NAME_KEY, "bebopDroneSample",
+                              ARDISCOVERY_CONNECTION_JSON_CONTROLLER_TYPE_KEY, "iOSController") + 1;
+    }
+    else
+    {
+        err = ARDISCOVERY_ERROR;
+    }
+    
+    return err;
+}
+
+eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *dataRx, uint32_t dataRxSize, char *ip, void *customData)
+{
+    DeviceController *deviceController = (__bridge DeviceController *)customData;
+    eARDISCOVERY_ERROR err = ARDISCOVERY_OK;
+    
+    if ((dataRx != NULL) && (dataRxSize != 0))
+    {
+        char *json = malloc(dataRxSize + 1);
+        strncpy(json, (char *)dataRx, dataRxSize);
+        json[dataRxSize] = '\0';
+        
+        //read c2dPort ...
+        NSString *strResponse = [NSString stringWithCString:(const char *)json encoding:NSUTF8StringEncoding];
+
+        [deviceController readJson:strResponse];
+        
+        ARSAL_PRINT(ARSAL_PRINT_DEBUG, TAG, "    - ReceiveJson:%s ", json);
+        
+        free(json);
+    }
+    else
+    {
+        err = ARDISCOVERY_ERROR;
+    }
+    
+    return err;
+}
+
+- (void)readJson:(NSString*)jsonStr
+{
+    NSError *err;
+    id jsonobj = nil;
+    
+    if (jsonStr != nil)
+    {
+        jsonobj = [NSJSONSerialization JSONObjectWithData:[jsonStr dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
+    }
+    else
+    {
+        NSLog(@"error json = nil");
+    }
+    
+    NSDictionary *jsonDict = (NSDictionary *)jsonobj;
+    NSNumber *c2dPortData = [jsonDict objectForKey:[NSString stringWithCString:ARDISCOVERY_CONNECTION_JSON_C2DPORT_KEY encoding:NSUTF8StringEncoding]];
+    _c2dPort = c2dPortData.intValue;
+}
+
+
+#pragma mark Thread Methods
 
 void *looperRun (void* data)
 {
@@ -731,8 +757,10 @@ void *looperRun (void* data)
         while (deviceController.run)
         {
             [deviceController sendPCMD];
-            
             usleep(PCMD_LOOP_IN_MS);
+            
+            //[deviceController sendCameraOrientation];
+            //usleep(PCMD_LOOP_IN_MS);
         }
     }
     
@@ -815,6 +843,9 @@ void *readerRun (void* data)
     return NULL;
 }
 
+
+#pragma mark Callbacks
+
 uint8_t *frameCompleteCallback (eARSTREAM_READER_CAUSE cause, uint8_t *frame, uint32_t frameSize, int numberOfSkippedFrames, int isFlushFrame, uint32_t *newBufferCapacity, void *custom)
 {
     uint8_t *ret = NULL;
@@ -850,32 +881,6 @@ uint8_t *frameCompleteCallback (eARSTREAM_READER_CAUSE cause, uint8_t *frame, ui
     return ret;
 }
 
-int sendBeginStream(ARNETWORK_Manager_t *netManager)
-{
-    int sentStatus = 1;
-    u_int8_t cmdBuffer[128];
-    int32_t cmdSize = 0;
-    eARCOMMANDS_GENERATOR_ERROR cmdError;
-    eARNETWORK_ERROR netError = ARNETWORK_ERROR;
-    
-    ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- Send Streaming Begin");
-    
-    // Send Streaming begin command
-    cmdError = ARCOMMANDS_Generator_GenerateARDrone3MediaStreamingVideoEnable(cmdBuffer, sizeof(cmdBuffer), &cmdSize, 1);
-    if (cmdError == ARCOMMANDS_GENERATOR_OK)
-    {
-        netError = ARNETWORK_Manager_SendData(netManager, BD_NET_C2D_ACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
-    }
-    
-    if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
-    {
-        ARSAL_PRINT(ARSAL_PRINT_WARNING, TAG, "Failed to send Streaming command. cmdError:%d netError:%s", cmdError, ARNETWORK_Error_ToString(netError));
-        sentStatus = 0;
-    }
-    
-    return sentStatus;
-}
-
 eARNETWORK_MANAGER_CALLBACK_RETURN arnetworkCmdCallback(int buffer_id, uint8_t *data, void *custom, eARNETWORK_MANAGER_CALLBACK_STATUS cause)
 {
     eARNETWORK_MANAGER_CALLBACK_RETURN retval = ARNETWORK_MANAGER_CALLBACK_RETURN_DEFAULT;
@@ -887,6 +892,116 @@ eARNETWORK_MANAGER_CALLBACK_RETURN arnetworkCmdCallback(int buffer_id, uint8_t *
     
     return retval;
 }
+
+/**
+ * @brief fuction called on disconnect
+ * @param manager The manager
+ */
+void onDisconnectNetwork (ARNETWORK_Manager_t *manager, ARNETWORKAL_Manager_t *alManager, void *customData)
+{
+    DeviceController *deviceController = (__bridge DeviceController*)customData;
+    
+    NSLog(@"onDisconnectNetwork ... %@ : %@", deviceController, [deviceController delegate]);
+    
+    if ((deviceController != nil) && (deviceController.delegate != nil))
+    {
+        [deviceController.delegate onDisconnectNetwork:deviceController];
+    }
+}
+
+-(void) registerARCommandsCallbacks
+{
+    ARCOMMANDS_Decoder_SetCommonCommonStateAllStatesChangedCallback(allStatesCallback, (__bridge void *)self);
+    ARCOMMANDS_Decoder_SetCommonSettingsStateAllSettingsChangedCallback(allSettingsCallback, (__bridge void *)self);
+    ARCOMMANDS_Decoder_SetCommonCommonStateBatteryStateChangedCallback(batteryStateChangedCallback, (__bridge void *)self);
+    ARCOMMANDS_Decoder_SetARDrone3PilotingStateFlyingStateChangedCallback(flyingStateChangedCallback, (__bridge void *)self);
+    ARCOMMANDS_Decoder_SetARDrone3PilotingStatePositionChangedCallback(positionChangedCallback, (__bridge void *)self);
+    ARCOMMANDS_Decoder_SetARDrone3PilotingStateAttitudeChangedCallback(attitudeChangedCallback, (__bridge void *)self);
+}
+
+-(void) unregisterARCommandsCallbacks
+{
+    ARCOMMANDS_Decoder_SetCommonCommonStateAllStatesChangedCallback(NULL, NULL);
+    ARCOMMANDS_Decoder_SetCommonSettingsStateAllSettingsChangedCallback(NULL, NULL);
+    ARCOMMANDS_Decoder_SetCommonCommonStateBatteryStateChangedCallback (NULL, NULL);
+    ARCOMMANDS_Decoder_SetARDrone3PilotingStateFlyingStateChangedCallback(NULL, NULL);
+    //ARCOMMANDS_Decoder_SetARDrone3PilotingStatePositionChangedCallback(NULL, NULL);
+}
+
+void allStatesCallback (void *custom)
+{
+    // all states received, that means that the drone has now sent all states
+    // if you were listening for settings (like ARCOMMANDS_Decoder_CommonCommonStateBatteryStateChangedCallback_t), you should have receive it
+    NSLog(@"All states received ... ");
+    DeviceController *deviceController = (__bridge DeviceController*)custom;
+    
+    [deviceController.initialStatesReceivedCondition lock];
+    deviceController.initialStatesReceived = YES;
+    [deviceController.initialStatesReceivedCondition signal];
+    [deviceController.initialStatesReceivedCondition unlock];
+}
+
+void allSettingsCallback (void *custom)
+{
+    // all settings received, that means that the drone has now sent all settings
+    // if you were listening for settings (like ARCOMMANDS_Decoder_ARDrone3PilotingSettingsMaxAltitudeCallback_t), you should have receive it
+    NSLog(@"All settings received ... ");
+    
+    DeviceController *deviceController = (__bridge DeviceController*)custom;
+    
+    [deviceController.initialSettingsReceivedCondition lock];
+    deviceController.initialSettingsReceived = YES;
+    [deviceController.initialSettingsReceivedCondition signal];
+    [deviceController.initialSettingsReceivedCondition unlock];
+}
+
+void batteryStateChangedCallback (uint8_t percent, void *custom)
+{
+    // callback of changing of battery level
+    DeviceController *deviceController = (__bridge DeviceController*)custom;
+    
+    NSLog(@"batteryStateChangedCallback ... %d  ; %@ : %@", percent, deviceController, [deviceController delegate]);
+    
+    if ((deviceController != nil) && (deviceController.delegate != nil))
+    {
+        [deviceController.delegate onUpdateBattery:deviceController batteryLevel:percent];
+    }
+}
+
+void flyingStateChangedCallback (eARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE flyingState, void *custom)
+{
+    // callback of changing of battery level
+    DeviceController *deviceController = (__bridge DeviceController*)custom;
+    
+    NSLog(@"flyingStateStateChangedCallback ... %d", flyingState);
+    
+    if ((deviceController != nil) && (deviceController.delegate != nil))
+    {
+        [deviceController.delegate onFlyingStateChanged:deviceController flyingState:flyingState];
+    }
+}
+
+static void positionChangedCallback(double latitude, double longitude, double altitude, void *custom)
+{
+    DeviceController *deviceController = (__bridge DeviceController*)custom;
+    //NSDictionary* dict = [NSDictionary dictionaryWithObjects:@[[NSNumber numberWithDouble:latitude], [NSNumber numberWithDouble:longitude], [NSNumber numberWithDouble:altitude]] forKeys:@[ARDrone3DeviceControllerPilotingStatePositionChangedNotificationLatitudeKey, ARDrone3DeviceControllerPilotingStatePositionChangedNotificationLongitudeKey, ARDrone3DeviceControllerPilotingStatePositionChangedNotificationAltitudeKey]];
+    //[deviceController.privateNotificationsDictionary setObject:dict forKey:ARDrone3DeviceControllerPilotingStatePositionChangedNotification];
+    //[[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerNotificationsDictionaryChanged object:deviceController userInfo:[NSDictionary dictionaryWithObject:dict forKey:ARDrone3DeviceControllerPilotingStatePositionChangedNotification]];
+    //[[NSNotificationCenter defaultCenter] postNotificationName:ARDrone3DeviceControllerPilotingStatePositionChangedNotification object:deviceController userInfo:dict];
+    
+    
+    [deviceController.delegate onDronePositionChanged:deviceController latitude:latitude longitude:longitude altitude:altitude];
+}
+
+static void attitudeChangedCallback(float roll, float pitch, float yaw, void *custom)
+{
+    DeviceController *deviceController = (__bridge DeviceController*)custom;
+    
+    [deviceController.delegate onAttitudeChanged:deviceController roll:roll pitch:pitch yaw:yaw];
+}
+
+
+#pragma mark Drone Control Methods
 
 - (void) setRoll:(int8_t)roll
 {
@@ -913,17 +1028,27 @@ eARNETWORK_MANAGER_CALLBACK_RETURN arnetworkCmdCallback(int buffer_id, uint8_t *
     _dataPCMD.flag = flag;
 }
 
-- (void) setCamPan:(uint8_t)pan
+- (void) setCamPan:(int8_t)pan
 {
     _cameraPan += pan;
+    if (_cameraPan < -40)
+        _cameraPan = -40;
+    else if (_cameraPan > 40)
+        _cameraPan = 40;
 }
 
 - (void) setCamTilt:(int8_t)tilt
 {
     _cameraTilt += tilt;
+    if (_cameraTilt < -40)
+        _cameraTilt = -40;
+    else if (_cameraTilt > 40)
+        _cameraTilt = 40;
 }
 
-#pragma mark sending functions
+
+#pragma mark Sending Methods
+
 - (BOOL)getInitialSettings
 {
     BOOL sentStatus = YES;
@@ -1015,10 +1140,34 @@ eARNETWORK_MANAGER_CALLBACK_RETURN arnetworkCmdCallback(int buffer_id, uint8_t *
     eARNETWORK_ERROR netError = ARNETWORK_ERROR;
     
     // Send Posture command
-    cmdError = ARCOMMANDS_Generator_GenerateARDrone3PilotingPCMD(cmdBuffer, sizeof(cmdBuffer), &cmdSize, _dataPCMD.flag, _dataPCMD.roll, _dataPCMD.pitch, _dataPCMD.yaw, _dataPCMD.gaz, _dataPCMD.psi) & ARCOMMANDS_Generator_GenerateARDrone3CameraOrientation (cmdBuffer, sizeof(cmdBuffer), &cmdSize, _cameraTilt, _cameraPan);
+    cmdError = ARCOMMANDS_Generator_GenerateARDrone3PilotingPCMD(cmdBuffer, sizeof(cmdBuffer), &cmdSize, _dataPCMD.flag, _dataPCMD.roll, _dataPCMD.pitch, _dataPCMD.yaw, _dataPCMD.gaz, _dataPCMD.psi);
     if (cmdError == ARCOMMANDS_GENERATOR_OK)
     {
         // The commands sent in loop should be sent to a buffer not acknowledged ; here JS_NET_CD_NONACK_ID
+        netError = ARNETWORK_Manager_SendData(_netManager, BD_NET_C2D_NONACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
+    }
+    
+    if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
+    {
+        sentStatus = NO;
+    }
+    
+    return sentStatus;
+}
+
+- (BOOL) sendCameraOrientation
+{
+    BOOL sentStatus = YES;
+    u_int8_t cmdBuffer[128];
+    int32_t cmdSize = 0;
+    eARCOMMANDS_GENERATOR_ERROR cmdError;
+    eARNETWORK_ERROR netError = ARNETWORK_ERROR;
+    
+    // Send Orientation command
+    cmdError = ARCOMMANDS_Generator_GenerateARDrone3CameraOrientation(cmdBuffer, sizeof(cmdBuffer), &cmdSize, (uint8_t)_cameraTilt, (uint8_t)_cameraPan);
+    if (cmdError == ARCOMMANDS_GENERATOR_OK)
+    {
+        // The commands sent in loop should be sent to a buffer not acknowledged ; here BD_NET_CD_NONACK_ID
         netError = ARNETWORK_Manager_SendData(_netManager, BD_NET_C2D_NONACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
     }
     
@@ -1185,99 +1334,9 @@ eARNETWORK_MANAGER_CALLBACK_RETURN arnetworkCmdCallback(int buffer_id, uint8_t *
     return sentStatus;
 }
 
-#pragma mark commands callbacks
--(void) registerARCommandsCallbacks
-{
-    ARCOMMANDS_Decoder_SetCommonCommonStateAllStatesChangedCallback(allStatesCallback, (__bridge void *)self);
-    ARCOMMANDS_Decoder_SetCommonSettingsStateAllSettingsChangedCallback(allSettingsCallback, (__bridge void *)self);
-    ARCOMMANDS_Decoder_SetCommonCommonStateBatteryStateChangedCallback(batteryStateChangedCallback, (__bridge void *)self);
-    ARCOMMANDS_Decoder_SetARDrone3PilotingStateFlyingStateChangedCallback(flyingStateChangedCallback, (__bridge void *)self);
-    ARCOMMANDS_Decoder_SetARDrone3PilotingStatePositionChangedCallback(positionChangedCallback, (__bridge void *)self);
-    ARCOMMANDS_Decoder_SetARDrone3PilotingStateAttitudeChangedCallback(attitudeChangedCallback, (__bridge void *)self);
-}
-
--(void) unregisterARCommandsCallbacks
-{
-    ARCOMMANDS_Decoder_SetCommonCommonStateAllStatesChangedCallback(NULL, NULL);
-    ARCOMMANDS_Decoder_SetCommonSettingsStateAllSettingsChangedCallback(NULL, NULL);
-    ARCOMMANDS_Decoder_SetCommonCommonStateBatteryStateChangedCallback (NULL, NULL);
-    ARCOMMANDS_Decoder_SetARDrone3PilotingStateFlyingStateChangedCallback(NULL, NULL);
-    //ARCOMMANDS_Decoder_SetARDrone3PilotingStatePositionChangedCallback(NULL, NULL);
-}
-
-void allStatesCallback (void *custom)
-{
-    // all states received, that means that the drone has now sent all states
-    // if you were listening for settings (like ARCOMMANDS_Decoder_CommonCommonStateBatteryStateChangedCallback_t), you should have receive it
-    NSLog(@"All states received ... ");
-    DeviceController *deviceController = (__bridge DeviceController*)custom;
-    
-    [deviceController.initialStatesReceivedCondition lock];
-    deviceController.initialStatesReceived = YES;
-    [deviceController.initialStatesReceivedCondition signal];
-    [deviceController.initialStatesReceivedCondition unlock];
-}
-
-void allSettingsCallback (void *custom)
-{
-    // all settings received, that means that the drone has now sent all settings
-    // if you were listening for settings (like ARCOMMANDS_Decoder_ARDrone3PilotingSettingsMaxAltitudeCallback_t), you should have receive it
-    NSLog(@"All settings received ... ");
-    
-    DeviceController *deviceController = (__bridge DeviceController*)custom;
-    
-    [deviceController.initialSettingsReceivedCondition lock];
-    deviceController.initialSettingsReceived = YES;
-    [deviceController.initialSettingsReceivedCondition signal];
-    [deviceController.initialSettingsReceivedCondition unlock];
-}
-
-void batteryStateChangedCallback (uint8_t percent, void *custom)
-{
-    // callback of changing of battery level
-    DeviceController *deviceController = (__bridge DeviceController*)custom;
-    
-    NSLog(@"batteryStateChangedCallback ... %d  ; %@ : %@", percent, deviceController, [deviceController delegate]);
-    
-    if ((deviceController != nil) && (deviceController.delegate != nil))
-    {
-        [deviceController.delegate onUpdateBattery:deviceController batteryLevel:percent];
-    }
-}
-
-void flyingStateChangedCallback (eARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE flyingState, void *custom)
-{
-    // callback of changing of battery level
-    DeviceController *deviceController = (__bridge DeviceController*)custom;
-    
-    NSLog(@"flyingStateStateChangedCallback ... %d", flyingState);
-    
-    if ((deviceController != nil) && (deviceController.delegate != nil))
-    {
-        [deviceController.delegate onFlyingStateChanged:deviceController flyingState:flyingState];
-    }
-}
-
-static void positionChangedCallback(double latitude, double longitude, double altitude, void *custom)
-{
-    DeviceController *deviceController = (__bridge DeviceController*)custom;
-    //NSDictionary* dict = [NSDictionary dictionaryWithObjects:@[[NSNumber numberWithDouble:latitude], [NSNumber numberWithDouble:longitude], [NSNumber numberWithDouble:altitude]] forKeys:@[ARDrone3DeviceControllerPilotingStatePositionChangedNotificationLatitudeKey, ARDrone3DeviceControllerPilotingStatePositionChangedNotificationLongitudeKey, ARDrone3DeviceControllerPilotingStatePositionChangedNotificationAltitudeKey]];
-    //[deviceController.privateNotificationsDictionary setObject:dict forKey:ARDrone3DeviceControllerPilotingStatePositionChangedNotification];
-    //[[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerNotificationsDictionaryChanged object:deviceController userInfo:[NSDictionary dictionaryWithObject:dict forKey:ARDrone3DeviceControllerPilotingStatePositionChangedNotification]];
-    //[[NSNotificationCenter defaultCenter] postNotificationName:ARDrone3DeviceControllerPilotingStatePositionChangedNotification object:deviceController userInfo:dict];
-    
-    
-    [deviceController.delegate onDronePositionChanged:deviceController latitude:latitude longitude:longitude altitude:altitude];
-}
-
-static void attitudeChangedCallback(float roll, float pitch, float yaw, void *custom)
-{
-    DeviceController *deviceController = (__bridge DeviceController*)custom;
-    
-    [deviceController.delegate onAttitudeChanged:deviceController roll:roll pitch:pitch yaw:yaw];
-}
 
 #pragma mark resolveService
+
 - (BOOL)resolveService
 {
     BOOL retval = NO;

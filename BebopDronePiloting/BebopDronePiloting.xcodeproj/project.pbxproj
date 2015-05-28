@@ -15,6 +15,7 @@
 		96DD801C1ABC8A4A00646F7D /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96DD801B1ABC8A4A00646F7D /* SystemConfiguration.framework */; };
 		96DD801E1ABC8A5400646F7D /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96DD801D1ABC8A5400646F7D /* MobileCoreServices.framework */; };
 		96DD80201ABC8A5D00646F7D /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96DD801F1ABC8A5D00646F7D /* CFNetwork.framework */; };
+		E962268E1B16780700BF584B /* Utility.c in Sources */ = {isa = PBXBuildFile; fileRef = E962268C1B16780700BF584B /* Utility.c */; };
 		E9A397411B0F923100E9A0F9 /* SocketAckMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A397361B0F923100E9A0F9 /* SocketAckMap.swift */; };
 		E9A397421B0F923100E9A0F9 /* SocketAnyEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A397371B0F923100E9A0F9 /* SocketAnyEvent.swift */; };
 		E9A397431B0F923100E9A0F9 /* SocketEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A397381B0F923100E9A0F9 /* SocketEngine.swift */; };
@@ -55,6 +56,8 @@
 		96DD801B1ABC8A4A00646F7D /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		96DD801D1ABC8A5400646F7D /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		96DD801F1ABC8A5D00646F7D /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		E962268C1B16780700BF584B /* Utility.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Utility.c; sourceTree = SOURCE_ROOT; };
+		E962268D1B16780700BF584B /* Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utility.h; sourceTree = SOURCE_ROOT; };
 		E9A397361B0F923100E9A0F9 /* SocketAckMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketAckMap.swift; sourceTree = "<group>"; };
 		E9A397371B0F923100E9A0F9 /* SocketAnyEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketAnyEvent.swift; sourceTree = "<group>"; };
 		E9A397381B0F923100E9A0F9 /* SocketEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketEngine.swift; sourceTree = "<group>"; };
@@ -193,6 +196,8 @@
 				F80F5EBA1AB2F8670002B2C6 /* Main.storyboard */,
 				F80F5EBB1AB2F8670002B2C6 /* PilotingViewController.h */,
 				F80F5EBC1AB2F8670002B2C6 /* PilotingViewController.m */,
+				E962268C1B16780700BF584B /* Utility.c */,
+				E962268D1B16780700BF584B /* Utility.h */,
 				F80F5EBD1AB2F8670002B2C6 /* ViewController.h */,
 				F80F5EBE1AB2F8670002B2C6 /* ViewController.m */,
 				96245C001AD34D9000A3C03B /* DroneVideoView.h */,
@@ -277,6 +282,7 @@
 				F80F5EBF1AB2F8670002B2C6 /* AppDelegate.m in Sources */,
 				E9A397421B0F923100E9A0F9 /* SocketAnyEvent.swift in Sources */,
 				E9A3974B1B0F923100E9A0F9 /* WebSocket.swift in Sources */,
+				E962268E1B16780700BF584B /* Utility.c in Sources */,
 				E9A3974A1B0F923100E9A0F9 /* SwiftRegex.swift in Sources */,
 				E9A397441B0F923100E9A0F9 /* SocketEngineClient.swift in Sources */,
 				F80F5EC41AB2F8670002B2C6 /* main.m in Sources */,
