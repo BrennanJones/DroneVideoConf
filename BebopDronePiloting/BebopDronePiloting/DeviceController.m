@@ -61,8 +61,7 @@ static const int BD_NET_DC_VIDEO_MAX_NUMBER_OF_FRAG = 128;
 
 static const int D2C_PORT = 43210;  // fixed by the app, but should be sent to drone in json
 
-static const int PCMD_LOOP_IN_MS = 25000; // piloting command sending interval
-//static const int PCMD_LOOP_IN_MS = 50000; // piloting command sending interval
+static const int PCMD_LOOP_IN_MS = 25; // piloting command sending interval
 
 static ARNETWORK_IOBufferParam_t C2D_PARAMS[] = {
     {

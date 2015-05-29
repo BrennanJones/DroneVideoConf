@@ -16,6 +16,11 @@
 		96DD801E1ABC8A5400646F7D /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96DD801D1ABC8A5400646F7D /* MobileCoreServices.framework */; };
 		96DD80201ABC8A5D00646F7D /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96DD801F1ABC8A5D00646F7D /* CFNetwork.framework */; };
 		E962268E1B16780700BF584B /* Utility.c in Sources */ = {isa = PBXBuildFile; fileRef = E962268C1B16780700BF584B /* Utility.c */; };
+		E96226BA1B18DAE600BF584B /* gps.c in Sources */ = {isa = PBXBuildFile; fileRef = E96226AC1B18DAE600BF584B /* gps.c */; };
+		E96226BC1B18DAE600BF584B /* kalman.c in Sources */ = {isa = PBXBuildFile; fileRef = E96226AF1B18DAE600BF584B /* kalman.c */; };
+		E96226BE1B18DAE600BF584B /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = E96226B21B18DAE600BF584B /* LICENSE */; };
+		E96226C01B18DAE600BF584B /* matrix.c in Sources */ = {isa = PBXBuildFile; fileRef = E96226B41B18DAE600BF584B /* matrix.c */; };
+		E96226C21B18DAE600BF584B /* README in Resources */ = {isa = PBXBuildFile; fileRef = E96226B71B18DAE600BF584B /* README */; };
 		E9A397411B0F923100E9A0F9 /* SocketAckMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A397361B0F923100E9A0F9 /* SocketAckMap.swift */; };
 		E9A397421B0F923100E9A0F9 /* SocketAnyEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A397371B0F923100E9A0F9 /* SocketAnyEvent.swift */; };
 		E9A397431B0F923100E9A0F9 /* SocketEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A397381B0F923100E9A0F9 /* SocketEngine.swift */; };
@@ -58,6 +63,14 @@
 		96DD801F1ABC8A5D00646F7D /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		E962268C1B16780700BF584B /* Utility.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Utility.c; sourceTree = SOURCE_ROOT; };
 		E962268D1B16780700BF584B /* Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utility.h; sourceTree = SOURCE_ROOT; };
+		E96226AC1B18DAE600BF584B /* gps.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gps.c; sourceTree = "<group>"; };
+		E96226AD1B18DAE600BF584B /* gps.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gps.h; sourceTree = "<group>"; };
+		E96226AF1B18DAE600BF584B /* kalman.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = kalman.c; sourceTree = "<group>"; };
+		E96226B01B18DAE600BF584B /* kalman.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kalman.h; sourceTree = "<group>"; };
+		E96226B21B18DAE600BF584B /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		E96226B41B18DAE600BF584B /* matrix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = matrix.c; sourceTree = "<group>"; };
+		E96226B51B18DAE600BF584B /* matrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = matrix.h; sourceTree = "<group>"; };
+		E96226B71B18DAE600BF584B /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		E9A397361B0F923100E9A0F9 /* SocketAckMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketAckMap.swift; sourceTree = "<group>"; };
 		E9A397371B0F923100E9A0F9 /* SocketAnyEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketAnyEvent.swift; sourceTree = "<group>"; };
 		E9A397381B0F923100E9A0F9 /* SocketEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketEngine.swift; sourceTree = "<group>"; };
@@ -119,6 +132,7 @@
 		1D9DF22C1A6D580F000941ED = {
 			isa = PBXGroup;
 			children = (
+				E96226AB1B18DAE600BF584B /* ikalman */,
 				F8C6053D1A9F06AC000D2804 /* BebopDronePiloting */,
 				1D9DF26B1A6D62CB000941ED /* Frameworks */,
 				1D9DF2361A6D580F000941ED /* Products */,
@@ -153,6 +167,21 @@
 				96DD80171ABC8A3300646F7D /* libicucore.dylib */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E96226AB1B18DAE600BF584B /* ikalman */ = {
+			isa = PBXGroup;
+			children = (
+				E96226AC1B18DAE600BF584B /* gps.c */,
+				E96226AD1B18DAE600BF584B /* gps.h */,
+				E96226AF1B18DAE600BF584B /* kalman.c */,
+				E96226B01B18DAE600BF584B /* kalman.h */,
+				E96226B21B18DAE600BF584B /* LICENSE */,
+				E96226B41B18DAE600BF584B /* matrix.c */,
+				E96226B51B18DAE600BF584B /* matrix.h */,
+				E96226B71B18DAE600BF584B /* README */,
+			);
+			path = ikalman;
 			sourceTree = "<group>";
 		};
 		E9A397351B0F923100E9A0F9 /* SwiftIO */ = {
@@ -264,10 +293,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E96226C21B18DAE600BF584B /* README in Resources */,
 				F80F5EC21AB2F8670002B2C6 /* Info.plist in Resources */,
 				F80F5EC31AB2F8670002B2C6 /* LaunchScreen.xib in Resources */,
 				F80F5EC11AB2F8670002B2C6 /* Images.xcassets in Resources */,
 				F80F5EC51AB2F8670002B2C6 /* Main.storyboard in Resources */,
+				E96226BE1B18DAE600BF584B /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -283,18 +314,21 @@
 				E9A397421B0F923100E9A0F9 /* SocketAnyEvent.swift in Sources */,
 				E9A3974B1B0F923100E9A0F9 /* WebSocket.swift in Sources */,
 				E962268E1B16780700BF584B /* Utility.c in Sources */,
+				E96226BA1B18DAE600BF584B /* gps.c in Sources */,
 				E9A3974A1B0F923100E9A0F9 /* SwiftRegex.swift in Sources */,
 				E9A397441B0F923100E9A0F9 /* SocketEngineClient.swift in Sources */,
 				F80F5EC41AB2F8670002B2C6 /* main.m in Sources */,
 				E9A397451B0F923100E9A0F9 /* SocketEventHandler.swift in Sources */,
 				96245C021AD34D9000A3C03B /* DroneVideoView.m in Sources */,
 				E9A397411B0F923100E9A0F9 /* SocketAckMap.swift in Sources */,
+				E96226C01B18DAE600BF584B /* matrix.c in Sources */,
 				E9A397431B0F923100E9A0F9 /* SocketEngine.swift in Sources */,
 				E9A397461B0F923100E9A0F9 /* SocketFixUTF8.swift in Sources */,
 				E9A397481B0F923100E9A0F9 /* SocketPacket.swift in Sources */,
 				E9A397491B0F923100E9A0F9 /* SocketParser.swift in Sources */,
 				E9A397471B0F923100E9A0F9 /* SocketIOClient.swift in Sources */,
 				F80F5EC01AB2F8670002B2C6 /* DeviceController.m in Sources */,
+				E96226BC1B18DAE600BF584B /* kalman.c in Sources */,
 				F80F5EC71AB2F8670002B2C6 /* ViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
