@@ -98,5 +98,9 @@ typedef struct
 - (BOOL) sendTakeoff;
 - (BOOL) sendLanding;
 
+- (BOOL) takePicture;
+
+- (void)getAllMediaAsync;
+
 @end
 

@@ -827,4 +827,10 @@ BOOL droneAtProperDistance = false;
     [_deviceController setHomeWithLatitude:latDrone withLongitude:lonDrone withAltitude:altDrone];
 }
 
+- (IBAction)takePhotoClick:(id)sender
+{
+    //[_deviceController takePicture];
+    [_deviceController getAllMediaAsync];
+}
+
 @end

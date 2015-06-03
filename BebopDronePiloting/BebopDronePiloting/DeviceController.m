@@ -44,6 +44,7 @@
 #import <libARNetwork/ARNetwork.h>
 #import <libARNetworkAL/ARNetworkAL.h>
 #import <libARCommands/ARCommands.h>
+#import <libARDataTransfer/ARDataTransfer.h>
 
 
 static const char* TAG = "DeviceController";
@@ -61,7 +62,7 @@ static const int BD_NET_DC_VIDEO_MAX_NUMBER_OF_FRAG = 128;
 
 static const int D2C_PORT = 43210;  // fixed by the app, but should be sent to drone in json
 
-static const int PCMD_LOOP_IN_MS = 25; // piloting command sending interval
+static const int PCMD_LOOP_IN_MS = 25000; // piloting command sending interval
 
 static ARNETWORK_IOBufferParam_t C2D_PARAMS[] = {
     {
@@ -179,8 +180,14 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
 
 @property (nonatomic) dispatch_semaphore_t resolveSemaphore;
 
+@property (nonatomic) ARDATATRANSFER_Manager_t *dataTransferManager;
+@property (nonatomic) ARUTILS_Manager_t *ftpListManager;
+@property (nonatomic) ARUTILS_Manager_t *ftpQueueManager;
+
 @property (nonatomic) int8_t cameraPan;
 @property (nonatomic) int8_t cameraTilt;
+
+@property (nonatomic) BOOL cameraOrientationChangeNeeded;
 
 @end
 
@@ -223,6 +230,8 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
         
         _cameraPan = 0;
         _cameraTilt = 0;
+        
+        _cameraOrientationChangeNeeded = NO;
     }
     
     return self;
@@ -265,9 +274,7 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
     
     if (!failed)
     {
-        int cmdSend = 0;
-        
-        cmdSend = sendBeginStream(_netManager);
+        failed = [self sendBeginStream];
     }
     
     if (!failed)
@@ -335,29 +342,47 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
     NSDate *currentDate = [NSDate date];
     if (!failed)
     {
-        failed = ![self sendDate:currentDate];
+        failed = [self sendDate:currentDate];
     }
     
     if (!failed)
     {
-        failed = ![self sendTime:currentDate];
+        failed = [self sendTime:currentDate];
     }
     
     if (!failed)
     {
-        failed = ![self getInitialSettings];
+        failed = [self setOutdoorMode];
     }
     
     if (!failed)
     {
-        failed = ![self getInitialStates];
+        failed = [self setHullFreeMode];
     }
     
     if (!failed)
     {
-        int cmdSend = 0;
-        
-        cmdSend = sendBeginStream(_netManager);
+        failed = [self resetHome];
+    }
+    
+//    if (!failed)
+//    {
+//        failed = [self setTimelapseMode];
+//    }
+    
+//    if (!failed)
+//    {
+//        failed = [self takePicture];
+//    }
+    
+    if (!failed)
+    {
+        failed = [self getInitialSettings];
+    }
+    
+    if (!failed)
+    {
+        failed = [self getInitialStates];
     }
     
     return failed;
@@ -483,37 +508,11 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
         if (ARSAL_Thread_Create(&(_videoTxThread), ARSTREAM_Reader_RunAckThread, _streamReader) != 0)
         {
             ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Creation of video Tx thread failed.");
-            failed = 1;
+            failed = YES;
         }
     }
     
     return failed;
-}
-
-int sendBeginStream(ARNETWORK_Manager_t *netManager)
-{
-    int sentStatus = 1;
-    u_int8_t cmdBuffer[128];
-    int32_t cmdSize = 0;
-    eARCOMMANDS_GENERATOR_ERROR cmdError;
-    eARNETWORK_ERROR netError = ARNETWORK_ERROR;
-    
-    ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- Send Streaming Begin");
-    
-    // Send Streaming begin command
-    cmdError = ARCOMMANDS_Generator_GenerateARDrone3MediaStreamingVideoEnable(cmdBuffer, sizeof(cmdBuffer), &cmdSize, 1);
-    if (cmdError == ARCOMMANDS_GENERATOR_OK)
-    {
-        netError = ARNETWORK_Manager_SendData(netManager, BD_NET_C2D_ACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
-    }
-    
-    if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
-    {
-        ARSAL_PRINT(ARSAL_PRINT_WARNING, TAG, "Failed to send Streaming command. cmdError:%d netError:%s", cmdError, ARNETWORK_Error_ToString(netError));
-        sentStatus = 0;
-    }
-    
-    return sentStatus;
 }
 
 
@@ -758,8 +757,13 @@ void *looperRun (void* data)
             [deviceController sendPCMD];
             usleep(PCMD_LOOP_IN_MS);
             
-            //[deviceController sendCameraOrientation];
-            //usleep(PCMD_LOOP_IN_MS);
+            if (deviceController.cameraOrientationChangeNeeded == YES)
+            {
+                [deviceController sendCameraOrientation];
+                deviceController.cameraOrientationChangeNeeded = NO;
+                
+                usleep(PCMD_LOOP_IN_MS);
+            }
         }
     }
     
@@ -1034,6 +1038,8 @@ static void attitudeChangedCallback(float roll, float pitch, float yaw, void *cu
         _cameraPan = -40;
     else if (_cameraPan > 40)
         _cameraPan = 40;
+    
+    _cameraOrientationChangeNeeded = YES;
 }
 
 - (void) setCamTilt:(int8_t)tilt
@@ -1043,6 +1049,8 @@ static void attitudeChangedCallback(float roll, float pitch, float yaw, void *cu
         _cameraTilt = -40;
     else if (_cameraTilt > 40)
         _cameraTilt = 40;
+    
+    _cameraOrientationChangeNeeded = YES;
 }
 
 
@@ -1050,7 +1058,7 @@ static void attitudeChangedCallback(float roll, float pitch, float yaw, void *cu
 
 - (BOOL)getInitialSettings
 {
-    BOOL sentStatus = YES;
+    BOOL failed = NO;
     
     [_initialSettingsReceivedCondition lock];
     u_int8_t cmdBuffer[128];
@@ -1070,10 +1078,10 @@ static void attitudeChangedCallback(float roll, float pitch, float yaw, void *cu
     if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
     {
         ARSAL_PRINT(ARSAL_PRINT_WARNING, TAG, "Failed to send get all settings command. cmdError:%d netError:%s", cmdError, ARNETWORK_Error_ToString(netError));
-        sentStatus = NO;
+        failed = YES;
     }
     
-    if(sentStatus)
+    if(!failed)
     {
         // wait for all settings to be received
         [_initialSettingsReceivedCondition wait];
@@ -1082,16 +1090,16 @@ static void attitudeChangedCallback(float roll, float pitch, float yaw, void *cu
     if (!_initialSettingsReceived)
     {
         ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Initial settings retrieval timed out.");
-        sentStatus = NO;
+        failed = YES;
     }
     [_initialSettingsReceivedCondition unlock];
     
-    return sentStatus;
+    return failed;
 }
 
 - (BOOL) getInitialStates
 {
-    BOOL sentStatus = YES;
+    BOOL failed = NO;
     
     [_initialStatesReceivedCondition lock];
     u_int8_t cmdBuffer[128];
@@ -1111,10 +1119,10 @@ static void attitudeChangedCallback(float roll, float pitch, float yaw, void *cu
     if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
     {
         ARSAL_PRINT(ARSAL_PRINT_WARNING, TAG, "Failed to send get all states command. cmdError:%d netError:%s", cmdError, ARNETWORK_Error_ToString(netError));
-        sentStatus = NO;
+        failed = YES;
     }
     
-    if(sentStatus)
+    if(!failed)
     {
         // wait for all states to be received
         [_initialStatesReceivedCondition wait];
@@ -1123,11 +1131,11 @@ static void attitudeChangedCallback(float roll, float pitch, float yaw, void *cu
     if (!_initialStatesReceived)
     {
         ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Initial states retrieval timed out.");
-        sentStatus = NO;
+        failed = YES;
     }
     [_initialStatesReceivedCondition unlock];
     
-    return sentStatus;
+    return failed;
 }
 
 - (BOOL) sendPCMD
@@ -1205,7 +1213,7 @@ static void attitudeChangedCallback(float roll, float pitch, float yaw, void *cu
 
 - (BOOL) sendDate:(NSDate *)currentDate
 {
-    BOOL sentStatus = YES;
+    BOOL failed = NO;
     u_int8_t cmdBuffer[128];
     int32_t cmdSize = 0;
     eARCOMMANDS_GENERATOR_ERROR cmdError;
@@ -1226,15 +1234,15 @@ static void attitudeChangedCallback(float roll, float pitch, float yaw, void *cu
     
     if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
     {
-        sentStatus = NO;
+        failed = YES;
     }
     
-    return sentStatus;
+    return failed;
 }
 
 - (BOOL) sendTime:(NSDate *)currentDate
 {
-    BOOL sentStatus = YES;
+    BOOL failed = NO;
     u_int8_t cmdBuffer[128];
     int32_t cmdSize = 0;
     eARCOMMANDS_GENERATOR_ERROR cmdError;
@@ -1255,10 +1263,174 @@ static void attitudeChangedCallback(float roll, float pitch, float yaw, void *cu
     
     if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
     {
-        sentStatus = NO;
+        failed = YES;
     }
     
-    return sentStatus;
+    return failed;
+}
+
+- (BOOL) sendBeginStream
+{
+    BOOL failed = NO;
+    u_int8_t cmdBuffer[128];
+    int32_t cmdSize = 0;
+    eARCOMMANDS_GENERATOR_ERROR cmdError;
+    eARNETWORK_ERROR netError = ARNETWORK_ERROR;
+    
+    ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- Send Streaming Begin");
+    
+    // Send Streaming begin command
+    cmdError = ARCOMMANDS_Generator_GenerateARDrone3MediaStreamingVideoEnable(cmdBuffer, sizeof(cmdBuffer), &cmdSize, 1);
+    if (cmdError == ARCOMMANDS_GENERATOR_OK)
+    {
+        netError = ARNETWORK_Manager_SendData(_netManager, BD_NET_C2D_ACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
+    }
+    
+    if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
+    {
+        ARSAL_PRINT(ARSAL_PRINT_WARNING, TAG, "Failed to send Streaming command. cmdError:%d netError:%s", cmdError, ARNETWORK_Error_ToString(netError));
+        failed = YES;
+    }
+    
+    return failed;
+}
+
+- (BOOL) setOutdoorMode
+{
+    BOOL failed = NO;
+    u_int8_t cmdBuffer[128];
+    int32_t cmdSize = 0;
+    eARCOMMANDS_GENERATOR_ERROR cmdError;
+    eARNETWORK_ERROR netError = ARNETWORK_ERROR;
+    
+    // Send command
+    cmdError = ARCOMMANDS_Generator_GenerateARDrone3SpeedSettingsOutdoor(cmdBuffer, sizeof(cmdBuffer), &cmdSize, 1);
+    if (cmdError == ARCOMMANDS_GENERATOR_OK)
+    {
+        netError = ARNETWORK_Manager_SendData(_netManager, BD_NET_C2D_NONACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
+    }
+    
+    if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
+    {
+        failed = YES;
+    }
+    
+    return failed;
+}
+
+- (BOOL) setHullFreeMode
+{
+    BOOL failed = NO;
+    u_int8_t cmdBuffer[128];
+    int32_t cmdSize = 0;
+    eARCOMMANDS_GENERATOR_ERROR cmdError;
+    eARNETWORK_ERROR netError = ARNETWORK_ERROR;
+    
+    // Send command
+    cmdError = ARCOMMANDS_Generator_GenerateARDrone3SpeedSettingsHullProtection(cmdBuffer, sizeof(cmdBuffer), &cmdSize, 0);
+    if (cmdError == ARCOMMANDS_GENERATOR_OK)
+    {
+        netError = ARNETWORK_Manager_SendData(_netManager, BD_NET_C2D_NONACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
+    }
+    
+    if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
+    {
+        failed = YES;
+    }
+    
+    return failed;
+}
+
+- (BOOL) resetHome
+{
+    BOOL failed = NO;
+    u_int8_t cmdBuffer[128];
+    int32_t cmdSize = 0;
+    eARCOMMANDS_GENERATOR_ERROR cmdError;
+    eARNETWORK_ERROR netError = ARNETWORK_ERROR;
+    
+    // Send command
+    cmdError = ARCOMMANDS_Generator_GenerateARDrone3GPSSettingsResetHome(cmdBuffer, sizeof(cmdBuffer), &cmdSize);
+    if (cmdError == ARCOMMANDS_GENERATOR_OK)
+    {
+        netError = ARNETWORK_Manager_SendData(_netManager, BD_NET_C2D_NONACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
+    }
+    
+    if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
+    {
+        failed = YES;
+    }
+    
+    return failed;
+}
+
+- (BOOL) setTimelapseMode
+{
+    BOOL failed = NO;
+    u_int8_t cmdBuffer[128];
+    int32_t cmdSize = 0;
+    eARCOMMANDS_GENERATOR_ERROR cmdError;
+    eARNETWORK_ERROR netError = ARNETWORK_ERROR;
+    
+    // Send command
+    cmdError = ARCOMMANDS_Generator_GenerateARDrone3PictureSettingsTimelapseSelection(cmdBuffer, sizeof(cmdBuffer), &cmdSize, 1, 5);
+    if (cmdError == ARCOMMANDS_GENERATOR_OK)
+    {
+        netError = ARNETWORK_Manager_SendData(_netManager, BD_NET_C2D_NONACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
+    }
+    
+    if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
+    {
+        failed = YES;
+    }
+    
+    return failed;
+}
+
+- (BOOL) disableAutorecord
+{
+    BOOL failed = NO;
+    u_int8_t cmdBuffer[128];
+    int32_t cmdSize = 0;
+    eARCOMMANDS_GENERATOR_ERROR cmdError;
+    eARNETWORK_ERROR netError = ARNETWORK_ERROR;
+    
+    // Send command
+    cmdError = ARCOMMANDS_Generator_GenerateARDrone3PictureSettingsVideoAutorecordSelection(cmdBuffer, sizeof(cmdBuffer), &cmdSize, 0, 0);
+    if (cmdError == ARCOMMANDS_GENERATOR_OK)
+    {
+        netError = ARNETWORK_Manager_SendData(_netManager, BD_NET_C2D_NONACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
+    }
+    
+    if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
+    {
+        failed = YES;
+    }
+    
+    return failed;
+}
+
+- (BOOL) takePicture
+{
+    BOOL failed = NO;
+    u_int8_t cmdBuffer[128];
+    int32_t cmdSize = 0;
+    eARCOMMANDS_GENERATOR_ERROR cmdError;
+    eARNETWORK_ERROR netError = ARNETWORK_ERROR;
+    
+    // Send command
+    cmdError = ARCOMMANDS_Generator_GenerateARDrone3MediaRecordPicture(cmdBuffer, sizeof(cmdBuffer), &cmdSize, 0);
+    if (cmdError == ARCOMMANDS_GENERATOR_OK)
+    {
+        netError = ARNETWORK_Manager_SendData(_netManager, BD_NET_C2D_NONACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
+    }
+    
+    if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
+    {
+        failed = YES;
+    }
+    
+    return failed;
 }
 
 - (BOOL) sendEmergency
@@ -1373,6 +1545,91 @@ static void attitudeChangedCallback(float roll, float pitch, float yaw, void *cu
 {
     _service = nil;
     dispatch_semaphore_signal(_resolveSemaphore);
+}
+
+
+#pragma mark Media Methods
+
+- (void)getAllMediaAsync
+{
+    NSString *productIP = @"192.168.42.1";
+    
+    eARDATATRANSFER_ERROR result = ARDATATRANSFER_OK;
+    _dataTransferManager = ARDATATRANSFER_Manager_New(&result);
+    int mediaListCount = 0;
+    
+    if (result == ARDATATRANSFER_OK)
+    {
+        eARUTILS_ERROR ftpError = ARUTILS_OK;
+        _ftpListManager = ARUTILS_Manager_New(&ftpError);
+        if(ftpError == ARUTILS_OK)
+        {
+            _ftpQueueManager = ARUTILS_Manager_New(&ftpError);
+        }
+        
+        if(ftpError == ARUTILS_OK)
+        {
+            ftpError = ARUTILS_Manager_InitWifiFtp(_ftpListManager, [productIP UTF8String], 21, ARUTILS_FTP_ANONYMOUS, "");
+        }
+        
+        if(ftpError == ARUTILS_OK)
+        {
+            ftpError = ARUTILS_Manager_InitWifiFtp(_ftpQueueManager, [productIP UTF8String], 21, ARUTILS_FTP_ANONYMOUS, "");
+        }
+        
+        if(ftpError != ARUTILS_OK)
+        {
+            result = ARDATATRANSFER_ERROR_FTP;
+        }
+    }
+    // NO ELSE
+    
+    if (result == ARDATATRANSFER_OK)
+    {
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *path = [paths lastObject];
+        
+        result = ARDATATRANSFER_MediasDownloader_New(_dataTransferManager, _ftpListManager, _ftpQueueManager, "internal_000", [path UTF8String]);
+    }
+    
+    if (result == ARDATATRANSFER_OK)
+    {
+        mediaListCount = ARDATATRANSFER_MediasDownloader_GetAvailableMediasSync(_dataTransferManager,0,&result);
+        if (result == ARDATATRANSFER_OK)
+        {
+            for (int i = 0 ; i < 1 && result == ARDATATRANSFER_OK; i++)
+            {
+                ARDATATRANSFER_Media_t * mediaObject_t = ARDATATRANSFER_MediasDownloader_GetAvailableMediaAtIndex(_dataTransferManager, i, &result);
+                if (result == ARDATATRANSFER_OK)
+                {
+                    result = ARDATATRANSFER_MediasDownloader_AddMediaToQueue(_dataTransferManager, mediaObject_t, medias_downloader_progress_callback, (__bridge void *)(self), medias_downloader_completion_callback,(__bridge void*)self);
+                }
+            }
+        }
+    }
+    
+    if (result == ARDATATRANSFER_OK)
+    {
+        if (mediaListCount == 0)
+        {
+            NSLog(@"No medias");
+        }
+        else
+        {
+            ARDATATRANSFER_MediasDownloader_QueueThreadRun(_dataTransferManager);
+        }
+        
+    }
+}
+
+void medias_downloader_progress_callback(void* arg, ARDATATRANSFER_Media_t *media, float percent)
+{
+    NSLog(@"Media %s : %f", media->name, percent);
+}
+
+void medias_downloader_completion_callback(void* arg, ARDATATRANSFER_Media_t *media, eARDATATRANSFER_ERROR error)
+{
+    NSLog(@"Media %s completed : %i", media->name, error);
 }
 
 @end

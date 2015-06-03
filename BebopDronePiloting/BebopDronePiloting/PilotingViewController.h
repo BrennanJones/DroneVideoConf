@@ -115,4 +115,6 @@
 
 - (IBAction)resetHomeClick:(id)sender;
 
+- (IBAction)takePhotoClick:(id)sender;
+
 @end

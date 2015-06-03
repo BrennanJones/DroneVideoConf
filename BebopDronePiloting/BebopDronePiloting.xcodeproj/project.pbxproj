@@ -21,6 +21,9 @@
 		E96226BE1B18DAE600BF584B /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = E96226B21B18DAE600BF584B /* LICENSE */; };
 		E96226C01B18DAE600BF584B /* matrix.c in Sources */ = {isa = PBXBuildFile; fileRef = E96226B41B18DAE600BF584B /* matrix.c */; };
 		E96226C21B18DAE600BF584B /* README in Resources */ = {isa = PBXBuildFile; fileRef = E96226B71B18DAE600BF584B /* README */; };
+		E96226C71B1FB21D00BF584B /* libARDataTransfer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E96226C61B1FB21D00BF584B /* libARDataTransfer.framework */; };
+		E96226D51B1FBDDC00BF584B /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E96226D41B1FBDDC00BF584B /* libz.dylib */; };
+		E96226D71B1FBE3E00BF584B /* libcurl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E96226D61B1FBE3E00BF584B /* libcurl.framework */; };
 		E9A397411B0F923100E9A0F9 /* SocketAckMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A397361B0F923100E9A0F9 /* SocketAckMap.swift */; };
 		E9A397421B0F923100E9A0F9 /* SocketAnyEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A397371B0F923100E9A0F9 /* SocketAnyEvent.swift */; };
 		E9A397431B0F923100E9A0F9 /* SocketEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A397381B0F923100E9A0F9 /* SocketEngine.swift */; };
@@ -71,6 +74,9 @@
 		E96226B41B18DAE600BF584B /* matrix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = matrix.c; sourceTree = "<group>"; };
 		E96226B51B18DAE600BF584B /* matrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = matrix.h; sourceTree = "<group>"; };
 		E96226B71B18DAE600BF584B /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		E96226C61B1FB21D00BF584B /* libARDataTransfer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libARDataTransfer.framework; sourceTree = "<group>"; };
+		E96226D41B1FBDDC00BF584B /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		E96226D61B1FBE3E00BF584B /* libcurl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libcurl.framework; sourceTree = "<group>"; };
 		E9A397361B0F923100E9A0F9 /* SocketAckMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketAckMap.swift; sourceTree = "<group>"; };
 		E9A397371B0F923100E9A0F9 /* SocketAnyEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketAnyEvent.swift; sourceTree = "<group>"; };
 		E9A397381B0F923100E9A0F9 /* SocketEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketEngine.swift; sourceTree = "<group>"; };
@@ -109,11 +115,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E96226D51B1FBDDC00BF584B /* libz.dylib in Frameworks */,
 				E9A397541B0F942300E9A0F9 /* libARCommands.framework in Frameworks */,
 				963AF21E1B0D3B3A0018B4FE /* CoreLocation.framework in Frameworks */,
 				E9A397561B0F942300E9A0F9 /* libARNetwork.framework in Frameworks */,
+				E96226C71B1FB21D00BF584B /* libARDataTransfer.framework in Frameworks */,
 				E9A397551B0F942300E9A0F9 /* libARDiscovery.framework in Frameworks */,
 				96245C061AD3741500A3C03B /* VideoToolbox.framework in Frameworks */,
+				E96226D71B1FBE3E00BF584B /* libcurl.framework in Frameworks */,
 				E9A397571B0F942300E9A0F9 /* libARNetworkAL.framework in Frameworks */,
 				E9A397581B0F942300E9A0F9 /* libARStream.framework in Frameworks */,
 				96DD80201ABC8A5D00646F7D /* CFNetwork.framework in Frameworks */,
@@ -151,6 +160,9 @@
 		1D9DF26B1A6D62CB000941ED /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E96226D41B1FBDDC00BF584B /* libz.dylib */,
+				E96226D61B1FBE3E00BF584B /* libcurl.framework */,
+				E96226C61B1FB21D00BF584B /* libARDataTransfer.framework */,
 				E9A3974E1B0F942300E9A0F9 /* libARCommands.framework */,
 				E9A3974F1B0F942300E9A0F9 /* libARDiscovery.framework */,
 				E9A397501B0F942300E9A0F9 /* libARNetwork.framework */,
@@ -422,10 +434,10 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks",
-					/Users/d.bertrand/Documents/SDK/ARSDKBuildUtils/Targets/iOS/Install/Frameworks,
-					/Users/bdgjones/Projects/ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks,
 					"$(PROJECT_DIR)",
+					/Users/iLab/Projects/ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks,
+					/Users/bdgjones/Projects/ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks,
+					"./**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/BebopDronePiloting/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
@@ -446,10 +458,10 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks",
-					/Users/d.bertrand/Documents/SDK/ARSDKBuildUtils/Targets/iOS/Install/Frameworks,
-					/Users/bdgjones/Projects/ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks,
 					"$(PROJECT_DIR)",
+					/Users/iLab/Projects/ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks,
+					/Users/bdgjones/Projects/ARDroneSDK3/ARSDKBuildUtils/Targets/iOS/Install/Frameworks,
+					"./**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/BebopDronePiloting/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;

@@ -319,6 +319,18 @@
                                     <action selector="resetHomeClick:" destination="h7l-W5-mPq" eventType="touchUpInside" id="4id-g8-MrU"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Wdx-zS-HnI">
+                                <rect key="frame" x="217" y="480" width="87" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <state key="normal" title="Take photo">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="resetHomeClick:" destination="h7l-W5-mPq" eventType="touchUpInside" id="heO-fH-0Ml"/>
+                                    <action selector="takePhotoClick:" destination="h7l-W5-mPq" eventType="touchUpInside" id="t5m-Nj-rTw"/>
+                                </connections>
+                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Still" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="6Rj-Si-KDq">
                                 <rect key="frame" x="170" y="195" width="29" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
