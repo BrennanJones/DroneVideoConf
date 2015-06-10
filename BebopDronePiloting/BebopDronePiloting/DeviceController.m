@@ -919,16 +919,21 @@ void onDisconnectNetwork (ARNETWORK_Manager_t *manager, ARNETWORKAL_Manager_t *a
     ARCOMMANDS_Decoder_SetCommonCommonStateBatteryStateChangedCallback(batteryStateChangedCallback, (__bridge void *)self);
     ARCOMMANDS_Decoder_SetARDrone3PilotingStateFlyingStateChangedCallback(flyingStateChangedCallback, (__bridge void *)self);
     ARCOMMANDS_Decoder_SetARDrone3PilotingStatePositionChangedCallback(positionChangedCallback, (__bridge void *)self);
+    ARCOMMANDS_Decoder_SetARDrone3PilotingStateAltitudeChangedCallback(altitudeChangedCallback, (__bridge void *)self);
     ARCOMMANDS_Decoder_SetARDrone3PilotingStateAttitudeChangedCallback(attitudeChangedCallback, (__bridge void *)self);
+    ARCOMMANDS_Decoder_SetARDrone3PilotingStateSpeedChangedCallback(speedChangedCallback, (__bridge void *) self);
 }
 
 -(void) unregisterARCommandsCallbacks
 {
     ARCOMMANDS_Decoder_SetCommonCommonStateAllStatesChangedCallback(NULL, NULL);
     ARCOMMANDS_Decoder_SetCommonSettingsStateAllSettingsChangedCallback(NULL, NULL);
-    ARCOMMANDS_Decoder_SetCommonCommonStateBatteryStateChangedCallback (NULL, NULL);
+    ARCOMMANDS_Decoder_SetCommonCommonStateBatteryStateChangedCallback(NULL, NULL);
     ARCOMMANDS_Decoder_SetARDrone3PilotingStateFlyingStateChangedCallback(NULL, NULL);
-    //ARCOMMANDS_Decoder_SetARDrone3PilotingStatePositionChangedCallback(NULL, NULL);
+    ARCOMMANDS_Decoder_SetARDrone3PilotingStatePositionChangedCallback(NULL, NULL);
+    ARCOMMANDS_Decoder_SetARDrone3PilotingStateAltitudeChangedCallback(NULL, NULL);
+    ARCOMMANDS_Decoder_SetARDrone3PilotingStateAttitudeChangedCallback(NULL, NULL);
+    ARCOMMANDS_Decoder_SetARDrone3PilotingStateSpeedChangedCallback(NULL, NULL);
 }
 
 void allStatesCallback (void *custom)
@@ -996,11 +1001,25 @@ static void positionChangedCallback(double latitude, double longitude, double al
     [deviceController.delegate onDronePositionChanged:deviceController latitude:latitude longitude:longitude altitude:altitude];
 }
 
+static void altitudeChangedCallback(double altitude, void *custom)
+{
+    DeviceController *deviceController = (__bridge DeviceController*)custom;
+    
+    [deviceController.delegate onAltitudeChanged:deviceController altitude:altitude];
+}
+
 static void attitudeChangedCallback(float roll, float pitch, float yaw, void *custom)
 {
     DeviceController *deviceController = (__bridge DeviceController*)custom;
     
     [deviceController.delegate onAttitudeChanged:deviceController roll:roll pitch:pitch yaw:yaw];
+}
+
+static void speedChangedCallback(float speedX, float speedY, float speedZ, void *custom)
+{
+    DeviceController *deviceController = (__bridge DeviceController*)custom;
+    
+    [deviceController.delegate onSpeedChanged:deviceController speedX:speedX speedY:speedY speedZ:speedZ];
 }
 
 
@@ -1410,7 +1429,7 @@ static void attitudeChangedCallback(float roll, float pitch, float yaw, void *cu
     return failed;
 }
 
-- (BOOL) takePicture
+- (BOOL) takePhoto
 {
     BOOL failed = NO;
     u_int8_t cmdBuffer[128];
@@ -1629,7 +1648,7 @@ void medias_downloader_progress_callback(void* arg, ARDATATRANSFER_Media_t *medi
 
 void medias_downloader_completion_callback(void* arg, ARDATATRANSFER_Media_t *media, eARDATATRANSFER_ERROR error)
 {
-    NSLog(@"Media %s completed : %i", media->name, error);
+    NSLog(@"Media %s completed, located in %s : %i", media->name, media->filePath, error);
 }
 
 @end

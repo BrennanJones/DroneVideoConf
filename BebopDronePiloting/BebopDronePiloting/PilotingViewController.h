@@ -61,9 +61,6 @@
 @property (strong, nonatomic) IBOutlet UIButton *serverConnectionButton;
 @property (strong, nonatomic) IBOutlet UILabel *serverConnectionStatusLabel;
 @property (strong, nonatomic) IBOutlet DroneVideoView *droneVideoView;
-@property (strong, nonatomic) IBOutlet UILabel *commandLabel;
-@property (strong, nonatomic) IBOutlet UILabel *incomingCommandLabel;
-@property (strong, nonatomic) IBOutlet UIButton *endCommandButton;
 
 @property (weak, nonatomic) IBOutlet UILabel *latPhoneLabel;
 @property (weak, nonatomic) IBOutlet UILabel *lonPhoneLabel;
@@ -73,14 +70,18 @@
 @property (weak, nonatomic) IBOutlet UILabel *requiredBearingDroneLabel;
 @property (weak, nonatomic) IBOutlet UILabel *droneYawDirectionLabel;
 @property (weak, nonatomic) IBOutlet UILabel *droneToPhoneDistanceLabel;
+@property (weak, nonatomic) IBOutlet UILabel *droneCurrentSpeedLabel;
+@property (weak, nonatomic) IBOutlet UILabel *droneXSpeedLabel;
+@property (weak, nonatomic) IBOutlet UILabel *droneYSpeedLabel;
+@property (weak, nonatomic) IBOutlet UILabel *droneZSpeedLabel;
+@property (weak, nonatomic) IBOutlet UILabel *droneDirectionOfVelocityLabel;
+@property (weak, nonatomic) IBOutlet UILabel *altDroneLabel;
 
 - (IBAction)connectToServerClick:(id)sender;
 
 - (IBAction)emergencyClick:(id)sender;
 - (IBAction)takeoffClick:(id)sender;
 - (IBAction)landingClick:(id)sender;
-
-- (IBAction)endCommandClick:(id)sender;
 
 - (IBAction)gazUpTouchDown:(id)sender;
 - (IBAction)gazDownTouchDown:(id)sender;

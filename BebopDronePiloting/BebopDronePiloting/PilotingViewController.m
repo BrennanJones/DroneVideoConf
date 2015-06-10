@@ -53,7 +53,7 @@
 KalmanFilter droneKalmanFilter;
 KalmanFilter phoneKalmanFilter;
 
-static const int DRONE_CONTROL_LOOP_IN_MS = 25;  // control loop interval
+static const int DRONE_CONTROL_LOOP_IN_MS = 25000;  // control loop interval
 BOOL droneControlLoopRunning;
 
 double latPhone;
@@ -81,6 +81,12 @@ double compassDisplacement = 0;
 double requiredBearingDrone;
 
 double distanceApart;   // the calculated distance between the drone and the phone
+
+double droneSpeed = 0;
+double droneSpeedX = 0;
+double droneSpeedY = 0;
+double droneSpeedZ = 0;
+double droneVelocityDirectionAlongXY = 0;
 
 BOOL posPhoneSet = false;
 BOOL posDroneSet = false;
@@ -261,7 +267,7 @@ BOOL droneAtProperDistance = false;
     {
         latDrone = latitude;
         lonDrone = longitude;
-        altDrone = altitude;
+        //altDrone = altitude;
         
         posDroneSet = true;
         
@@ -277,9 +283,16 @@ BOOL droneAtProperDistance = false;
     }
 }
 
+- (void)onAltitudeChanged:(DeviceController *)deviceController altitude:(double)altitude;
+{
+    NSLog(@"onAltitudeChanged");
+    
+    altDrone = altitude;
+}
+
 - (void)onAttitudeChanged:(DeviceController *)deviceController roll:(float)roll pitch:(float)pitch yaw:(float)yaw;
 {
-    NSLog(@"onUpdatePosition");
+    NSLog(@"onAttitudeChanged");
     
     yawDrone = yaw;
     bearingDrone = yawDrone - compassDisplacement;
@@ -297,6 +310,19 @@ BOOL droneAtProperDistance = false;
 //    });
     
     //[self droneUpdateMovements];
+}
+
+- (void)onSpeedChanged:(DeviceController *)deviceController speedX:(float)speedX speedY:(float)speedY speedZ:(float)speedZ;
+{
+    NSLog(@"onSpeedChanged");
+    
+    droneSpeedX = speedX;
+    droneSpeedY = speedY;
+    droneSpeedZ = speedZ;
+    
+    droneSpeed = sqrtf(speedX*speedX + speedY*speedY + speedZ*speedZ);
+    
+    droneVelocityDirectionAlongXY = atan2(speedY, speedX);
 }
 
 - (void)onFrameComplete:(DeviceController *)deviceController frame:(uint8_t *)frame frameSize:(uint32_t)frameSize;
@@ -455,10 +481,20 @@ BOOL droneAtProperDistance = false;
     NSDate *droneKalmanFilter_lastUpdate = [NSDate date];
     NSDate *phoneKalmanFilter_lastUpdate = [NSDate date];
     
-    NSDate *lastCompassDisplacementRecalculation = [NSDate date];
+    //NSDate *lastCompassDisplacementRecalculation = [NSDate date];
+    
+    NSDate *lastLabelsUpdate = [NSDate date];
     
     while (droneControlLoopRunning)
     {
+        if ([[NSDate date] timeIntervalSinceDate:lastLabelsUpdate] >= 0.5)
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSString *speedText = [[NSString alloc] initWithFormat:@"%f", droneSpeed];
+                [_droneCurrentSpeedLabel setText:speedText];
+            });
+        }
+        
         if (posDroneSet)
         {
             update_velocity2d(droneKalmanFilter, latDrone, lonDrone, [[NSDate date] timeIntervalSinceDate:droneKalmanFilter_lastUpdate]);
@@ -466,13 +502,18 @@ BOOL droneAtProperDistance = false;
             
             get_lat_long(droneKalmanFilter, &latDroneEst, &lonDroneEst);
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSString *latText = [[NSString alloc] initWithFormat:@"%f", latDroneEst];
-                NSString *longText = [[NSString alloc] initWithFormat:@"%f", lonDroneEst];
-                
-                [_latDroneLabel setText:latText];
-                [_lonDroneLabel setText:longText];
-            });
+            if ([[NSDate date] timeIntervalSinceDate:lastLabelsUpdate] >= 0.5)
+            {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    NSString *latText = [[NSString alloc] initWithFormat:@"%f", latDroneEst];
+                    NSString *longText = [[NSString alloc] initWithFormat:@"%f", lonDroneEst];
+                    NSString *altText = [[NSString alloc] initWithFormat:@"%f", altDrone];
+                    
+                    [_latDroneLabel setText:latText];
+                    [_lonDroneLabel setText:longText];
+                    [_altDroneLabel setText:altText];
+                });
+            }
         }
         
         if (posPhoneSet)
@@ -482,13 +523,16 @@ BOOL droneAtProperDistance = false;
             
             get_lat_long(phoneKalmanFilter, &latPhoneEst, &lonPhoneEst);
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSString *latText = [[NSString alloc] initWithFormat:@"%f", latPhoneEst];
-                NSString *longText = [[NSString alloc] initWithFormat:@"%f", lonPhoneEst];
-                
-                [_latPhoneLabel setText:latText];
-                [_lonPhoneLabel setText:longText];
-            });
+            if ([[NSDate date] timeIntervalSinceDate:lastLabelsUpdate] >= 0.5)
+            {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    NSString *latText = [[NSString alloc] initWithFormat:@"%f", latPhoneEst];
+                    NSString *longText = [[NSString alloc] initWithFormat:@"%f", lonPhoneEst];
+                    
+                    [_latPhoneLabel setText:latText];
+                    [_lonPhoneLabel setText:longText];
+                });
+            }
         }
         
         if (posDroneSet && posPhoneSet)
@@ -498,22 +542,53 @@ BOOL droneAtProperDistance = false;
             
             if (bearingDroneSet)
             {
-                if ([[NSDate date] timeIntervalSinceDate:lastCompassDisplacementRecalculation] >= 2.0)
-                {
+//                if ([[NSDate date] timeIntervalSinceDate:lastCompassDisplacementRecalculation] >= 2.0)
+//                {
 //                    if ([self droneRecalculateCompassDisplacement])
 //                    {
 //                        lastCompassDisplacementRecalculation = [NSDate date];
 //                    }
+//                }
+                
+                if ([[NSDate date] timeIntervalSinceDate:lastLabelsUpdate] >= 0.5)
+                {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        NSString *bearingText = [[NSString alloc] initWithFormat:@"%f", bearingDrone];
+                        [_bearingDroneLabel setText:bearingText];
+                    });
                 }
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    NSString *bearingText = [[NSString alloc] initWithFormat:@"%f", bearingDrone];
-                    [_bearingDroneLabel setText:bearingText];
-                });
-                
-                [self droneAdjustBearing];
-                [self droneFollowTarget];
+                if (altDrone >= 4.0 && altDrone <= 6.0)
+                {
+                    [self droneAdjustBearing];
+                    [self droneFollowTarget];
+                }
+                else
+                {
+                    [_deviceController setYaw:0];
+                    
+                    [_deviceController setFlag:0];
+                    [_deviceController setPitch:0];
+                }
             }
+        }
+        
+        if (altDrone < 4.0)
+        {
+            [_deviceController setGaz:50];
+        }
+        else if (altDrone > 6.0)
+        {
+            [_deviceController setGaz:-50];
+        }
+        else
+        {
+            [_deviceController setGaz:0];
+        }
+        
+        if ([[NSDate date] timeIntervalSinceDate:lastLabelsUpdate] >= 0.5)
+        {
+            lastLabelsUpdate = [NSDate date];
         }
         
         usleep(DRONE_CONTROL_LOOP_IN_MS);
@@ -543,7 +618,7 @@ BOOL droneAtProperDistance = false;
     
     double angle = requiredBearingDrone - bearingDrone;
     
-    if (droneProperlyOriented && fabs(angle) > 0.15)
+    if (droneProperlyOriented && fabs(angle) > 0.2)
     {
         droneProperlyOriented = false;
     }
@@ -554,7 +629,7 @@ BOOL droneAtProperDistance = false;
         {
             if ((angle >= 0 && angle < M_PI) || angle < -1*M_PI)
             {
-                [_deviceController setYaw:15];
+                [_deviceController setYaw:35];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [_droneYawDirectionLabel setText:@"Right"];
@@ -562,7 +637,7 @@ BOOL droneAtProperDistance = false;
             }
             else if ((angle < 0 && angle >= -1*M_PI) || angle >= M_PI)
             {
-                [_deviceController setYaw:-15];
+                [_deviceController setYaw:-35];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [_droneYawDirectionLabel setText:@"Left"];
@@ -604,38 +679,24 @@ BOOL droneAtProperDistance = false;
     });
     
     
-    if (droneProperlyOriented)
+    // If the distance is greater than the outer bound, move forward.
+    if (distanceApart > 12.0 && droneProperlyOriented)
     {
-        //
-        // The drone's current bearing and the bearing required for the drone to be pointed at the target are close enough
-        //  that the drone can start moving toward the target.
-        //
+        double pitch = 7.0 * (distanceApart - 12.0);
         
-        
-        // If the distance is greater than the outer bound, move forward.
-        if (distanceApart > 20.0)
-        {
-            double pitch = 0.75 * (distanceApart - 20.0);
-            
-            [_deviceController setFlag:1];
-            [_deviceController setPitch:pitch];
-        }
-        
-        // If the distance is less than the inner bound, move backward.
-        // TEST CODE HERE FOR NOW. MODIFY LATER.
-//        else if (distanceApart < 15.0)
-//        {
-//            [_deviceController setFlag:1];
-//            [_deviceController setPitch:-10];
-//        }
-        
-        // Otherwise, stay still.
-        else
-        {
-            [_deviceController setFlag:0];
-            [_deviceController setPitch:0];
-        }
+        [_deviceController setFlag:1];
+        [_deviceController setPitch:pitch];
     }
+    
+    // If the distance is less than the inner bound, move backward.
+    // TEST CODE HERE FOR NOW. MODIFY LATER.
+    //        else if (distanceApart < 8.0)
+    //        {
+    //            [_deviceController setFlag:1];
+    //            [_deviceController setPitch:-10];
+    //        }
+    
+    // Otherwise, stay still.
     else
     {
         [_deviceController setFlag:0];
@@ -645,10 +706,8 @@ BOOL droneAtProperDistance = false;
 
 - (BOOL)droneRecalculateCompassDisplacement
 {
-    if (mphDroneEst >= 16.0)
+    if (droneSpeed > 0.5)
     {
-        NSLog(@"HERE!!!!!!!!!!!!!!!!!!!");
-        
         double bearingDroneEstRad = degreesToRadians(bearingDroneEst);
         if (bearingDroneEstRad > M_PI)
         {
@@ -694,6 +753,7 @@ BOOL droneAtProperDistance = false;
 
 - (IBAction)takeoffClick:(id)sender
 {
+    [_deviceController resetHome];
     [_deviceController sendTakeoff];
 }
 
@@ -809,14 +869,6 @@ BOOL droneAtProperDistance = false;
     [_deviceController setCamPan:10];
 }
 
-- (IBAction)endCommandClick:(id)sender
-{
-    [_socket emitObjc:@"EndCommand" withItems:[[NSArray alloc] init]];
-    
-    [_endCommandButton setAlpha:0.0];
-    _commandLabel.text = @"";
-}
-
 - (IBAction)resetNorthClick:(id)sender
 {
     compassDisplacement = yawDrone;
@@ -829,8 +881,10 @@ BOOL droneAtProperDistance = false;
 
 - (IBAction)takePhotoClick:(id)sender
 {
-    //[_deviceController takePicture];
-    [_deviceController getAllMediaAsync];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [_deviceController takePhoto];
+        [_deviceController getAllMediaAsync];
+    });
 }
 
 @end

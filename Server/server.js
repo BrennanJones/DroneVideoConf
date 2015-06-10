@@ -93,4 +93,10 @@ io.sockets.on('connection', function(socket)
 		console.log('Command ended.');
 		socket.broadcast.emit('EndCommand', data);
 	});
+
+	socket.on('DronePhoto', function(data))
+	{
+		console.log('DronePhoto ' + data);
+		socket.broadcast.emit('DronePhoto', data);
+	}
 });

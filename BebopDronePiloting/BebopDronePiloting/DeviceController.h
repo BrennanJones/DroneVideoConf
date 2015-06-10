@@ -68,7 +68,9 @@ typedef struct
 - (void)onUpdateBattery:(DeviceController *)deviceController batteryLevel:(uint8_t)percent;
 - (void)onFlyingStateChanged:(DeviceController *)deviceController flyingState:(eARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE)state;
 - (void)onDronePositionChanged:(DeviceController *)deviceController latitude:(double)latitude longitude:(double)longitude altitude:(double)altitude;
+- (void)onAltitudeChanged:(DeviceController *)deviceController altitude:(double)altitude;
 - (void)onAttitudeChanged:(DeviceController *)deviceController roll:(float)roll pitch:(float)pitch yaw:(float)yaw;
+- (void)onSpeedChanged:(DeviceController *)deviceController speedX:(float)speedX speedY:(float)speedY speedZ:(float)speedZ;
 - (void)onFrameComplete:(DeviceController *)deviceController frame:(uint8_t *)frame frameSize:(uint32_t)frameSize;
 @end
 
@@ -92,13 +94,14 @@ typedef struct
 - (void) setCamPan:(int8_t)pan;
 - (void) setCamTilt:(int8_t)tilt;
 
+- (BOOL) resetHome;
 - (BOOL) setHomeWithLatitude:(double)latitude withLongitude:(double)longitude withAltitude:(double)altitude;
 
 - (BOOL) sendEmergency;
 - (BOOL) sendTakeoff;
 - (BOOL) sendLanding;
 
-- (BOOL) takePicture;
+- (BOOL) takePhoto;
 
 - (void)getAllMediaAsync;
 
