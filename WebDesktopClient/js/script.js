@@ -81,6 +81,7 @@ jQuery(function()
 	var div = jQuery('#videoFrameContainer');
 	var canvas = document.createElement('canvas');
 	canvas.style.background = 'black';
+	//var size = new Size(960, 552);
 	var size = new Size(640, 368);
 	var webGLCanvas = new YUVWebGLCanvas(canvas, size);
 	div.append(canvas);
@@ -96,12 +97,15 @@ jQuery(function()
 	{
 		console.log("onPictureDecoded: W: " + width + " H: " + height);
 		
+		
 		// Paint decoded buffer.
+
 		if (!buffer)
 		{
             return;
         }
         var lumaSize = width * height;
+        //var lumaSize = 960 * 552;
         var chromaSize = lumaSize >> 2;
 
         webGLCanvas.YTexture.fill(buffer.subarray(0, lumaSize));

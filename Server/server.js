@@ -94,9 +94,9 @@ io.sockets.on('connection', function(socket)
 		socket.broadcast.emit('EndCommand', data);
 	});
 
-	socket.on('DronePhoto', function(data))
+	socket.on('DronePhoto', function(data)
 	{
 		console.log('DronePhoto ' + data);
 		socket.broadcast.emit('DronePhoto', data);
-	}
+	});
 });
