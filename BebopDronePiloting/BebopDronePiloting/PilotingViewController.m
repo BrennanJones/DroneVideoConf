@@ -45,6 +45,7 @@
 #import "DeviceController.h"
 
 #import "gps.h"
+#import "SocketIOWrapper.h"
 #import "Utility.h"
 
 
@@ -334,7 +335,7 @@ BOOL droneAtProperDistance = false;
     {
         NSData *data = [[NSData alloc] initWithBytes:frame length:frameSize];
         NSArray *args = [[NSArray alloc] initWithObjects:data, nil];
-        [_socket emitObjc:@"DroneVideoFrame" withItems:args];
+        [SocketIOWrapper emit:_socket withEvent:@"DroneVideoFrame" withItems:args];
     }
     
     [_droneVideoView updateVideoViewWithFrame:frame frameSize:frameSize];
@@ -404,7 +405,7 @@ BOOL droneAtProperDistance = false;
     [_socket on:@"connect" callback:^(NSArray* data, void (^ack)(NSArray*)) {
         NSLog(@"socket connected");
         
-        [_socket emitObjc:@"MobileClientConnected" withItems:[[NSArray alloc] init]];
+        [SocketIOWrapper emit:_socket withEvent:@"MobileClientConnected" withItems:[[NSArray alloc] init]];
         
         self.serverConnectionStatusLabel.text = @"Connected to server.";
         [self.serverConnectionButton setTitle:@"Disconnect" forState:UIControlStateNormal];
@@ -738,7 +739,7 @@ BOOL droneAtProperDistance = false;
         NSData *photo = [NSData dataWithContentsOfFile:filePathString];
         
         NSArray *args = [[NSArray alloc] initWithObjects:photo, nil];
-        [_socket emitObjc:@"DronePhoto" withItems:args];
+        [SocketIOWrapper emit:_socket withEvent:@"DronePhoto" withItems:args];
     }
 }
 
