@@ -148,6 +148,9 @@ static int COMMAND_BUFFER_IDS[] = {
 };
 static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / sizeof(int);
 
+static const int SEQUENTIAL_PHOTO_LOOP_IN_MS = 5000000;   // sequential photo loop interval
+BOOL sequentialPhotoLoopRunning;
+
 
 @interface DeviceController ()
 
@@ -188,6 +191,8 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
 @property (nonatomic) int8_t cameraTilt;
 
 @property (nonatomic) BOOL cameraOrientationChangeNeeded;
+
+@property (nonatomic, strong) NSThread *sequentialPhotoLoopThread;
 
 @end
 
@@ -362,18 +367,18 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
     
     if (!failed)
     {
-        failed = [self resetHome];
+        failed = [self disableAutorecord];
     }
     
-//    if (!failed)
-//    {
-//        failed = [self setTimelapseMode];
-//    }
+    if (!failed)
+    {
+        failed = [self setPhotoMode];
+    }
     
-//    if (!failed)
-//    {
-//        failed = [self takePicture];
-//    }
+    if (!failed)
+    {
+        failed = [self resetHome];
+    }
     
     if (!failed)
     {
@@ -383,6 +388,13 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
     if (!failed)
     {
         failed = [self getInitialStates];
+    }
+    
+    if (!failed)
+    {
+        _sequentialPhotoLoopThread = [[NSThread alloc] initWithTarget:self selector:@selector(sequentialPhotoLoopRun) object:nil];
+        sequentialPhotoLoopRunning = true;
+        [_sequentialPhotoLoopThread start];
     }
     
     return failed;
@@ -521,6 +533,8 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
 - (void)stop
 {
     NSLog(@"stop ...");
+    
+    sequentialPhotoLoopRunning = false;
     
     _run = 0; // break threads loops
     
@@ -992,12 +1006,6 @@ void flyingStateChangedCallback (eARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATEC
 static void positionChangedCallback(double latitude, double longitude, double altitude, void *custom)
 {
     DeviceController *deviceController = (__bridge DeviceController*)custom;
-    //NSDictionary* dict = [NSDictionary dictionaryWithObjects:@[[NSNumber numberWithDouble:latitude], [NSNumber numberWithDouble:longitude], [NSNumber numberWithDouble:altitude]] forKeys:@[ARDrone3DeviceControllerPilotingStatePositionChangedNotificationLatitudeKey, ARDrone3DeviceControllerPilotingStatePositionChangedNotificationLongitudeKey, ARDrone3DeviceControllerPilotingStatePositionChangedNotificationAltitudeKey]];
-    //[deviceController.privateNotificationsDictionary setObject:dict forKey:ARDrone3DeviceControllerPilotingStatePositionChangedNotification];
-    //[[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerNotificationsDictionaryChanged object:deviceController userInfo:[NSDictionary dictionaryWithObject:dict forKey:ARDrone3DeviceControllerPilotingStatePositionChangedNotification]];
-    //[[NSNotificationCenter defaultCenter] postNotificationName:ARDrone3DeviceControllerPilotingStatePositionChangedNotification object:deviceController userInfo:dict];
-    
-    
     [deviceController.delegate onDronePositionChanged:deviceController latitude:latitude longitude:longitude altitude:altitude];
 }
 
@@ -1383,7 +1391,7 @@ static void speedChangedCallback(float speedX, float speedY, float speedZ, void 
     return failed;
 }
 
-- (BOOL) setTimelapseMode
+- (BOOL) setPhotoMode
 {
     BOOL failed = NO;
     u_int8_t cmdBuffer[128];
@@ -1392,7 +1400,7 @@ static void speedChangedCallback(float speedX, float speedY, float speedZ, void 
     eARNETWORK_ERROR netError = ARNETWORK_ERROR;
     
     // Send command
-    cmdError = ARCOMMANDS_Generator_GenerateARDrone3PictureSettingsTimelapseSelection(cmdBuffer, sizeof(cmdBuffer), &cmdSize, 1, 5);
+    cmdError = ARCOMMANDS_Generator_GenerateARDrone3PictureSettingsPictureFormatSelection(cmdBuffer, sizeof(cmdBuffer), &cmdSize, ARCOMMANDS_ARDRONE3_PICTURESETTINGS_PICTUREFORMATSELECTION_TYPE_JPEG_FISHEYE);
     if (cmdError == ARCOMMANDS_GENERATOR_OK)
     {
         netError = ARNETWORK_Manager_SendData(_netManager, BD_NET_C2D_NONACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
@@ -1567,9 +1575,26 @@ static void speedChangedCallback(float speedX, float speedY, float speedZ, void 
 }
 
 
+#pragma mark Sequential Photo Methods
+
+- (void)sequentialPhotoLoopRun
+{
+    while (sequentialPhotoLoopRunning)
+    {
+        NSLog(@"Sequential photo loop iteration");
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self takePhoto];
+            [self getLastMediaAsync];
+        });
+        usleep(SEQUENTIAL_PHOTO_LOOP_IN_MS);
+    }
+}
+
+
 #pragma mark Media Methods
 
-- (void)getAllMediaAsync
+- (void)getLastMediaAsync
 {
     NSString *productIP = @"192.168.42.1";
     
@@ -1637,7 +1662,6 @@ static void speedChangedCallback(float speedX, float speedY, float speedZ, void 
         {
             ARDATATRANSFER_MediasDownloader_QueueThreadRun(_dataTransferManager);
         }
-        
     }
 }
 
@@ -1646,9 +1670,15 @@ void medias_downloader_progress_callback(void* arg, ARDATATRANSFER_Media_t *medi
     NSLog(@"Media %s : %f", media->name, percent);
 }
 
-void medias_downloader_completion_callback(void* arg, ARDATATRANSFER_Media_t *media, eARDATATRANSFER_ERROR error)
+void medias_downloader_completion_callback(void* custom, ARDATATRANSFER_Media_t *media, eARDATATRANSFER_ERROR error)
 {
     NSLog(@"Media %s completed, located in %s : %i", media->name, media->filePath, error);
+    
+    if (!error)
+    {
+        DeviceController *deviceController = (__bridge DeviceController*)custom;
+        [deviceController.delegate onSequentialPhotoReady:deviceController filePath:media->filePath];
+    }
 }
 
 @end

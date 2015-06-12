@@ -72,6 +72,7 @@ typedef struct
 - (void)onAttitudeChanged:(DeviceController *)deviceController roll:(float)roll pitch:(float)pitch yaw:(float)yaw;
 - (void)onSpeedChanged:(DeviceController *)deviceController speedX:(float)speedX speedY:(float)speedY speedZ:(float)speedZ;
 - (void)onFrameComplete:(DeviceController *)deviceController frame:(uint8_t *)frame frameSize:(uint32_t)frameSize;
+- (void)onSequentialPhotoReady:(DeviceController *)deviceController filePath:(char *)filePath;
 @end
 
 
@@ -103,7 +104,7 @@ typedef struct
 
 - (BOOL) takePhoto;
 
-- (void)getAllMediaAsync;
+- (void)getLastMediaAsync;
 
 @end
 

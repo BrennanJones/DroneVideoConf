@@ -39,6 +39,7 @@
 
 
 #import <CoreLocation/CoreLocation.h>
+#import <libARDataTransfer/ARDataTransfer.h>
 
 #import "PilotingViewController.h"
 #import "DeviceController.h"
@@ -54,7 +55,7 @@ KalmanFilter droneKalmanFilter;
 KalmanFilter phoneKalmanFilter;
 
 static const int DRONE_CONTROL_LOOP_IN_MS = 25000;  // control loop interval
-BOOL droneControlLoopRunning;
+BOOL droneControlLoopRunning = false;
 
 double latPhone;
 double lonPhone;
@@ -725,6 +726,23 @@ BOOL droneAtProperDistance = false;
 }
 
 
+#pragma mark Drone Sequential Photo Methods
+
+- (void)onSequentialPhotoReady:(DeviceController *)deviceController filePath:(char *)filePath;
+{
+    NSLog(@"onSequentialPhotoReady");
+    
+    if (_socket.connected)
+    {
+        NSString *filePathString = [NSString stringWithUTF8String:filePath];
+        NSData *photo = [NSData dataWithContentsOfFile:filePathString];
+        
+        NSArray *args = [[NSArray alloc] initWithObjects:photo, nil];
+        [_socket emitObjc:@"DronePhoto" withItems:args];
+    }
+}
+
+
 #pragma mark UI Event Handler Methods
 
 - (IBAction)connectToServerClick:(id)sender
@@ -883,7 +901,7 @@ BOOL droneAtProperDistance = false;
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [_deviceController takePhoto];
-        [_deviceController getAllMediaAsync];
+        [_deviceController getLastMediaAsync];
     });
 }
 
