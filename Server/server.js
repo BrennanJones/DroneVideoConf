@@ -81,18 +81,6 @@ io.sockets.on('connection', function(socket)
 		console.log('Command: ' + data);
 		socket.broadcast.emit('Command', data);
 	});
-	
-	socket.on('CommandAcknowledged', function(data)
-	{
-		console.log('Command acknowledged: ' + data.command);
-		socket.broadcast.emit('CommandAcknowledged', data);
-	});
-	
-	socket.on('EndCommand', function(data)
-	{
-		console.log('Command ended.');
-		socket.broadcast.emit('EndCommand', data);
-	});
 
 	socket.on('DronePhoto', function(data)
 	{
