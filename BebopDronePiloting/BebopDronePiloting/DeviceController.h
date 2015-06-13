@@ -41,6 +41,7 @@
 #import <libARDiscovery/ARDiscovery.h>
 #import <libARDiscovery/ARDISCOVERY_BonjourDiscovery.h>
 #import <libARCommands/ARCommands.h>
+#import <libARDataTransfer/ARDataTransfer.h>
 #import <libARNetwork/ARNetwork.h>
 #import <libARNetworkAL/ARNetworkAL.h>
 
@@ -81,6 +82,8 @@ typedef struct
 @property (nonatomic, weak) id <DeviceControllerDelegate> delegate;
 /** Get the ARService instance associated with this controller. */
 @property (readonly, nonatomic, strong) ARService* service;
+
+@property (nonatomic) ARDATATRANSFER_Manager_t *dataTransferManager;
 
 - (id)initWithARService:(ARService*)service;
 - (BOOL)start;

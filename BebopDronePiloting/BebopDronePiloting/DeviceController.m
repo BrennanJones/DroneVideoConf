@@ -183,7 +183,6 @@ BOOL sequentialPhotoLoopRunning;
 
 @property (nonatomic) dispatch_semaphore_t resolveSemaphore;
 
-@property (nonatomic) ARDATATRANSFER_Manager_t *dataTransferManager;
 @property (nonatomic) ARUTILS_Manager_t *ftpListManager;
 @property (nonatomic) ARUTILS_Manager_t *ftpQueueManager;
 
@@ -1583,10 +1582,8 @@ static void speedChangedCallback(float speedX, float speedY, float speedZ, void 
     {
         NSLog(@"Sequential photo loop iteration");
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [self takePhoto];
-            [self getLastMediaAsync];
-        });
+        [self takePhoto];
+        [self getLastMediaAsync];
         usleep(SEQUENTIAL_PHOTO_LOOP_IN_MS);
     }
 }
@@ -1601,6 +1598,7 @@ static void speedChangedCallback(float speedX, float speedY, float speedZ, void 
     eARDATATRANSFER_ERROR result = ARDATATRANSFER_OK;
     _dataTransferManager = ARDATATRANSFER_Manager_New(&result);
     int mediaListCount = 0;
+    ARDATATRANSFER_Media_t * mediaObject_t;
     
     if (result == ARDATATRANSFER_OK)
     {
@@ -1638,16 +1636,13 @@ static void speedChangedCallback(float speedX, float speedY, float speedZ, void 
     
     if (result == ARDATATRANSFER_OK)
     {
-        mediaListCount = ARDATATRANSFER_MediasDownloader_GetAvailableMediasSync(_dataTransferManager,0,&result);
-        if (result == ARDATATRANSFER_OK)
+        mediaListCount = ARDATATRANSFER_MediasDownloader_GetAvailableMediasSync(_dataTransferManager, 0, &result);
+        if (result == ARDATATRANSFER_OK && mediaListCount > 0)
         {
-            for (int i = 0 ; i < 1 && result == ARDATATRANSFER_OK; i++)
+            mediaObject_t = ARDATATRANSFER_MediasDownloader_GetAvailableMediaAtIndex(_dataTransferManager, 0, &result);
+            if (result == ARDATATRANSFER_OK)
             {
-                ARDATATRANSFER_Media_t * mediaObject_t = ARDATATRANSFER_MediasDownloader_GetAvailableMediaAtIndex(_dataTransferManager, i, &result);
-                if (result == ARDATATRANSFER_OK)
-                {
-                    result = ARDATATRANSFER_MediasDownloader_AddMediaToQueue(_dataTransferManager, mediaObject_t, medias_downloader_progress_callback, (__bridge void *)(self), medias_downloader_completion_callback,(__bridge void*)self);
-                }
+                result = ARDATATRANSFER_MediasDownloader_AddMediaToQueue(_dataTransferManager, mediaObject_t, medias_downloader_progress_callback, (__bridge void *)(self), medias_downloader_completion_callback,(__bridge void*)self);
             }
         }
     }
@@ -1663,9 +1658,18 @@ static void speedChangedCallback(float speedX, float speedY, float speedZ, void 
             ARDATATRANSFER_MediasDownloader_QueueThreadRun(_dataTransferManager);
         }
     }
+    
+    
+    // Deallocate memory
+    ARDATATRANSFER_MediasDownloader_Delete(_dataTransferManager);
+    ARUTILS_Manager_CloseWifiFtp(_ftpQueueManager);
+    ARUTILS_Manager_CloseWifiFtp(_ftpListManager);
+    ARUTILS_Manager_Delete(&_ftpQueueManager);
+    ARUTILS_Manager_Delete(&_ftpListManager);
+    ARDATATRANSFER_Manager_Delete(&_dataTransferManager);
 }
 
-void medias_downloader_progress_callback(void* arg, ARDATATRANSFER_Media_t *media, float percent)
+void medias_downloader_progress_callback(void* custom, ARDATATRANSFER_Media_t *media, float percent)
 {
     NSLog(@"Media %s : %f", media->name, percent);
 }
@@ -1674,11 +1678,14 @@ void medias_downloader_completion_callback(void* custom, ARDATATRANSFER_Media_t 
 {
     NSLog(@"Media %s completed, located in %s : %i", media->name, media->filePath, error);
     
+    DeviceController *deviceController = (__bridge DeviceController*)custom;
+    
     if (!error)
     {
-        DeviceController *deviceController = (__bridge DeviceController*)custom;
         [deviceController.delegate onSequentialPhotoReady:deviceController filePath:media->filePath];
     }
+    
+    ARDATATRANSFER_MediasDownloader_CancelQueueThread(deviceController.dataTransferManager);
 }
 
 @end
