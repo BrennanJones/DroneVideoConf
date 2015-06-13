@@ -84,7 +84,7 @@ io.sockets.on('connection', function(socket)
 
 	socket.on('DronePhoto', function(data)
 	{
-		console.log('DronePhoto ' + data);
+		console.log('DronePhoto');
 		socket.broadcast.emit('DronePhoto', data);
 	});
 });
