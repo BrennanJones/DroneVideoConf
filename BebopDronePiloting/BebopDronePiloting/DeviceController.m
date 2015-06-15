@@ -148,7 +148,7 @@ static int COMMAND_BUFFER_IDS[] = {
 };
 static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / sizeof(int);
 
-static const int SEQUENTIAL_PHOTO_LOOP_IN_MS = 5000000;   // sequential photo loop interval
+static const int SEQUENTIAL_PHOTO_LOOP_IN_MS = 15000000;   // sequential photo loop interval
 BOOL sequentialPhotoLoopRunning;
 
 
@@ -935,6 +935,7 @@ void onDisconnectNetwork (ARNETWORK_Manager_t *manager, ARNETWORKAL_Manager_t *a
     ARCOMMANDS_Decoder_SetARDrone3PilotingStateAltitudeChangedCallback(altitudeChangedCallback, (__bridge void *)self);
     ARCOMMANDS_Decoder_SetARDrone3PilotingStateAttitudeChangedCallback(attitudeChangedCallback, (__bridge void *)self);
     ARCOMMANDS_Decoder_SetARDrone3PilotingStateSpeedChangedCallback(speedChangedCallback, (__bridge void *) self);
+    ARCOMMANDS_Decoder_SetARDrone3MediaRecordStatePictureStateChangedCallback(pictureTakenCallback, (__bridge void *) self);
 }
 
 -(void) unregisterARCommandsCallbacks
@@ -947,6 +948,7 @@ void onDisconnectNetwork (ARNETWORK_Manager_t *manager, ARNETWORKAL_Manager_t *a
     ARCOMMANDS_Decoder_SetARDrone3PilotingStateAltitudeChangedCallback(NULL, NULL);
     ARCOMMANDS_Decoder_SetARDrone3PilotingStateAttitudeChangedCallback(NULL, NULL);
     ARCOMMANDS_Decoder_SetARDrone3PilotingStateSpeedChangedCallback(NULL, NULL);
+    ARCOMMANDS_Decoder_SetARDrone3MediaRecordStatePictureStateChangedCallback(NULL, NULL);
 }
 
 void allStatesCallback (void *custom)
@@ -1027,6 +1029,13 @@ static void speedChangedCallback(float speedX, float speedY, float speedZ, void 
     DeviceController *deviceController = (__bridge DeviceController*)custom;
     
     [deviceController.delegate onSpeedChanged:deviceController speedX:speedX speedY:speedY speedZ:speedZ];
+}
+
+static void pictureTakenCallback(uint8_t state, uint8_t mass_storage_id, void *custom)
+{
+    DeviceController *deviceController = (__bridge DeviceController*)custom;
+    
+    [deviceController getLastMediaAsync];
 }
 
 
@@ -1583,7 +1592,6 @@ static void speedChangedCallback(float speedX, float speedY, float speedZ, void 
         NSLog(@"Sequential photo loop iteration");
         
         [self takePhoto];
-        [self getLastMediaAsync];
         usleep(SEQUENTIAL_PHOTO_LOOP_IN_MS);
     }
 }
@@ -1624,7 +1632,6 @@ static void speedChangedCallback(float speedX, float speedY, float speedZ, void 
             result = ARDATATRANSFER_ERROR_FTP;
         }
     }
-    // NO ELSE
     
     if (result == ARDATATRANSFER_OK)
     {
@@ -1639,7 +1646,7 @@ static void speedChangedCallback(float speedX, float speedY, float speedZ, void 
         mediaListCount = ARDATATRANSFER_MediasDownloader_GetAvailableMediasSync(_dataTransferManager, 0, &result);
         if (result == ARDATATRANSFER_OK && mediaListCount > 0)
         {
-            mediaObject_t = ARDATATRANSFER_MediasDownloader_GetAvailableMediaAtIndex(_dataTransferManager, 0, &result);
+            mediaObject_t = ARDATATRANSFER_MediasDownloader_GetAvailableMediaAtIndex(_dataTransferManager, mediaListCount - 1, &result);
             if (result == ARDATATRANSFER_OK)
             {
                 result = ARDATATRANSFER_MediasDownloader_AddMediaToQueue(_dataTransferManager, mediaObject_t, medias_downloader_progress_callback, (__bridge void *)(self), medias_downloader_completion_callback,(__bridge void*)self);
@@ -1658,7 +1665,6 @@ static void speedChangedCallback(float speedX, float speedY, float speedZ, void 
             ARDATATRANSFER_MediasDownloader_QueueThreadRun(_dataTransferManager);
         }
     }
-    
     
     // Deallocate memory
     ARDATATRANSFER_MediasDownloader_Delete(_dataTransferManager);

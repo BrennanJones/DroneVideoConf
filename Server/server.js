@@ -8,7 +8,8 @@
 var app = require('http').createServer(handler),
 	io = require('socket.io')(app),
 	static = require('node-static'),
-	fs = new static.Server('../WebDesktopClient/');
+	fs = new static.Server('../WebDesktopClient/')
+	filesystem = require('fs');
 
 // If the URL of the server is opened in a browser.
 function handler(request, response)
@@ -24,6 +25,7 @@ console.log('Server started.');
 
 
 //var numFramesReceived = 0;
+var numTimelinePhotosReceived = 0;
 
 io.sockets.on('connection', function(socket)
 {	
@@ -85,6 +87,15 @@ io.sockets.on('connection', function(socket)
 	socket.on('DronePhoto', function(data)
 	{
 		console.log('DronePhoto');
+
+		filesystem.writeFile("./timelinePhotos/test" + numTimelinePhotosReceived++ + ".jpg", data, function(err) {
+			if(err) {
+		        return console.log(err);
+		    }
+
+		    console.log("The file was saved!");
+		});
+
 		socket.broadcast.emit('DronePhoto', data);
 	});
 });
