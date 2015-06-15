@@ -12,8 +12,8 @@ jQuery(function()
 {
 	/* NOTE: Change this to the server's IP address/domain name and any port number you'd like.
 	    (Maybe grab server information dynamically later.) */
-	var url = "http://192.168.42.2:12345";
-	//var url = "http://127.0.0.1:12345";
+	//var url = "http://192.168.42.2:12345";
+	var url = "http://127.0.0.1:12345";
 	
 	var socket = io.connect(url);
 	
@@ -43,9 +43,9 @@ jQuery(function()
 	});
 	
 	
-	var div = jQuery('#videoFrameContainer');
+	var div = jQuery('.videoFrameContainer');
 	var canvas = document.createElement('canvas');
-	canvas.style.cssText = "background:black; width: 960px; height: 532px;";
+	canvas.className = 'videoFrameCanvas';
 	var size = new Size(640, 368);
 	var webGLCanvas = new YUVWebGLCanvas(canvas, size);
 	div.append(canvas);

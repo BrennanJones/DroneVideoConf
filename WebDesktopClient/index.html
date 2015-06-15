@@ -1,8 +1,8 @@
 <html>
     <head>
-        <title>Drone Video Conferencing - Web Desktop Client</title>
-        <!--<link href="./css/style.css" rel="stylesheet" type="text/css"/>-->
+        <title>Drone Video Conferencing</title>
         <link href="./lib/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+        <link href="./css/style.css" rel="stylesheet" type="text/css"/>
     </head>
     
     <body>
@@ -20,32 +20,26 @@
         <script type="text/javascript" src="/lib/js/canvas.js"></script>
         
         
-        <h3>Drone Video Conferencing</h3>
-        
         <table>
 			<tr>
-				<td width="970">
-                	<div id="videoFrameContainer" width="960" height="552" align="center"></div>
-                    <div id="currentCommandText" height="20" align="center"><p></p></div>
+				<td width="800">
+                	<div class="videoFrameContainer">
+                    	<img class="camControlButton" id="camLeftButton">
+                        <img class="camControlButton" id="camRightButton">
+                        <img class="camControlButton" id="camUpButton">
+                        <img class="camControlButton" id="camDownButton">
+                    </div>
                 </td>
-                <td width="355">
-                	<div id="buttons" align="left">
-                    	<p>
-                            Camera:
-                        </p>
-                        <p>
-                            <img src="images/icons/cam-arrows/left.png" id="camLeftButton">
-                            <!--<button class="btn btn-default" type="button" id="camLeftButton">&#8592; Left</button>-->
-                            <button class="btn btn-default" type="button" id="camRightButton">&#8594; Right</button>
-                        </p>
-                        <p>
-                            <button class="btn btn-default" type="button" id="camUpButton">&#8593; Up</button>
-                            <button class="btn btn-default" type="button" id="camDownButton">&#8595; Down</button>
-                        </p>
+                <td width="480">
+                	<div class="mapContainer">
+                    	<!-- Map will go here. -->
                     </div>
                 </td>
 			</tr>
-          </table>
+        </table>
+        <div class="photoTimelineContainer">
+        	<!-- Photo timeline will go here. -->
+        </div>
         
         <script src="/js/script.js"></script>
     </body>
