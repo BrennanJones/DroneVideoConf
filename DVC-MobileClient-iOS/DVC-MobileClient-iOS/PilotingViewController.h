@@ -109,8 +109,6 @@
 - (IBAction)camLeftClick:(id)sender;
 - (IBAction)camRightClick:(id)sender;
 
-- (IBAction)resetNorthClick:(id)sender;
-
 - (IBAction)resetHomeClick:(id)sender;
 
 - (IBAction)takePhotoClick:(id)sender;
