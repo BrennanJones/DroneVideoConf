@@ -213,6 +213,9 @@ BOOL sequentialPhotoLoopRunning;
         _rxThread = NULL;
         _txThread = NULL;
         
+        _videoRxThread = NULL;
+        _videoTxThread = NULL;
+        
         _looperThread = NULL;
         _readerThreads = NULL;
         _readerThreadsData = NULL;
@@ -870,25 +873,15 @@ uint8_t *frameCompleteCallback (eARSTREAM_READER_CAUSE cause, uint8_t *frame, ui
     switch(cause)
     {
         case ARSTREAM_READER_CAUSE_FRAME_COMPLETE:
-            /* Here, the H264 video frame is in the "frame" pointer, with size "frameSize" bytes
-             You can do what you want, but keep it as short as possible, as the video is blocked until you return from this callback.
-             Typically, you will either copy the frame and return the same buffer to the library, or store the buffer
-             in a fifo for pending operations, and provide a new one.
-             In this sample, we do nothing and just pass the buffer back*/
-            
             [deviceController.delegate onFrameComplete:deviceController frame:frame frameSize:frameSize];
-            
             ret = deviceController->_videoFrame;
             
             break;
         case ARSTREAM_READER_CAUSE_FRAME_TOO_SMALL:
-            /* This case should not happen, as we've allocated a frame pointer to the maximum possible size. */
             break;
         case ARSTREAM_READER_CAUSE_COPY_COMPLETE:
-            /* Same as before ... but return value are ignored, so we just do nothing */
             break;
         case ARSTREAM_READER_CAUSE_CANCEL:
-            /* Called when the library closes, return values ignored, so do nothing here */
             break;
         default:
             break;

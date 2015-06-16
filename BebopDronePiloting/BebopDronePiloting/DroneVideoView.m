@@ -48,8 +48,6 @@ static const NSString * naluTypesStrings[] = {
 
 @interface DroneVideoView ()
 
-//@property (nonatomic) PilotingViewController *pilotingViewController;
-
 @property (nonatomic) BOOL searchForSPSAndPPS;
 
 @property (nonatomic) NSData *spsData;
@@ -65,47 +63,12 @@ static const NSString * naluTypesStrings[] = {
 @implementation DroneVideoView
 
 
-/*
-void ReceivedDecompressedFrame(void *decompressionOutputRefCon, void *sourceFrameRefCon, OSStatus status, VTDecodeInfoFlags infoFlags, CVImageBufferRef imageBuffer, CMTime presentationTimeStamp, CMTime presentationDuration)
-{
-    NSLog(@"Decompressed frame received.");
-    
-    if (decompressionOutputRefCon != NULL)
-    {
-        DroneVideoView *droneVideoView = (__bridge DroneVideoView *)decompressionOutputRefCon;
-        
-        if (!droneVideoView.currentBufferLocked)
-        {
-            CVPixelBufferLockBaseAddress(imageBuffer, 0);
-            
-            if (droneVideoView.currentBufferPixels != NULL)
-                free(droneVideoView.currentBufferPixels);
-            
-            droneVideoView.currentBufferWidth = CVPixelBufferGetWidth(imageBuffer);
-            droneVideoView.currentBufferHeight = CVPixelBufferGetHeight(imageBuffer);
-            droneVideoView.currentBufferSize = (droneVideoView.currentBufferWidth * droneVideoView.currentBufferHeight) * 4 * sizeof(uint8_t);
-            
-            uint8_t *bufferPixels = (unsigned char *)CVPixelBufferGetBaseAddress(imageBuffer);
-            
-            size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
-            
-            droneVideoView.currentBufferPixels = malloc(droneVideoView.currentBufferSize);
-            for (int i = 0; i < droneVideoView.currentBufferSize / sizeof(uint8_t); i++)
-            {
-                droneVideoView.currentBufferPixels[i] = bufferPixels[i];
-            }
-            
-            CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
-        }
-    }
-}
-*/
-
 -(void) setupVideoView
 {
-    //_pilotingViewController = pilotingViewController;
-    
     _searchForSPSAndPPS = true;
+    
+    [self setNeedsLayout];
+    [self layoutIfNeeded];
     
     self.videoLayer = [[AVSampleBufferDisplayLayer alloc] init];
     self.videoLayer.bounds = self.bounds;
@@ -113,7 +76,7 @@ void ReceivedDecompressedFrame(void *decompressionOutputRefCon, void *sourceFram
     self.videoLayer.videoGravity = AVLayerVideoGravityResizeAspect;
     self.videoLayer.backgroundColor = [[UIColor blackColor] CGColor];
     
-    //set Timebase
+    // Set Timebase
     CMTimebaseRef controlTimebase;
     CMTimebaseCreateWithMasterClock( CFAllocatorGetDefault(), CMClockGetHostTimeClock(), &controlTimebase );
     
@@ -121,11 +84,8 @@ void ReceivedDecompressedFrame(void *decompressionOutputRefCon, void *sourceFram
     CMTimebaseSetTime(self.videoLayer.controlTimebase, CMTimeMake(5, 1));
     CMTimebaseSetRate(self.videoLayer.controlTimebase, 1.0);
     
-    // connecting the videolayer with the view
-    
+    // Connecting the videolayer with the view
     [[self layer] addSublayer:_videoLayer];
-    
-    //_currentBufferLocked = false;
 }
 
 -(void) updateVideoViewWithFrame:(uint8_t *)frame frameSize:(uint32_t)frameSize
@@ -188,21 +148,6 @@ void ReceivedDecompressedFrame(void *decompressionOutputRefCon, void *sourceFram
                 OSStatus status = CMVideoFormatDescriptionCreateFromH264ParameterSets(kCFAllocatorDefault, 2, parameterSetPointers, parameterSetSizes, 4, &_videoFormatDescr);
                 _searchForSPSAndPPS = false;
                 NSLog(@"Found all data for CMVideoFormatDescription. Creation: %@.", (status == noErr) ? @"successfully." : @"failed.");
-                
-                
-                /*
-                const VTDecompressionOutputCallbackRecord outputCallback = { ReceivedDecompressedFrame, (__bridge void *)self };
-                
-                CFMutableDictionaryRef destinationPixelBufferAttributes = CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-                CFDictionarySetSInt32(destinationPixelBufferAttributes, kCVPixelBufferPixelFormatTypeKey, kCVPixelFormatType_32BGRA);
-                //CFDictionarySetSInt32(destinationPixelBufferAttributes, kCVPixelBufferWidthKey, 640);
-                //CFDictionarySetSInt32(destinationPixelBufferAttributes, kCVPixelBufferHeightKey, 368);
-                
-                status = VTDecompressionSessionCreate(NULL, _videoFormatDescr, NULL, destinationPixelBufferAttributes, &outputCallback, &_decompressionSession);
-                NSLog(@"Creation of VTDecompressionSession: %@.", (status == noErr) ? @"successfully." : @"failed.");
-                
-                CFRelease(destinationPixelBufferAttributes);
-                */
             }
         }
         
@@ -239,13 +184,6 @@ void ReceivedDecompressedFrame(void *decompressionOutputRefCon, void *sourceFram
             [_videoLayer enqueueSampleBuffer:sbRef];
             [_videoLayer setNeedsDisplay];
         });
-        
-        
-        /*
-        VTDecodeInfoFlags flags;
-        status = VTDecompressionSessionDecodeFrame(_decompressionSession, sbRef, kVTDecodeFrame_EnableAsynchronousDecompression | kVTDecodeFrame_EnableTemporalProcessing, &sbRef, &flags);
-        NSLog(@"VTDecompressionSessionDecodeFrame: %@", (status == noErr) ? @"successfully." : @"failed.");
-        */
     }
 }
 
@@ -254,20 +192,6 @@ void ReceivedDecompressedFrame(void *decompressionOutputRefCon, void *sourceFram
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect {
     // Drawing code
-}
-*/
-
-
-/* HELPER FUNCTIONS */
-
-/*
-static void CFDictionarySetSInt32(CFMutableDictionaryRef dictionary, CFStringRef key, SInt32 numberSInt32)
-{
-    CFNumberRef number;
-    
-    number = CFNumberCreate(NULL, kCFNumberSInt32Type, &numberSInt32);
-    CFDictionarySetValue(dictionary, key, number);
-    CFRelease(number);
 }
 */
 
