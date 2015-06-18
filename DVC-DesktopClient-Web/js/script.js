@@ -93,5 +93,19 @@ jQuery(function()
 	socket.on('DronePhoto', function(data)
 	{
 		console.log("DronePhoto");
+		
+		var binary = '';
+		var bytes = new Uint8Array(data);
+		var len = bytes.byteLength;
+		for (var i = 0; i < len; i++)
+		{
+			binary += String.fromCharCode(bytes[i]);
+		}
+		
+		var div = jQuery('.cover-container');
+		var img = document.createElement('img');
+		img.src = "data:image/jpg;base64," + window.btoa(binary);
+		img.className = 'cover-item';
+		div.prepend(img);
 	});
 });

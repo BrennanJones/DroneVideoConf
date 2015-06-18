@@ -14,8 +14,8 @@ button
 
 .videoFrameContainer
 {
-	width: 800px;
-	height: 450px;
+	width: 960px;
+	height: 540px;
 	position: relative;
 	margin-left: auto;
     margin-right: auto;
@@ -31,46 +31,68 @@ button
 .camControlButton
 {
 	position: absolute;
+	opacity: 0.75;
 }
 
 #camLeftButton
 {
 	content: url(/images/buttons/cam-arrows/left.png);
 	left:-55px;
-	top: 129px;
+	top: 174px;
 }
 
 #camRightButton
 {
 	content: url(/images/buttons/cam-arrows/right.png);
 	right:-55px;
-	top: 129px;
+	top: 174px;
 }
 
 #camUpButton
 {
 	content: url(/images/buttons/cam-arrows/up.png);
-	left: 304px;
+	left: 384px;
 	top: -55px;
 }
 
 #camDownButton
 {
 	content: url(/images/buttons/cam-arrows/down.png);
-	left: 304px;
+	left: 384px;
 	bottom: -55px;
 }
 
 .mapContainer
 {
 	width: 480px;
-	height: 450px;
+	height: 540px;
 	background-color: #090;
 }
 
 .photoTimelineContainer
 {
-	width: 1280px;
-	height: 200px;
+	width: 1440px;
+	height: 180px;
 	background-color: #DDD;
+}
+
+.cover-container {
+    height: 180px;
+    width: 100%;
+    white-space: nowrap;
+    overflow-x: scroll;
+    overflow-y: hidden;
+}
+
+.cover-item {
+    position: relative;
+    display: inline-block;
+    margin: 8px 8px;
+    box-shadow: 2px 2px 4px #bbb;
+    width: 200px;
+    height: 150px;
+    vertical-align: bottom;
+    background-position: top left;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
