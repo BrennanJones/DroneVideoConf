@@ -146,7 +146,7 @@ static int COMMAND_BUFFER_IDS[] = {
 };
 static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / sizeof(int);
 
-static const int SEQUENTIAL_PHOTO_LOOP_IN_MS = 15000000;   // sequential photo loop interval
+static const int SEQUENTIAL_PHOTO_LOOP_IN_MS = 30000;   // sequential photo loop interval
 BOOL sequentialPhotoLoopRunning;
 
 
@@ -1583,7 +1583,7 @@ static void pictureTakenCallback(uint8_t state, uint8_t mass_storage_id, void *c
         NSLog(@"Sequential photo loop iteration");
         
         [self takePhoto];
-        usleep(SEQUENTIAL_PHOTO_LOOP_IN_MS);
+        usleep(SEQUENTIAL_PHOTO_LOOP_IN_MS * 1000);
     }
 }
 
