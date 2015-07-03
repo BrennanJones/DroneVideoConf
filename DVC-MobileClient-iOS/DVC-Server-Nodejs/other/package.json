@@ -1,9 +1,0 @@
-{
-  "name": "dvc-server",
-  "version": "1.0.0",
-  "description": "The server for the DVC application.",
-  "dependencies": {
-	"socket.io": "^1.3.5"
-	"node-static": "^0.7.6"
-  }
-}
