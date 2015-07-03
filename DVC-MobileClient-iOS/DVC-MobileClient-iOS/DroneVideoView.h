@@ -11,7 +11,6 @@
 
 @property (nonatomic, retain) AVSampleBufferDisplayLayer *videoLayer;
 
--(void) setupVideoView;
 -(void) updateVideoViewWithFrame:(uint8_t *)frame frameSize:(uint32_t)frameSize;
 
 @end
