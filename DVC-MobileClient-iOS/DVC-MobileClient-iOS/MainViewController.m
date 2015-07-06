@@ -98,6 +98,9 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 
 @property (nonatomic, strong) NSThread *droneControlLoopThread;
 
+@property (nonatomic, strong) UIColor *dvcRed;
+@property (nonatomic, strong) UIColor *dvcGreen;
+
 @end
 
 
@@ -114,22 +117,36 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
     [super viewDidLoad];
     NSLog(@"viewDidLoad ...");
     
+    _dvcRed = [UIColor colorWithRed:0.8 green:0.2 blue:0.2 alpha:1.0];
+    _dvcGreen = [UIColor colorWithRed:0.2 green:0.8 blue:0.0 alpha:1];
+    
     _service = nil;
+    
+    self.droneConnectionStatusLabel.text = @"Not connected";
+    self.droneConnectionStatusLabel.textColor = _dvcRed;
+    
+    [_emergencyBt setEnabled:NO];
+    
+    [self registerApplicationNotifications];
+    [[ARDiscovery sharedInstance] start];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     NSLog(@"viewDidAppear ... ");
     [super viewDidAppear:animated];
-    
-    [self registerApplicationNotifications];
-    [[ARDiscovery sharedInstance] start];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
 {
     NSLog(@"viewDidDisappear ... ");
     [super viewDidDisappear:animated];
+}
+
+- (void)viewWillUnload
+{
+    NSLog(@"viewWillUnload ... ");
+    [super viewWillUnload];
     
     [self unregisterApplicationNotifications];
     [[ARDiscovery sharedInstance] stop];
@@ -204,6 +221,11 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
                     }
                     else
                     {
+                        [_emergencyBt setEnabled:YES];
+                        
+                        self.droneConnectionStatusLabel.text = @"Connected";
+                        self.droneConnectionStatusLabel.textColor = _dvcGreen;
+                        
                         droneKalmanFilter = alloc_filter_velocity2d(1.0);
                         phoneKalmanFilter = alloc_filter_velocity2d(1.0);
                         
@@ -353,6 +375,11 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
     NSLog(@"onDisconnect ...");
     
     _service = nil;
+    
+    self.droneConnectionStatusLabel.text = @"Not connected";
+    self.droneConnectionStatusLabel.textColor = _dvcRed;
+    
+    [_emergencyBt setEnabled:NO];
 }
 
 
@@ -402,7 +429,8 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
         
         [SocketIOWrapper emit:_socket withEvent:@"MobileClientConnected" withItems:[[NSArray alloc] init]];
         
-        self.serverConnectionStatusLabel.text = @"Connected to server.";
+        self.serverConnectionStatusLabel.text = @"Connected to server";
+        self.serverConnectionStatusLabel.textColor = _dvcGreen;
         [self.serverConnectionButton setTitle:@"Disconnect" forState:UIControlStateNormal];
         self.serverConnectionButton.enabled = true;
     }];
@@ -410,7 +438,8 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
     [_socket on:@"disconnect" callback:^(NSArray* data, void (^ack)(NSArray*)) {
         NSLog(@"socket disconnect");
         
-        self.serverConnectionStatusLabel.text = @"Disconnected from server.";
+        self.serverConnectionStatusLabel.text = @"Not connected to server";
+        self.serverConnectionStatusLabel.textColor = _dvcRed;
         [self.serverConnectionButton setTitle:@"Connect" forState:UIControlStateNormal];
         self.serverConnectionButton.enabled = true;
         self.serverConnectionTextField.enabled = true;
@@ -419,10 +448,11 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
     [_socket on:@"error" callback:^(NSArray* data, void (^ack)(NSArray*)) {
         NSLog(@"socket error");
         
-        _alertView = [[UIAlertView alloc] initWithTitle:[_service name] message:@"Connection with server failed." delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+        _alertView = [[UIAlertView alloc] initWithTitle:@"DVC" message:@"Connection with server failed." delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
         [_alertView show];
         
-        self.serverConnectionStatusLabel.text = @"Disconnected from server.";
+        self.serverConnectionStatusLabel.text = @"Not connected to server";
+        self.serverConnectionStatusLabel.textColor = _dvcRed;
         [self.serverConnectionButton setTitle:@"Connect" forState:UIControlStateNormal];
         self.serverConnectionButton.enabled = true;
         self.serverConnectionTextField.enabled = true;
@@ -700,6 +730,7 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
     {
         self.serverConnectionButton.enabled = false;
         self.serverConnectionStatusLabel.text = @"Disconnecting from server...";
+        self.serverConnectionStatusLabel.textColor = [UIColor blackColor];
         
         [self disconnectFromServer];
     }
@@ -708,6 +739,7 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
         self.serverConnectionTextField.enabled = false;
         self.serverConnectionButton.enabled = false;
         self.serverConnectionStatusLabel.text = @"Connecting to server...";
+        self.serverConnectionStatusLabel.textColor = [UIColor blackColor];
         
         [self connectToServer:self.serverConnectionTextField.text];
     }

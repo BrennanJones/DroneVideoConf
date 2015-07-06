@@ -54,9 +54,11 @@
 @property (nonatomic, strong) IBOutlet UILabel *batteryLabel;
 @property (nonatomic, strong) IBOutlet UIButton *takeoffBt;
 @property (nonatomic, strong) IBOutlet UIButton *landingBt;
+@property (strong, nonatomic) IBOutlet UIButton *emergencyBt;
 @property (strong, nonatomic) IBOutlet UITextField *serverConnectionTextField;
 @property (strong, nonatomic) IBOutlet UIButton *serverConnectionButton;
 @property (strong, nonatomic) IBOutlet UILabel *serverConnectionStatusLabel;
+@property (strong, nonatomic) IBOutlet UILabel *droneConnectionStatusLabel;
 @property (strong, nonatomic) IBOutlet DroneVideoView *droneVideoView;
 
 @property (weak, nonatomic) IBOutlet UILabel *latPhoneLabel;
