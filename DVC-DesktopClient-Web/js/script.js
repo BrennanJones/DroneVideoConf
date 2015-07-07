@@ -10,10 +10,7 @@
 
 jQuery(function()
 {
-	/* NOTE: Change this to the server's IP address/domain name and any port number you'd like.
-	    (Maybe grab server information dynamically later.) */
-	var url = "http://192.168.42.2:12345";
-	//var url = "http://127.0.0.1:12345";
+	var url = "http://" + window.location.hostname + ":12345";
 	
 	var socket = io.connect(url);
 	

@@ -33,7 +33,6 @@
 		96DD801C1ABC8A4A00646F7D /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96DD801B1ABC8A4A00646F7D /* SystemConfiguration.framework */; };
 		96DD801E1ABC8A5400646F7D /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96DD801D1ABC8A5400646F7D /* MobileCoreServices.framework */; };
 		96DD80201ABC8A5D00646F7D /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96DD801F1ABC8A5D00646F7D /* CFNetwork.framework */; };
-		A83B2F07DA5B7F41F58CF63D /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F37A64DAE4B581D8A3C7036A /* libPods.a */; };
 		E96226BA1B18DAE600BF584B /* gps.c in Sources */ = {isa = PBXBuildFile; fileRef = E96226AC1B18DAE600BF584B /* gps.c */; };
 		E96226BC1B18DAE600BF584B /* kalman.c in Sources */ = {isa = PBXBuildFile; fileRef = E96226AF1B18DAE600BF584B /* kalman.c */; };
 		E96226BE1B18DAE600BF584B /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = E96226B21B18DAE600BF584B /* LICENSE */; };
@@ -59,12 +58,9 @@
 		E9BA9C7D1B45AA170078A35E /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E9BA9C7C1B45AA170078A35E /* libresolv.dylib */; };
 		E9BA9C7F1B45AA2A0078A35E /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E9BA9C7E1B45AA2A0078A35E /* libxml2.dylib */; };
 		E9BA9C811B45AA3B0078A35E /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9BA9C801B45AA3B0078A35E /* GLKit.framework */; };
-		E9BA9C881B45DB230078A35E /* Quickblox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9BA9C861B45DB230078A35E /* Quickblox.framework */; };
-		E9BA9C891B45DB230078A35E /* QuickbloxWebRTC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9BA9C871B45DB230078A35E /* QuickbloxWebRTC.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		08004D4CE4EA352F499B2818 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		1D9DF2351A6D580F000941ED /* DVC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DVC.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		96245C051AD3741500A3C03B /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		963AF21D1B0D3B3A0018B4FE /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -99,7 +95,6 @@
 		96DD801B1ABC8A4A00646F7D /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		96DD801D1ABC8A5400646F7D /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		96DD801F1ABC8A5D00646F7D /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
-		C03AB1474136754C061ED6BD /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		E96226AC1B18DAE600BF584B /* gps.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gps.c; sourceTree = "<group>"; };
 		E96226AD1B18DAE600BF584B /* gps.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gps.h; sourceTree = "<group>"; };
 		E96226AF1B18DAE600BF584B /* kalman.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = kalman.c; sourceTree = "<group>"; };
@@ -129,9 +124,6 @@
 		E9BA9C7C1B45AA170078A35E /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
 		E9BA9C7E1B45AA2A0078A35E /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		E9BA9C801B45AA3B0078A35E /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
-		E9BA9C861B45DB230078A35E /* Quickblox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quickblox.framework; path = Quickblox/Quickblox.framework; sourceTree = "<group>"; };
-		E9BA9C871B45DB230078A35E /* QuickbloxWebRTC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickbloxWebRTC.framework; path = Quickblox/QuickbloxWebRTC.framework; sourceTree = "<group>"; };
-		F37A64DAE4B581D8A3C7036A /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,14 +148,11 @@
 				96DD801A1ABC8A3F00646F7D /* Security.framework in Frameworks */,
 				96D347741B2B69160090CDFF /* libARDataTransfer.framework in Frameworks */,
 				96D347761B2B69160090CDFF /* libARNetwork.framework in Frameworks */,
-				E9BA9C881B45DB230078A35E /* Quickblox.framework in Frameworks */,
-				E9BA9C891B45DB230078A35E /* QuickbloxWebRTC.framework in Frameworks */,
 				96DD80181ABC8A3400646F7D /* libicucore.dylib in Frameworks */,
 				96D3477A1B2B69160090CDFF /* libARUtils.framework in Frameworks */,
 				96D347771B2B69160090CDFF /* libARNetworkAL.framework in Frameworks */,
 				96D347751B2B69160090CDFF /* libARDiscovery.framework in Frameworks */,
 				96D347731B2B69160090CDFF /* libARCommands.framework in Frameworks */,
-				A83B2F07DA5B7F41F58CF63D /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -176,7 +165,6 @@
 				968B41941B308EA800B3EE71 /* DVC-MobileClient-iOS */,
 				1D9DF26B1A6D62CB000941ED /* Frameworks */,
 				E96226AB1B18DAE600BF584B /* ikalman */,
-				C261CAF85AD8C6274E1C264F /* Pods */,
 				1D9DF2361A6D580F000941ED /* Products */,
 				E9BA9C571B45A6BB0078A35E /* SocketIOClientSwift */,
 			);
@@ -207,14 +195,11 @@
 				E9BA9C781B45A9FC0078A35E /* libc++.dylib */,
 				96D347A01B2B74DA0090CDFF /* libcurl.framework */,
 				96DD80171ABC8A3300646F7D /* libicucore.dylib */,
-				F37A64DAE4B581D8A3C7036A /* libPods.a */,
 				E9BA9C7C1B45AA170078A35E /* libresolv.dylib */,
 				E9BA9C7A1B45AA0A0078A35E /* libsqlite3.dylib */,
 				E9BA9C7E1B45AA2A0078A35E /* libxml2.dylib */,
 				E96226D41B1FBDDC00BF584B /* libz.dylib */,
 				96DD801D1ABC8A5400646F7D /* MobileCoreServices.framework */,
-				E9BA9C861B45DB230078A35E /* Quickblox.framework */,
-				E9BA9C871B45DB230078A35E /* QuickbloxWebRTC.framework */,
 				96DD80191ABC8A3F00646F7D /* Security.framework */,
 				96DD801B1ABC8A4A00646F7D /* SystemConfiguration.framework */,
 				96245C051AD3741500A3C03B /* VideoToolbox.framework */,
@@ -246,15 +231,6 @@
 				968B41A51B308EA800B3EE71 /* Utility.h */,
 			);
 			path = "DVC-MobileClient-iOS";
-			sourceTree = "<group>";
-		};
-		C261CAF85AD8C6274E1C264F /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				08004D4CE4EA352F499B2818 /* Pods.debug.xcconfig */,
-				C03AB1474136754C061ED6BD /* Pods.release.xcconfig */,
-			);
-			name = Pods;
 			sourceTree = "<group>";
 		};
 		E96226AB1B18DAE600BF584B /* ikalman */ = {
@@ -299,11 +275,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1D9DF2581A6D5810000941ED /* Build configuration list for PBXNativeTarget "DVC-MobileClient-iOS" */;
 			buildPhases = (
-				64DFAA15F82DAB469D562D13 /* Check Pods Manifest.lock */,
 				1D9DF2311A6D580F000941ED /* Sources */,
 				1D9DF2321A6D580F000941ED /* Frameworks */,
 				1D9DF2331A6D580F000941ED /* Resources */,
-				13FFE8A6269AD48E43875DB0 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -360,39 +334,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		13FFE8A6269AD48E43875DB0 /* Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		64DFAA15F82DAB469D562D13 /* Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		1D9DF2311A6D580F000941ED /* Sources */ = {
@@ -509,7 +450,6 @@
 		};
 		1D9DF2591A6D5810000941ED /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 08004D4CE4EA352F499B2818 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -536,7 +476,6 @@
 		};
 		1D9DF25A1A6D5810000941ED /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C03AB1474136754C061ED6BD /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";

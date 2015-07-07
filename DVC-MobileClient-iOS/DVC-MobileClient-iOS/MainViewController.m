@@ -221,10 +221,12 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
                     }
                     else
                     {
-                        [_emergencyBt setEnabled:YES];
-                        
-                        self.droneConnectionStatusLabel.text = @"Connected";
-                        self.droneConnectionStatusLabel.textColor = _dvcGreen;
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [_emergencyBt setEnabled:YES];
+                            
+                            self.droneConnectionStatusLabel.text = @"Connected";
+                            self.droneConnectionStatusLabel.textColor = _dvcGreen;
+                        });
                         
                         droneKalmanFilter = alloc_filter_velocity2d(1.0);
                         phoneKalmanFilter = alloc_filter_velocity2d(1.0);
@@ -376,10 +378,12 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
     
     _service = nil;
     
-    self.droneConnectionStatusLabel.text = @"Not connected";
-    self.droneConnectionStatusLabel.textColor = _dvcRed;
-    
-    [_emergencyBt setEnabled:NO];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.droneConnectionStatusLabel.text = @"Not connected";
+        self.droneConnectionStatusLabel.textColor = _dvcRed;
+        
+        [_emergencyBt setEnabled:NO];
+    });
 }
 
 
