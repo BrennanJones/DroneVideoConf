@@ -4,6 +4,7 @@
 //
 
 #import "AppDelegate.h"
+#import "RTCPeerConnectionFactory.h"
 
 @interface AppDelegate ()
 
@@ -15,6 +16,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    [RTCPeerConnectionFactory initializeSSL];
     return YES;
 }
 

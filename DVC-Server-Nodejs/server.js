@@ -8,8 +8,10 @@
 var app = require('http').createServer(handler),
 	io = require('socket.io')(app),
 	static = require('node-static'),
-	fs = new static.Server('../DVC-DesktopClient-Web/')
-	filesystem = require('fs');
+	fs = new static.Server('../DVC-DesktopClient-Web/'),
+	filesystem = require('fs'),
+	PeerServer = require('peer').PeerServer,
+	server = PeerServer({port: 9000, path: '/dvc'});
 
 // If the URL of the server is opened in a browser.
 function handler(request, response)
@@ -24,7 +26,6 @@ app.listen(12345);
 console.log('Server started.');
 
 
-//var numFramesReceived = 0;
 var numTimelinePhotosReceived = 0;
 
 io.sockets.on('connection', function(socket)
@@ -65,13 +66,6 @@ io.sockets.on('connection', function(socket)
 	
 	socket.on('DroneVideoFrame', function(data)
 	{
-		//numFramesReceived++;
-		//if (numFramesReceived == 1)
-		//{
-		//	console.log(data);
-		//}
-		//console.log('Video frame received: ' + numFramesReceived);
-
 		socket.broadcast.emit('DroneVideoFrame', data);
 	});
 	

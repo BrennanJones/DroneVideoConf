@@ -392,9 +392,9 @@ BOOL sequentialPhotoLoopRunning;
     
     if (!failed)
     {
-        _sequentialPhotoLoopThread = [[NSThread alloc] initWithTarget:self selector:@selector(sequentialPhotoLoopRun) object:nil];
-        sequentialPhotoLoopRunning = true;
-        [_sequentialPhotoLoopThread start];
+//        _sequentialPhotoLoopThread = [[NSThread alloc] initWithTarget:self selector:@selector(sequentialPhotoLoopRun) object:nil];
+//        sequentialPhotoLoopRunning = true;
+//        [_sequentialPhotoLoopThread start];
     }
     
     return failed;
