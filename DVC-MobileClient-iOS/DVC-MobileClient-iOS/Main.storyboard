@@ -350,7 +350,7 @@
                                 </connections>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="kXX-3p-Tir">
-                                <rect key="frame" x="115" y="477" width="90" height="30"/>
+                                <rect key="frame" x="16" y="477" width="90" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <state key="normal" title="Disconnect">
@@ -358,6 +358,17 @@
                                 </state>
                                 <connections>
                                     <action selector="finishCall:" destination="TPD-hW-o9V" eventType="touchUpInside" id="j5r-FK-7Bo"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="xLc-UB-mUN">
+                                <rect key="frame" x="204" y="477" width="110" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <state key="normal" title="Swap cameras">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="swapCameras:" destination="TPD-hW-o9V" eventType="touchUpInside" id="2ux-jR-FVF"/>
                                 </connections>
                             </button>
                         </subviews>

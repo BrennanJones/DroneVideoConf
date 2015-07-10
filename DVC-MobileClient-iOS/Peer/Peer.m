@@ -111,7 +111,7 @@ static NSInteger kPeerClientErrorSetSDP = -4;
       _secure = NO;
       _webSock = nil;
       _isInitiator = NO;
-      _cameraPosition = AVCaptureDevicePositionFront;
+      _cameraPosition = AVCaptureDevicePositionBack;
       _localVideoTrack = nil;
       _localMediaStream = nil;
 
@@ -201,6 +201,64 @@ static NSInteger kPeerClientErrorSetSDP = -4;
   }
 
   _cameraPosition = pos;
+}
+
+- (void)swapCaptureDevicePosition
+{
+    if (_cameraPosition == AVCaptureDevicePositionBack)
+    {
+        [self setCaptureDevicePosition:AVCaptureDevicePositionFront];
+    }
+    else // if (_cameraPosition == AVCaptureDevicePositionFront)
+    {
+        [self setCaptureDevicePosition:AVCaptureDevicePositionBack];
+    }
+    
+    
+    if (_onRemoveLocalVideoTrack)
+    {
+        _onRemoveLocalVideoTrack();
+    }
+    
+    [_localMediaStream removeVideoTrack:_localVideoTrack];
+    _localVideoTrack = nil;
+    
+    // The iOS simulator doesn't provide any sort of camera capture
+    // support or emulation (http://goo.gl/rHAnC1) so don't bother
+    // trying to open a local stream.
+    // TODO(tkchin): local video capture for OSX. See
+    // https://code.google.com/p/webrtc/issues/detail?id=3417.
+#if !TARGET_IPHONE_SIMULATOR && TARGET_OS_IPHONE
+    NSString *cameraID = nil;
+    for (AVCaptureDevice *captureDevice in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo])
+    {
+        if (captureDevice.position == _cameraPosition)
+        {
+            cameraID = [captureDevice localizedName];
+            break;
+        }
+    }
+    NSAssert(cameraID, @"Unable to get the camera id");
+    
+    RTCVideoCapturer *capturer = [RTCVideoCapturer capturerWithDeviceName:cameraID];
+    RTCMediaConstraints *mediaConstraints = [self defaultMediaStreamConstraints];
+    RTCVideoSource *videoSource = [_factory videoSourceWithCapturer:capturer
+                                                        constraints:mediaConstraints];
+    RTCVideoTrack *localVideoTrack = [_factory videoTrackWithID:@"ARDAMSv0" source:videoSource];
+    
+    if (localVideoTrack)
+    {
+        [_localMediaStream addVideoTrack:localVideoTrack];
+        
+        _localVideoTrack = localVideoTrack;
+        
+        if (_onReceiveLocalVideoTrack)
+        {
+            _onReceiveLocalVideoTrack(localVideoTrack);
+        }
+    }
+    
+#endif
 }
 
 #pragma API Helper

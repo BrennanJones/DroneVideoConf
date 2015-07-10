@@ -69,14 +69,42 @@ button
 	background-color: #090;
 }
 
+.phoneVideoContainer
+{
+	position: relative;
+	/*width: 480px;*/
+	width: 405px;
+	height: 540px;
+	background-color: #000;
+}
+
+.phoneVideo
+{
+	width: 100%;
+	height: 100%;
+	background-color: #000;
+}
+
+.desktopVideo
+{
+	position: absolute;
+	bottom: 2%;
+	right: 2%;
+	width: 40%;
+	height: auto;
+	background-color: #000;
+}
+
 .photoTimelineContainer
 {
-	width: 1440px;
+	/*width: 1440px;*/
+	width: 1365px;
 	height: 180px;
 	background-color: #DDD;
 }
 
-.cover-container {
+.cover-container
+{
     height: 180px;
     width: 100%;
     white-space: nowrap;
@@ -84,11 +112,12 @@ button
     overflow-y: hidden;
 }
 
-.cover-item {
+.cover-item
+{
     position: relative;
     display: inline-block;
     margin: 8px 8px;
-    box-shadow: 2px 2px 4px #bbb;
+    box-shadow: 2px 2px 4px #BBB;
     width: 200px;
     height: 150px;
     vertical-align: bottom;

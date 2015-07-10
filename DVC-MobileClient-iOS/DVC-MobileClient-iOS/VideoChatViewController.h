@@ -13,6 +13,7 @@
 @property(weak, nonatomic) IBOutlet UIView* blackView;
 @property(weak, nonatomic) IBOutlet UITextField *idField;
 
+- (IBAction)swapCameras:(id)sender;
 - (IBAction)finishCall:(id)sender;
 
 - (void)applicationWillResignActive:(UIApplication*)application;

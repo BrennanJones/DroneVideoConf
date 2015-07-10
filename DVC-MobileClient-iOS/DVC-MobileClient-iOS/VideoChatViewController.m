@@ -65,18 +65,18 @@ static CGFloat const kLocalViewPadding = 20;
     [_peer disconnect];
     
     // Create Configuration object.
-    //NSDictionary *config = @{@"key": @"lwjd5qra8257b9", @"port": @(9000)};
+    NSDictionary *config = @{@"id": @"1", @"key": @"s51s84ud22jwz5mi", @"port": @(9000)};
     
-    NSDictionary *config = @{@"host": @"192.168.42.2",
-                             @"port": @(9000),
-                             //@"key": @"peerjs",
-                             @"path": @"/dvc",
-                             @"secure": @(NO),
-                             /*@"config": @{
-                                     @"iceServers": @[
-                                             @{@"url": @"stun:stun.l.google.com:19302", @"user": @"", @"password": @""}
-                                             ]
-                                     }*/};
+//    NSDictionary *config = @{@"host": @"192.168.42.2",
+//                             @"port": @(9000),
+//                             //@"key": @"peerjs",
+//                             @"path": @"/dvc",
+//                             @"secure": @(NO),
+//                             /*@"config": @{
+//                                     @"iceServers": @[
+//                                             @{@"url": @"stun:stun.l.google.com:19302", @"user": @"", @"password": @""}
+//                                             ]
+//                                     }*/};
     
     __block typeof(self) __self = self;
     
@@ -97,6 +97,11 @@ static CGFloat const kLocalViewPadding = 20;
     _peer.onReceiveLocalVideoTrack = ^(RTCVideoTrack *videoTrack) {
         NSLog(@"onReceiveLocalVideoTrack");
         [__self peerClient:__self.peer didReceiveLocalVideoTrack:videoTrack];
+    };
+    
+    _peer.onRemoveLocalVideoTrack = ^() {
+        NSLog(@"onRemoveLocalVideoTrack");
+        [__self peerClientWillRemoveLocalVideoTrack:__self.peer];
     };
     
     _peer.onReceiveRemoteVideoTrack = ^(RTCVideoTrack *videoTrack) {
@@ -167,6 +172,13 @@ static CGFloat const kLocalViewPadding = 20;
     _localVideoTrack = localVideoTrack;
     [_localVideoTrack addRenderer:self.localVideoView];
     self.localVideoView.hidden = NO;
+}
+
+- (void)peerClientWillRemoveLocalVideoTrack:(Peer *)client
+{
+    [_localVideoTrack removeRenderer:self.localVideoView];
+    _localVideoTrack = nil;
+    [self.localVideoView renderFrame:nil];
 }
 
 - (void)peerClient:(Peer *)client didReceiveRemoteVideoTrack:(RTCVideoTrack *)remoteVideoTrack
@@ -288,6 +300,11 @@ static CGFloat const kLocalViewPadding = 20;
     localVideoFrame.origin.x = CGRectGetMaxX(self.blackView.bounds) - localVideoFrame.size.width - kLocalViewPadding;
     localVideoFrame.origin.y = CGRectGetMaxY(self.blackView.bounds) - localVideoFrame.size.height - kLocalViewPadding;
     self.localVideoView.frame = localVideoFrame;
+}
+
+- (IBAction)swapCameras:(id)sender
+{
+    [_peer swapCaptureDevicePosition];
 }
 
 - (IBAction)finishCall:(id)sender
