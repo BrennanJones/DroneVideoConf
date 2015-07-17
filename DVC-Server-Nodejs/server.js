@@ -11,7 +11,7 @@ var app = require('http').createServer(handler),
 	fs = new static.Server('../DVC-DesktopClient-Web/'),
 	filesystem = require('fs'),
 	PeerServer = require('peer').PeerServer,
-	server = PeerServer({port: 9000, path: '/dvc'});
+	server = PeerServer({port: 9876, path: '/dvc'});
 
 // If the URL of the server is opened in a browser.
 function handler(request, response)

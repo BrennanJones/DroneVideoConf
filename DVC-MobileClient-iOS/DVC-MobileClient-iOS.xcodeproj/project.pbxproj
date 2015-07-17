@@ -75,6 +75,8 @@
 		E9BA9C7D1B45AA170078A35E /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E9BA9C7C1B45AA170078A35E /* libresolv.dylib */; };
 		E9BA9C7F1B45AA2A0078A35E /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E9BA9C7E1B45AA2A0078A35E /* libxml2.dylib */; };
 		E9BA9C811B45AA3B0078A35E /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9BA9C801B45AA3B0078A35E /* GLKit.framework */; };
+		E9EE87E71B5704E10068A510 /* DroneVideoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E9EE87E61B5704E10068A510 /* DroneVideoViewController.m */; };
+		E9EE87EA1B5827D70068A510 /* DVCTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = E9EE87E91B5827D70068A510 /* DVCTabBarController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -190,6 +192,10 @@
 		E9BA9C7C1B45AA170078A35E /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
 		E9BA9C7E1B45AA2A0078A35E /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		E9BA9C801B45AA3B0078A35E /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		E9EE87E51B5704E10068A510 /* DroneVideoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DroneVideoViewController.h; sourceTree = "<group>"; };
+		E9EE87E61B5704E10068A510 /* DroneVideoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DroneVideoViewController.m; sourceTree = "<group>"; };
+		E9EE87E81B5827D70068A510 /* DVCTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVCTabBarController.h; sourceTree = "<group>"; };
+		E9EE87E91B5827D70068A510 /* DVCTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DVCTabBarController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -302,19 +308,23 @@
 				968B41981B308EA800B3EE71 /* DeviceController.m */,
 				968B41991B308EA800B3EE71 /* DroneVideoView.h */,
 				968B419A1B308EA800B3EE71 /* DroneVideoView.m */,
+				E9EE87E51B5704E10068A510 /* DroneVideoViewController.h */,
+				E9EE87E61B5704E10068A510 /* DroneVideoViewController.m */,
 				968B419B1B308EA800B3EE71 /* Images.xcassets */,
 				968B419C1B308EA800B3EE71 /* Info.plist */,
 				968B419D1B308EA800B3EE71 /* LaunchScreen.xib */,
 				968B419E1B308EA800B3EE71 /* main.m */,
 				968B419F1B308EA800B3EE71 /* Main.storyboard */,
-				E9A61AE21B4A37C400CA142B /* VideoChatViewController.h */,
-				E9A61AE31B4A37C400CA142B /* VideoChatViewController.m */,
 				968B41A01B308EA800B3EE71 /* MainViewController.h */,
 				968B41A11B308EA800B3EE71 /* MainViewController.m */,
 				968B41A21B308EA800B3EE71 /* SocketIOWrapper.h */,
 				968B41A31B308EA800B3EE71 /* SocketIOWrapper.m */,
 				968B41A41B308EA800B3EE71 /* Utility.c */,
 				968B41A51B308EA800B3EE71 /* Utility.h */,
+				E9A61AE21B4A37C400CA142B /* VideoChatViewController.h */,
+				E9A61AE31B4A37C400CA142B /* VideoChatViewController.m */,
+				E9EE87E81B5827D70068A510 /* DVCTabBarController.h */,
+				E9EE87E91B5827D70068A510 /* DVCTabBarController.m */,
 			);
 			path = "DVC-MobileClient-iOS";
 			sourceTree = "<group>";
@@ -526,6 +536,8 @@
 				E9BA9C681B45A6BB0078A35E /* SocketEngineClient.swift in Sources */,
 				E9BA9C6E1B45A6BB0078A35E /* SocketParser.swift in Sources */,
 				E9BA9C6C1B45A6BB0078A35E /* SocketLogger.swift in Sources */,
+				E9EE87E71B5704E10068A510 /* DroneVideoViewController.m in Sources */,
+				E9EE87EA1B5827D70068A510 /* DVCTabBarController.m in Sources */,
 				968B41A81B308EA800B3EE71 /* AppDelegate.m in Sources */,
 				E9BA9C6A1B45A6BB0078A35E /* SocketFixUTF8.swift in Sources */,
 			);

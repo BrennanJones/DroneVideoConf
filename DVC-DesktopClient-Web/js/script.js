@@ -113,13 +113,12 @@ jQuery(function()
 
 	var phoneVideo = jQuery('.phoneVideo');
 	var desktopVideo = jQuery('.desktopVideo');
-	var remoteStream;
 
 	// Compatibility shim
     navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
     // PeerJS object
-    var peer = new Peer('0', { key: 's51s84ud22jwz5mi', debug: 3 });
+    var peer = new Peer('0', { host: 'csf.cpsc.ucalgary.ca', port: 9876, path: '/dvc' });
 
     peer.on('open', function()
     {
@@ -176,18 +175,9 @@ jQuery(function()
 	    // Wait for stream on the call, then set peer video display
 	    call.on('stream', function(stream)
 	    {
+	    	console.log('stream');
+
 	    	phoneVideo.prop('src', URL.createObjectURL(stream));
-	    	remoteStream = stream;
-
-	    	stream.onaddtrack = function()
-	    	{
-	    		console.log("onaddtrack");
-	    	};
-
-	    	stream.onremovetrack = function()
-	    	{
-	    		console.log("onremovetrack");
-	    	};
 	    });
 
 	    // UI stuff

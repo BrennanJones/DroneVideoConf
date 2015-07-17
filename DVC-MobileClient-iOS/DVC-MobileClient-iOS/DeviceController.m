@@ -871,7 +871,7 @@ uint8_t *frameCompleteCallback (eARSTREAM_READER_CAUSE cause, uint8_t *frame, ui
     switch(cause)
     {
         case ARSTREAM_READER_CAUSE_FRAME_COMPLETE:
-            [deviceController.delegate onFrameComplete:deviceController frame:frame frameSize:frameSize];
+            [deviceController.droneVideoDelegate onFrameComplete:deviceController frame:frame frameSize:frameSize];
             ret = deviceController->_videoFrame;
             
             break;

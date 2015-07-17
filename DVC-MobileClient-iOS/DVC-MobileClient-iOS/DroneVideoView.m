@@ -59,7 +59,8 @@ static const NSString * naluTypesStrings[] = {
 
 @implementation DroneVideoView
 
-- (void)commonInit {
+- (void)commonInit
+{
     _searchForSPSAndPPS = true;
     
     [self setNeedsLayout];
@@ -93,7 +94,8 @@ static const NSString * naluTypesStrings[] = {
 -(id) initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
-    if (self) {
+    if (self)
+    {
         // Initialization code
     }
     return self;
@@ -105,6 +107,9 @@ static const NSString * naluTypesStrings[] = {
     // Credit for a lot of this code goes to Zappel on Stack Overflow:
     //  (http://stackoverflow.com/questions/25980070/how-to-use-avsamplebufferdisplaylayer-in-ios-8-for-rtp-h264-streams-with-gstream)
     //
+    
+    self.videoLayer.bounds = self.bounds;
+    self.videoLayer.position = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds));
     
     int startCodeIndex = 0;
     for (int i = 0; i < 4; i++)

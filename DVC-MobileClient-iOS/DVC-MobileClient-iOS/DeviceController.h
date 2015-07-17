@@ -70,14 +70,19 @@ typedef struct
 - (void)onAltitudeChanged:(DeviceController *)deviceController altitude:(double)altitude;
 - (void)onAttitudeChanged:(DeviceController *)deviceController roll:(float)roll pitch:(float)pitch yaw:(float)yaw;
 - (void)onSpeedChanged:(DeviceController *)deviceController speedX:(float)speedX speedY:(float)speedY speedZ:(float)speedZ;
-- (void)onFrameComplete:(DeviceController *)deviceController frame:(uint8_t *)frame frameSize:(uint32_t)frameSize;
 - (void)onSequentialPhotoReady:(DeviceController *)deviceController filePath:(char *)filePath;
+@end
+
+@protocol DroneVideoDelegate <NSObject>
+- (void)onFrameComplete:(DeviceController *)deviceController frame:(uint8_t *)frame frameSize:(uint32_t)frameSize;
 @end
 
 
 @interface DeviceController : NSObject
 
 @property (nonatomic, weak) id <DeviceControllerDelegate> delegate;
+@property (nonatomic, weak) id <DroneVideoDelegate> droneVideoDelegate;
+
 /** Get the ARService instance associated with this controller. */
 @property (readonly, nonatomic, strong) ARService* service;
 

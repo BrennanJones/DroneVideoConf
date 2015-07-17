@@ -40,6 +40,7 @@
 
 #import "MainViewController.h"
 #import "DeviceController.h"
+#import "DVCTabBarController.h"
 
 #import "gps.h"
 #import "SocketIOWrapper.h"
@@ -91,7 +92,7 @@ static const double DRONE_REQUIRED_ALTITUDE_LOWER_BOUND = 4.0;
 static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 
 
-@interface MainViewController () <DeviceControllerDelegate>
+@interface MainViewController ()
 
 @property (nonatomic, strong) DeviceController *deviceController;
 @property (nonatomic, strong) UIAlertView *alertView;
@@ -115,7 +116,7 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    NSLog(@"viewDidLoad ...");
+    NSLog(@"MainViewController: viewDidLoad ...");
     
     _dvcRed = [UIColor colorWithRed:0.8 green:0.2 blue:0.2 alpha:1.0];
     _dvcGreen = [UIColor colorWithRed:0.2 green:0.8 blue:0.0 alpha:1];
@@ -131,22 +132,33 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
     [[ARDiscovery sharedInstance] start];
 }
 
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    NSLog(@"MainViewController: viewWillAppear ... ");
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.tabBarController.tabBar setBarStyle:UIBarStyleDefault];
+        [self.tabBarController.tabBar setTranslucent:NO];
+    });
+}
+
 - (void)viewDidAppear:(BOOL)animated
 {
-    NSLog(@"viewDidAppear ... ");
     [super viewDidAppear:animated];
+    NSLog(@"MainViewController: viewDidAppear ... ");
 }
 
 - (void)viewDidDisappear:(BOOL)animated
 {
-    NSLog(@"viewDidDisappear ... ");
     [super viewDidDisappear:animated];
+    NSLog(@"MainViewController: viewDidDisappear ... ");
 }
 
 - (void)viewWillUnload
 {
-    NSLog(@"viewWillUnload ... ");
     [super viewWillUnload];
+    NSLog(@"MainViewController: viewWillUnload ... ");
     
     [self unregisterApplicationNotifications];
     [[ARDiscovery sharedInstance] stop];
@@ -188,12 +200,12 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 
 - (void)enteredBackground:(NSNotification*)notification
 {
-    NSLog(@"enteredBackground ... ");
+    NSLog(@"MainViewController: enteredBackground ... ");
 }
 
 - (void)enterForeground:(NSNotification*)notification
 {
-    NSLog(@"enterForeground ... ");
+    NSLog(@"MainViewController: enterForeground ... ");
 }
 
 - (void)discoveryDidUpdateServices:(NSNotification *)notification
@@ -211,8 +223,10 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                     _deviceController = [[DeviceController alloc]initWithARService:_service];
                     [_deviceController setDelegate:self];
-                    BOOL connectError = [_deviceController start];
+                    [_deviceController setDroneVideoDelegate:self];
+                    [(DVCTabBarController *)(self.tabBarController) setDeviceController:_deviceController];
                     
+                    BOOL connectError = [_deviceController start];
                     NSLog(@"connectError = %d", connectError);
                     
                     if (connectError)
@@ -324,7 +338,7 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 {
     NSLog(@"onDronePositionChanged");
     
-    if (latitude >= -90 && latitude <= 90 && longitude >= -180 && longitude <= 180)
+    if (latitude >= -90.0 && latitude <= 90.0 && longitude >= -180.0 && longitude <= 180.0)
     {
         latDrone = latitude;
         lonDrone = longitude;
@@ -360,7 +374,7 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 
 - (void)onFrameComplete:(DeviceController *)deviceController frame:(uint8_t *)frame frameSize:(uint32_t)frameSize;
 {
-    NSLog(@"onFrameComplete");
+    NSLog(@"MainViewController: onFrameComplete ...");
     
     if (_socket.connected)
     {
@@ -368,8 +382,6 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
         NSArray *args = [[NSArray alloc] initWithObjects:data, nil];
         [SocketIOWrapper emit:_socket withEvent:@"DroneVideoFrame" withItems:args];
     }
-    
-    [_droneVideoView updateVideoViewWithFrame:frame frameSize:frameSize];
 }
 
 - (void)onDisconnectNetwork:(DeviceController *)deviceController
@@ -392,6 +404,8 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 // Delegate method from the CLLocationManagerDelegate protocol.
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
+    NSLog(@"locationManager didUpdateLocations (phone location updated)");
+    
     // If it's a relatively recent event, turn off updates to save power.
     CLLocation* location = [locations lastObject];
     NSDate* eventDate = location.timestamp;
@@ -411,7 +425,7 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
-    NSLog(@"didFailWithError: %@", error);
+    NSLog(@"locationManager didFailWithError: %@ (phone location update failed)", error);
     UIAlertView *errorAlert = [[UIAlertView alloc]
                                initWithTitle:@"Error" message:@"Failed to Get Your Location" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [errorAlert show];
@@ -751,17 +765,23 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 
 - (IBAction)emergencyClick:(id)sender
 {
+    NSLog(@"emergencyClick");
+    
     [_deviceController sendEmergency];
 }
 
 - (IBAction)takeoffClick:(id)sender
 {
+    NSLog(@"takeoffClick");
+    
     [_deviceController resetHome];
     [_deviceController sendTakeoff];
 }
 
 - (IBAction)landingClick:(id)sender
 {
+    NSLog(@"landingClick");
+    
     [_deviceController sendLanding];
 }
 

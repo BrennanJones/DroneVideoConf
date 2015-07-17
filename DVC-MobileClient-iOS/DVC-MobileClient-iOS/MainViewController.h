@@ -39,11 +39,11 @@
 #import <CoreLocation/CoreLocation.h>
 #import <libARDiscovery/ARDISCOVERY_BonjourDiscovery.h>
 
-#import "DroneVideoView.h"
+#import "DeviceController.h"
 #import "DVC-Swift.h"
 
 
-@interface MainViewController : UIViewController <UITextFieldDelegate, CLLocationManagerDelegate>
+@interface MainViewController : UIViewController <UITextFieldDelegate, CLLocationManagerDelegate, DeviceControllerDelegate, DroneVideoDelegate>
 
 @property (nonatomic, strong) ARService *service;
 
@@ -59,7 +59,6 @@
 @property (strong, nonatomic) IBOutlet UIButton *serverConnectionButton;
 @property (strong, nonatomic) IBOutlet UILabel *serverConnectionStatusLabel;
 @property (strong, nonatomic) IBOutlet UILabel *droneConnectionStatusLabel;
-@property (strong, nonatomic) IBOutlet DroneVideoView *droneVideoView;
 
 @property (weak, nonatomic) IBOutlet UILabel *latPhoneLabel;
 @property (weak, nonatomic) IBOutlet UILabel *lonPhoneLabel;

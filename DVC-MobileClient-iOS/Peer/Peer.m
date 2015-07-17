@@ -220,6 +220,19 @@ static NSInteger kPeerClientErrorSetSDP = -4;
         _onRemoveLocalVideoTrack();
     }
     
+    [_peerConnection removeStream:_localMediaStream];
+    [self deleteLocalMediaStream];
+    _localMediaStream = nil;
+    RTCMediaStream *localStream = [self createLocalMediaStream];
+    [_peerConnection addStream:localStream];
+    
+    
+    /*
+    if (_onRemoveLocalVideoTrack)
+    {
+        _onRemoveLocalVideoTrack();
+    }
+    
     [_localMediaStream removeVideoTrack:_localVideoTrack];
     _localVideoTrack = nil;
     
@@ -257,8 +270,8 @@ static NSInteger kPeerClientErrorSetSDP = -4;
             _onReceiveLocalVideoTrack(localVideoTrack);
         }
     }
-    
 #endif
+    */
 }
 
 #pragma API Helper

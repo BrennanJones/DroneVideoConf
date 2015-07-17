@@ -5,6 +5,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "DeviceController.h"
+
 @interface VideoChatViewController : UIViewController <UITextFieldDelegate>
 
 @property(weak, nonatomic) IBOutlet UITextField* roomInput;

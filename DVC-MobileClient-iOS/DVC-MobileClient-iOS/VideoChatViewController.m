@@ -39,9 +39,12 @@ static CGFloat const kLocalViewPadding = 20;
 @synthesize peer = _peer;
 
 
-- (void)viewDidLoad
+- (void)loadView
 {
-    [super viewDidLoad];
+    [super loadView];
+    NSLog(@"VideoChatViewController: loadView ...");
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSessionRouteChange:) name:AVAudioSessionRouteChangeNotification object:nil];
     
     self.remoteVideoView =
     [[RTCEAGLVideoView alloc] initWithFrame:self.blackView.bounds];
@@ -65,18 +68,11 @@ static CGFloat const kLocalViewPadding = 20;
     [_peer disconnect];
     
     // Create Configuration object.
-    NSDictionary *config = @{@"id": @"1", @"key": @"s51s84ud22jwz5mi", @"port": @(9000)};
-    
-//    NSDictionary *config = @{@"host": @"192.168.42.2",
-//                             @"port": @(9000),
-//                             //@"key": @"peerjs",
-//                             @"path": @"/dvc",
-//                             @"secure": @(NO),
-//                             /*@"config": @{
-//                                     @"iceServers": @[
-//                                             @{@"url": @"stun:stun.l.google.com:19302", @"user": @"", @"password": @""}
-//                                             ]
-//                                     }*/};
+    NSDictionary *config = @{@"host": @"csf.cpsc.ucalgary.ca",
+                             @"port": @(9876),
+                             @"id": @"1",
+                             @"path": @"/dvc",
+                             @"secure": @(NO)};
     
     __block typeof(self) __self = self;
     
@@ -129,6 +125,35 @@ static CGFloat const kLocalViewPadding = 20;
      }];
 }
 
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    NSLog(@"VideoChatViewController: viewDidLoad ...");
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    NSLog(@"VideoChatViewController: viewWillAppear ... ");
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.tabBarController.tabBar setBarStyle:UIBarStyleBlack];
+        [self.tabBarController.tabBar setTranslucent:YES];
+    });
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    NSLog(@"VideoChatViewController: viewDidAppear ... ");
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    NSLog(@"VideoChatViewController: viewDidDisappear ... ");
+}
+
 - (void)viewDidLayoutSubviews
 {
     if (self.statusBarOrientation != [UIApplication sharedApplication].statusBarOrientation)
@@ -141,6 +166,28 @@ static CGFloat const kLocalViewPadding = 20;
     }
 }
 
+- (void)registerApplicationNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(enteredBackground:) name: UIApplicationDidEnterBackgroundNotification object: nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(enterForeground:) name: UIApplicationWillEnterForegroundNotification object: nil];
+}
+
+- (void)unregisterApplicationNotifications
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name: UIApplicationDidEnterBackgroundNotification object: nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name: UIApplicationWillEnterForegroundNotification object: nil];
+}
+
+- (void)enteredBackground:(NSNotification*)notification
+{
+    NSLog(@"VideoChatViewController: enteredBackground ... ");
+}
+
+- (void)enterForeground:(NSNotification*)notification
+{
+    NSLog(@"VideoChatViewController: enterForeground ... ");
+}
+
 - (void)applicationWillResignActive:(UIApplication*)application
 {
     [self disconnect];
@@ -149,6 +196,29 @@ static CGFloat const kLocalViewPadding = 20;
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)didSessionRouteChange:(NSNotification *)notification
+{
+    NSDictionary *interuptionDict = notification.userInfo;
+    NSInteger routeChangeReason = [[interuptionDict valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
+    
+    switch (routeChangeReason) {
+        case AVAudioSessionRouteChangeReasonCategoryChange: {
+            // Set speaker as default route
+            NSError* error;
+            [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&error];
+        }
+            break;
+            
+        default:
+            break;
+    }
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
 }
 
 
