@@ -3,10 +3,13 @@
 //  DVC-MobileClient-iOS
 //
 
-#ifndef __BebopDronePiloting__Utility__
-#define __BebopDronePiloting__Utility__
+#import <Foundation/Foundation.h>
+
+@interface Utility : NSObject
+
++ (void)showAlertWithTitle:(NSString *)title withMessage:(NSString *)message;
 
 double radiansToDegrees(double radians);
 double degreesToRadians(double degrees);
 
-#endif /* defined(__BebopDronePiloting__Utility__) */
+@end

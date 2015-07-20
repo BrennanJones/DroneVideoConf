@@ -17,8 +17,6 @@
 		968B41AE1B308EA800B3EE71 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 968B419E1B308EA800B3EE71 /* main.m */; };
 		968B41AF1B308EA800B3EE71 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 968B419F1B308EA800B3EE71 /* Main.storyboard */; };
 		968B41B01B308EA800B3EE71 /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 968B41A11B308EA800B3EE71 /* MainViewController.m */; };
-		968B41B11B308EA800B3EE71 /* SocketIOWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 968B41A31B308EA800B3EE71 /* SocketIOWrapper.m */; };
-		968B41B21B308EA800B3EE71 /* Utility.c in Sources */ = {isa = PBXBuildFile; fileRef = 968B41A41B308EA800B3EE71 /* Utility.c */; };
 		96D347731B2B69160090CDFF /* libARCommands.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96D3476A1B2B69160090CDFF /* libARCommands.framework */; };
 		96D347741B2B69160090CDFF /* libARDataTransfer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96D3476B1B2B69160090CDFF /* libARDataTransfer.framework */; };
 		96D347751B2B69160090CDFF /* libARDiscovery.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96D3476C1B2B69160090CDFF /* libARDiscovery.framework */; };
@@ -75,6 +73,7 @@
 		E9BA9C7D1B45AA170078A35E /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E9BA9C7C1B45AA170078A35E /* libresolv.dylib */; };
 		E9BA9C7F1B45AA2A0078A35E /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E9BA9C7E1B45AA2A0078A35E /* libxml2.dylib */; };
 		E9BA9C811B45AA3B0078A35E /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9BA9C801B45AA3B0078A35E /* GLKit.framework */; };
+		E9C38AB41B5D684A00C8727B /* Utility.m in Sources */ = {isa = PBXBuildFile; fileRef = E9C38AB31B5D684A00C8727B /* Utility.m */; };
 		E9EE87E71B5704E10068A510 /* DroneVideoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E9EE87E61B5704E10068A510 /* DroneVideoViewController.m */; };
 		E9EE87EA1B5827D70068A510 /* DVCTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = E9EE87E91B5827D70068A510 /* DVCTabBarController.m */; };
 /* End PBXBuildFile section */
@@ -96,10 +95,6 @@
 		968B419F1B308EA800B3EE71 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		968B41A01B308EA800B3EE71 /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
 		968B41A11B308EA800B3EE71 /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
-		968B41A21B308EA800B3EE71 /* SocketIOWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocketIOWrapper.h; sourceTree = "<group>"; };
-		968B41A31B308EA800B3EE71 /* SocketIOWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SocketIOWrapper.m; sourceTree = "<group>"; };
-		968B41A41B308EA800B3EE71 /* Utility.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Utility.c; sourceTree = "<group>"; };
-		968B41A51B308EA800B3EE71 /* Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utility.h; sourceTree = "<group>"; };
 		96D3476A1B2B69160090CDFF /* libARCommands.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARCommands.framework; path = "ARDroneSDK3-Frameworks/libARCommands.framework"; sourceTree = "<group>"; };
 		96D3476B1B2B69160090CDFF /* libARDataTransfer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARDataTransfer.framework; path = "ARDroneSDK3-Frameworks/libARDataTransfer.framework"; sourceTree = "<group>"; };
 		96D3476C1B2B69160090CDFF /* libARDiscovery.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARDiscovery.framework; path = "ARDroneSDK3-Frameworks/libARDiscovery.framework"; sourceTree = "<group>"; };
@@ -192,6 +187,8 @@
 		E9BA9C7C1B45AA170078A35E /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
 		E9BA9C7E1B45AA2A0078A35E /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		E9BA9C801B45AA3B0078A35E /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		E9C38AB21B5D684A00C8727B /* Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utility.h; sourceTree = "<group>"; };
+		E9C38AB31B5D684A00C8727B /* Utility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utility.m; sourceTree = "<group>"; };
 		E9EE87E51B5704E10068A510 /* DroneVideoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DroneVideoViewController.h; sourceTree = "<group>"; };
 		E9EE87E61B5704E10068A510 /* DroneVideoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DroneVideoViewController.m; sourceTree = "<group>"; };
 		E9EE87E81B5827D70068A510 /* DVCTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVCTabBarController.h; sourceTree = "<group>"; };
@@ -317,14 +314,12 @@
 				968B419F1B308EA800B3EE71 /* Main.storyboard */,
 				968B41A01B308EA800B3EE71 /* MainViewController.h */,
 				968B41A11B308EA800B3EE71 /* MainViewController.m */,
-				968B41A21B308EA800B3EE71 /* SocketIOWrapper.h */,
-				968B41A31B308EA800B3EE71 /* SocketIOWrapper.m */,
-				968B41A41B308EA800B3EE71 /* Utility.c */,
-				968B41A51B308EA800B3EE71 /* Utility.h */,
 				E9A61AE21B4A37C400CA142B /* VideoChatViewController.h */,
 				E9A61AE31B4A37C400CA142B /* VideoChatViewController.m */,
 				E9EE87E81B5827D70068A510 /* DVCTabBarController.h */,
 				E9EE87E91B5827D70068A510 /* DVCTabBarController.m */,
+				E9C38AB21B5D684A00C8727B /* Utility.h */,
+				E9C38AB31B5D684A00C8727B /* Utility.m */,
 			);
 			path = "DVC-MobileClient-iOS";
 			sourceTree = "<group>";
@@ -512,7 +507,6 @@
 				E9BA9C711B45A6BB0078A35E /* WebSocket.swift in Sources */,
 				968B41A91B308EA800B3EE71 /* DeviceController.m in Sources */,
 				E9BA9C6F1B45A6BB0078A35E /* SocketTypes.swift in Sources */,
-				968B41B11B308EA800B3EE71 /* SocketIOWrapper.m in Sources */,
 				E90514301B4EE5B900584AC4 /* Peer.m in Sources */,
 				E9BA9C661B45A6BB0078A35E /* SocketAnyEvent.swift in Sources */,
 				E905142F1B4EE5B900584AC4 /* ARDUtilities.m in Sources */,
@@ -521,7 +515,7 @@
 				E96226C01B18DAE600BF584B /* matrix.c in Sources */,
 				968B41AE1B308EA800B3EE71 /* main.m in Sources */,
 				E90514341B4EE5B900584AC4 /* SRWebSocket.m in Sources */,
-				968B41B21B308EA800B3EE71 /* Utility.c in Sources */,
+				E9C38AB41B5D684A00C8727B /* Utility.m in Sources */,
 				E9BA9C6B1B45A6BB0078A35E /* SocketIOClient.swift in Sources */,
 				E9BA9C6D1B45A6BB0078A35E /* SocketPacket.swift in Sources */,
 				E9BA9C701B45A6BB0078A35E /* SwiftRegex.swift in Sources */,
@@ -649,7 +643,7 @@
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = DVC;
 				PROVISIONING_PROFILE = "";
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv7 armv7s";
 			};
 			name = Debug;
@@ -678,7 +672,7 @@
 				);
 				PRODUCT_NAME = DVC;
 				PROVISIONING_PROFILE = "";
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv7 armv7s";
 			};
 			name = Release;

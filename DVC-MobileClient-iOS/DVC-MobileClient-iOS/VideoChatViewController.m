@@ -8,6 +8,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import "Peer.h"
+#import "Utility.h"
 
 
 // Padding space for local video view with its parent.
@@ -259,7 +260,7 @@ static CGFloat const kLocalViewPadding = 20;
 
 - (void)peerClient:(Peer *)client didError:(NSError *)error
 {
-    [self showAlertWithMessage:[NSString stringWithFormat:@"%@", error]];
+    [Utility showAlertWithTitle:@"Video Chat Error" withMessage:[NSString stringWithFormat:@"%@", error]];
     [self disconnect];
 }
 
@@ -312,16 +313,6 @@ static CGFloat const kLocalViewPadding = 20;
 {
     [self resetUI];
     [_peer disconnect];
-}
-
-- (void)showAlertWithMessage:(NSString*)message
-{
-    UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:nil
-                                                        message:message
-                                                       delegate:nil
-                                              cancelButtonTitle:@"OK"
-                                              otherButtonTitles:nil];
-    [alertView show];
 }
 
 - (void)resetUI

@@ -43,7 +43,6 @@
 #import "DVCTabBarController.h"
 
 #import "gps.h"
-#import "SocketIOWrapper.h"
 #import "Utility.h"
 
 
@@ -95,7 +94,6 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 @interface MainViewController ()
 
 @property (nonatomic, strong) DeviceController *deviceController;
-@property (nonatomic, strong) UIAlertView *alertView;
 
 @property (nonatomic, strong) NSThread *droneControlLoopThread;
 
@@ -130,6 +128,8 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
     
     [self registerApplicationNotifications];
     [[ARDiscovery sharedInstance] start];
+    
+    [self connectToServerClick:nil];
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -168,7 +168,6 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self disconnectFromServer];
         [_deviceController stop];
-        [_alertView dismissWithClickedButtonIndex:0 animated:TRUE];
         
         free_filter(droneKalmanFilter);
         
@@ -380,7 +379,7 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
     {
         NSData *data = [[NSData alloc] initWithBytes:frame length:frameSize];
         NSArray *args = [[NSArray alloc] initWithObjects:data, nil];
-        [SocketIOWrapper emit:_socket withEvent:@"DroneVideoFrame" withItems:args];
+        [_socket emit:@"DroneVideoFrame" withItems:args];
     }
 }
 
@@ -426,9 +425,7 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
     NSLog(@"locationManager didFailWithError: %@ (phone location update failed)", error);
-    UIAlertView *errorAlert = [[UIAlertView alloc]
-                               initWithTitle:@"Error" message:@"Failed to Get Your Location" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-    [errorAlert show];
+    [Utility showAlertWithTitle:@"Location Error" withMessage:@"Failed to Get Your Location"];
 }
 
 
@@ -444,56 +441,23 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
     
     [_socket on:@"connect" callback:^(NSArray* data, void (^ack)(NSArray*)) {
         NSLog(@"socket connected");
-        
-        [SocketIOWrapper emit:_socket withEvent:@"MobileClientConnected" withItems:[[NSArray alloc] init]];
-        
-        self.serverConnectionStatusLabel.text = @"Connected to server";
-        self.serverConnectionStatusLabel.textColor = _dvcGreen;
-        [self.serverConnectionButton setTitle:@"Disconnect" forState:UIControlStateNormal];
-        self.serverConnectionButton.enabled = true;
+        [self socketOnConnect];
     }];
     
     [_socket on:@"disconnect" callback:^(NSArray* data, void (^ack)(NSArray*)) {
         NSLog(@"socket disconnect");
-        
-        self.serverConnectionStatusLabel.text = @"Not connected to server";
-        self.serverConnectionStatusLabel.textColor = _dvcRed;
-        [self.serverConnectionButton setTitle:@"Connect" forState:UIControlStateNormal];
-        self.serverConnectionButton.enabled = true;
-        self.serverConnectionTextField.enabled = true;
+        [self socketOnDisconnect];
     }];
     
     [_socket on:@"error" callback:^(NSArray* data, void (^ack)(NSArray*)) {
         NSLog(@"socket error");
-        
-        _alertView = [[UIAlertView alloc] initWithTitle:@"DVC" message:@"Connection with server failed." delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
-        [_alertView show];
-        
-        self.serverConnectionStatusLabel.text = @"Not connected to server";
-        self.serverConnectionStatusLabel.textColor = _dvcRed;
-        [self.serverConnectionButton setTitle:@"Connect" forState:UIControlStateNormal];
-        self.serverConnectionButton.enabled = true;
-        self.serverConnectionTextField.enabled = true;
+        [self socketOnError];
     }];
     
     
     [_socket on:@"Command" callback:^(NSArray* data, void (^ack)(NSArray*)) {
-        if([(NSString *)data[0] isEqualToString:@"CamLeft"])
-        {
-            [_deviceController setCamPan:-10];
-        }
-        if([(NSString *)data[0] isEqualToString:@"CamRight"])
-        {
-            [_deviceController setCamPan:10];
-        }
-        if([(NSString *)data[0] isEqualToString:@"CamUp"])
-        {
-            [_deviceController setCamTilt:10];
-        }
-        if([(NSString *)data[0] isEqualToString:@"CamDown"])
-        {
-            [_deviceController setCamTilt:-10];
-        }
+        NSLog(@"socket command");
+        [self socketOnCommand:data];
     }];
     
     
@@ -505,6 +469,59 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
     if (_socket != nil && _socket.connected)
     {
         [_socket closeWithFast:false];
+    }
+    _socket = nil;
+}
+
+- (void)socketOnConnect
+{
+    [_socket emit:@"MobileClientConnected" withItems:[[NSArray alloc] init]];
+    
+    self.serverConnectionStatusLabel.text = @"Connected to server";
+    self.serverConnectionStatusLabel.textColor = _dvcGreen;
+    [self.serverConnectionButton setTitle:@"Disconnect" forState:UIControlStateNormal];
+    self.serverConnectionButton.enabled = true;
+}
+
+- (void)socketOnDisconnect
+{
+    self.serverConnectionStatusLabel.text = @"Not connected to server";
+    self.serverConnectionStatusLabel.textColor = _dvcRed;
+    [self.serverConnectionButton setTitle:@"Connect" forState:UIControlStateNormal];
+    self.serverConnectionButton.enabled = true;
+    self.serverConnectionTextField.enabled = true;
+}
+
+- (void)socketOnError
+{
+    [Utility showAlertWithTitle:@"Server Connection Error" withMessage:@"Connection with server failed."];
+    
+    [self disconnectFromServer];
+    
+    self.serverConnectionStatusLabel.text = @"Not connected to server";
+    self.serverConnectionStatusLabel.textColor = _dvcRed;
+    [self.serverConnectionButton setTitle:@"Connect" forState:UIControlStateNormal];
+    self.serverConnectionButton.enabled = true;
+    self.serverConnectionTextField.enabled = true;
+}
+
+- (void)socketOnCommand:(NSArray *)data
+{
+    if([(NSString *)data[0] isEqualToString:@"CamLeft"])
+    {
+        [_deviceController setCamPan:-10];
+    }
+    if([(NSString *)data[0] isEqualToString:@"CamRight"])
+    {
+        [_deviceController setCamPan:10];
+    }
+    if([(NSString *)data[0] isEqualToString:@"CamUp"])
+    {
+        [_deviceController setCamTilt:10];
+    }
+    if([(NSString *)data[0] isEqualToString:@"CamDown"])
+    {
+        [_deviceController setCamTilt:-10];
     }
 }
 
@@ -735,7 +752,7 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
         NSData *photo = [NSData dataWithContentsOfFile:filePathString];
         
         NSArray *args = [[NSArray alloc] initWithObjects:photo, nil];
-        [SocketIOWrapper emit:_socket withEvent:@"DronePhoto" withItems:args];
+        [_socket emit:@"DronePhoto" withItems:args];
     }
 }
 
@@ -759,7 +776,7 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
         self.serverConnectionStatusLabel.text = @"Connecting to server...";
         self.serverConnectionStatusLabel.textColor = [UIColor blackColor];
         
-        [self connectToServer:self.serverConnectionTextField.text];
+        [self connectToServer:[NSString stringWithFormat:@"%@%@", self.serverConnectionTextField.text, @":12345"]];
     }
 }
 
