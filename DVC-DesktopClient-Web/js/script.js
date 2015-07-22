@@ -118,11 +118,11 @@ jQuery(function()
     navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
     // PeerJS object
-    var peer = new Peer('0', { host: 'csf.cpsc.ucalgary.ca', port: 9876, path: '/dvc' });
+    var peer = new Peer('0', { host: window.location.hostname, port: 9876, path: '/dvc' });
 
     peer.on('open', function()
     {
-    	//$('#my-id').text(peer.id);
+    	// ...
     });
 
     // Receiving a call
@@ -132,10 +132,12 @@ jQuery(function()
 	    call.answer(window.localStream);
 	    step3(call);
     });
+    
     peer.on('error', function(err)
     {
+	    console.log("Error.");
+	    
 	    alert(err.message);
-	    // Return to step 2 if error occurs
 	    step2();
     });
 
@@ -154,14 +156,13 @@ jQuery(function()
 	    },
 	    function()
 	    {
-	    	//$('#step1-error').show();
+	    	console.log("Step 1 error.");
 	    });
     }
 
     function step2 ()
     {
-    	//$('#step1, #step3').hide();
-    	//$('#step2').show();
+    	// ...
     }
 
     function step3 (call)
@@ -180,11 +181,7 @@ jQuery(function()
 	    	phoneVideo.prop('src', URL.createObjectURL(stream));
 	    });
 
-	    // UI stuff
 	    window.existingCall = call;
-	    //$('#their-id').text(call.peer);
 	    call.on('close', step2);
-	    //$('#step1, #step2').hide();
-	    //$('#step3').show();
     }
 });

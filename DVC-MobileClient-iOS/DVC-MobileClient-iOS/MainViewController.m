@@ -35,13 +35,13 @@
 //
 
 
+#import "MainViewController.h"
+
 #import <CoreLocation/CoreLocation.h>
 #import <libARDataTransfer/ARDataTransfer.h>
 
-#import "MainViewController.h"
 #import "DeviceController.h"
 #import "DVCTabBarController.h"
-
 #import "gps.h"
 #import "Utility.h"
 
@@ -93,7 +93,7 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 
 @interface MainViewController ()
 
-@property (nonatomic, strong) DeviceController *deviceController;
+@property (nonatomic, strong) DVCTabBarController *dvcTabBarController;
 
 @property (nonatomic, strong) NSThread *droneControlLoopThread;
 
@@ -115,6 +115,8 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 {
     [super viewDidLoad];
     NSLog(@"MainViewController: viewDidLoad ...");
+    
+    _dvcTabBarController = (DVCTabBarController *)(self.tabBarController);
     
     _dvcRed = [UIColor colorWithRed:0.8 green:0.2 blue:0.2 alpha:1.0];
     _dvcGreen = [UIColor colorWithRed:0.2 green:0.8 blue:0.0 alpha:1];
@@ -167,7 +169,7 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self disconnectFromServer];
-        [_deviceController stop];
+        [_dvcTabBarController.deviceController stop];
         
         free_filter(droneKalmanFilter);
         
@@ -220,12 +222,11 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
                 _service = service;
                 
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    _deviceController = [[DeviceController alloc]initWithARService:_service];
-                    [_deviceController setDeviceControllerDelegate:self];
-                    [_deviceController setDroneVideoDelegate:self];
-                    [(DVCTabBarController *)(self.tabBarController) setDeviceController:_deviceController];
+                    _dvcTabBarController.deviceController = [[DeviceController alloc]initWithARService:_service];
+                    [_dvcTabBarController.deviceController setDeviceControllerDelegate:self];
+                    [_dvcTabBarController.deviceController setDroneVideoDelegate:self];
                     
-                    BOOL connectError = [_deviceController start];
+                    BOOL connectError = [_dvcTabBarController.deviceController start];
                     NSLog(@"connectError = %d", connectError);
                     
                     if (connectError)
@@ -375,11 +376,11 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 {
     NSLog(@"MainViewController: onFrameComplete ...");
     
-    if (_socket.connected)
+    if (_dvcTabBarController.socket.connected)
     {
         NSData *data = [[NSData alloc] initWithBytes:frame length:frameSize];
         NSArray *args = [[NSArray alloc] initWithObjects:data, nil];
-        [_socket emit:@"DroneVideoFrame" withItems:args];
+        [_dvcTabBarController.socket emit:@"DroneVideoFrame" withItems:args];
     }
 }
 
@@ -435,46 +436,45 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 {
     //[self disconnectFromServer];
     
-    _socket = [[SocketIOClient alloc] initWithSocketURL:address options:nil];
+    _dvcTabBarController.socket = [[SocketIOClient alloc] initWithSocketURL:address options:nil];
     
-    [_socket on:@"connect" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+    [_dvcTabBarController.socket on:@"connect" callback:^(NSArray* data, void (^ack)(NSArray*)) {
         NSLog(@"socket connected");
         [self socketOnConnect];
     }];
     
-    [_socket on:@"disconnect" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+    [_dvcTabBarController.socket on:@"disconnect" callback:^(NSArray* data, void (^ack)(NSArray*)) {
         NSLog(@"socket disconnect");
         [self socketOnDisconnect];
     }];
     
-    [_socket on:@"error" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+    [_dvcTabBarController.socket on:@"error" callback:^(NSArray* data, void (^ack)(NSArray*)) {
         NSLog(@"socket error");
         [self socketOnError];
     }];
     
-    [_socket on:@"Command" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+    [_dvcTabBarController.socket on:@"Command" callback:^(NSArray* data, void (^ack)(NSArray*)) {
         NSLog(@"socket command");
         [self socketOnCommand:data];
     }];
     
-    
-    [_socket connect];
+    [_dvcTabBarController.socket connect];
 }
 
 - (void)disconnectFromServer
 {
-    if (_socket != nil && _socket.connected)
+    if (_dvcTabBarController.socket != nil && _dvcTabBarController.socket.connected)
     {
-        [_socket closeWithFast:false];
+        [_dvcTabBarController.socket closeWithFast:false];
     }
-    _socket = nil;
+    _dvcTabBarController.socket = nil;
     
     [self socketOnDisconnect];
 }
 
 - (void)socketOnConnect
 {
-    [_socket emit:@"MobileClientConnected" withItems:[[NSArray alloc] init]];
+    [_dvcTabBarController.socket emit:@"MobileClientConnect" withItems:[[NSArray alloc] init]];
     
     [_serverConnectionDelegate onConnectToServer:self.serverConnectionTextField.text];
     
@@ -486,6 +486,8 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 
 - (void)socketOnDisconnect
 {
+    [_serverConnectionDelegate onDisconnectFromServer];
+    
     self.serverConnectionStatusLabel.text = @"Not connected to server";
     self.serverConnectionStatusLabel.textColor = _dvcRed;
     [self.serverConnectionButton setTitle:@"Connect" forState:UIControlStateNormal];
@@ -510,19 +512,19 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 {
     if([(NSString *)data[0] isEqualToString:@"CamLeft"])
     {
-        [_deviceController setCamPan:-10];
+        [_dvcTabBarController.deviceController setCamPan:-10];
     }
     if([(NSString *)data[0] isEqualToString:@"CamRight"])
     {
-        [_deviceController setCamPan:10];
+        [_dvcTabBarController.deviceController setCamPan:10];
     }
     if([(NSString *)data[0] isEqualToString:@"CamUp"])
     {
-        [_deviceController setCamTilt:10];
+        [_dvcTabBarController.deviceController setCamTilt:10];
     }
     if([(NSString *)data[0] isEqualToString:@"CamDown"])
     {
-        [_deviceController setCamTilt:-10];
+        [_dvcTabBarController.deviceController setCamTilt:-10];
     }
 }
 
@@ -622,25 +624,25 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
                 }
                 else
                 {
-                    [_deviceController setYaw:0];
+                    [_dvcTabBarController.deviceController setYaw:0];
                     
-                    [_deviceController setFlag:0];
-                    [_deviceController setPitch:0];
+                    [_dvcTabBarController.deviceController setFlag:0];
+                    [_dvcTabBarController.deviceController setPitch:0];
                 }
             }
         }
         
         if (altDrone < DRONE_REQUIRED_ALTITUDE_LOWER_BOUND)
         {
-            [_deviceController setGaz:50];
+            [_dvcTabBarController.deviceController setGaz:50];
         }
         else if (altDrone > DRONE_REQUIRED_ALTITUDE_UPPER_BOUND)
         {
-            [_deviceController setGaz:-50];
+            [_dvcTabBarController.deviceController setGaz:-50];
         }
         else
         {
-            [_deviceController setGaz:0];
+            [_dvcTabBarController.deviceController setGaz:0];
         }
         
         if ([[NSDate date] timeIntervalSinceDate:lastLabelsUpdate] >= 0.5)
@@ -678,7 +680,7 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
         {
             if ((angle >= 0 && angle < M_PI) || angle < -1*M_PI)
             {
-                [_deviceController setYaw:35];
+                [_dvcTabBarController.deviceController setYaw:35];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [_droneYawDirectionLabel setText:@"Right"];
@@ -686,7 +688,7 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
             }
             else if ((angle < 0 && angle >= -1*M_PI) || angle >= M_PI)
             {
-                [_deviceController setYaw:-35];
+                [_dvcTabBarController.deviceController setYaw:-35];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [_droneYawDirectionLabel setText:@"Left"];
@@ -695,7 +697,7 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
         }
         else
         {
-            [_deviceController setYaw:0];
+            [_dvcTabBarController.deviceController setYaw:0];
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 [_droneYawDirectionLabel setText:@"Still"];
@@ -728,15 +730,15 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
     {
         double pitch = 7.0 * (distanceApart - 12.0);
         
-        [_deviceController setFlag:1];
-        [_deviceController setPitch:pitch];
+        [_dvcTabBarController.deviceController setFlag:1];
+        [_dvcTabBarController.deviceController setPitch:pitch];
     }
     
     // Otherwise, stay still.
     else
     {
-        [_deviceController setFlag:0];
-        [_deviceController setPitch:0];
+        [_dvcTabBarController.deviceController setFlag:0];
+        [_dvcTabBarController.deviceController setPitch:0];
     }
 }
 
@@ -747,13 +749,13 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 {
     NSLog(@"onSequentialPhotoReady");
     
-    if (_socket.connected)
+    if (_dvcTabBarController.socket.connected)
     {
         NSString *filePathString = [NSString stringWithUTF8String:filePath];
         NSData *photo = [NSData dataWithContentsOfFile:filePathString];
         
         NSArray *args = [[NSArray alloc] initWithObjects:photo, nil];
-        [_socket emit:@"DronePhoto" withItems:args];
+        [_dvcTabBarController.socket emit:@"DronePhoto" withItems:args];
     }
 }
 
@@ -762,7 +764,7 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 
 - (IBAction)connectToServerClick:(id)sender
 {
-    if (_socket.connected)
+    if (_dvcTabBarController.socket.connected)
     {
         self.serverConnectionButton.enabled = false;
         self.serverConnectionStatusLabel.text = @"Disconnecting from server...";
@@ -785,22 +787,22 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 {
     NSLog(@"emergencyClick");
     
-    [_deviceController sendEmergency];
+    [_dvcTabBarController.deviceController sendEmergency];
 }
 
 - (IBAction)takeoffClick:(id)sender
 {
     NSLog(@"takeoffClick");
     
-    [_deviceController resetHome];
-    [_deviceController sendTakeoff];
+    [_dvcTabBarController.deviceController resetHome];
+    [_dvcTabBarController.deviceController sendTakeoff];
 }
 
 - (IBAction)landingClick:(id)sender
 {
     NSLog(@"landingClick");
     
-    [_deviceController sendLanding];
+    [_dvcTabBarController.deviceController sendLanding];
 }
 
 @end

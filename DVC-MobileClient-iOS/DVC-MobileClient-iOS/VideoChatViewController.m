@@ -7,6 +7,8 @@
 #import "VideoChatViewController.h"
 
 #import <AVFoundation/AVFoundation.h>
+
+#import "DVCTabBarController.h"
 #import "Peer.h"
 #import "Utility.h"
 
@@ -14,14 +16,24 @@
 // Padding space for local video view with its parent.
 static CGFloat const kLocalViewPadding = 20;
 
+BOOL remoteViewIsLargeView = TRUE;
+static const CGFloat SMALL_VIEW_Z_POS = -1.0f;
+static const CGFloat LARGE_VIEW_Z_POS = -2.0f;
+
 BOOL videoCallViewsAreEstablished = FALSE;
 
 
 @interface VideoChatViewController () <RTCEAGLVideoViewDelegate>
 
+@property (nonatomic, strong) DVCTabBarController *dvcTabBarController;
+
 @property(nonatomic, assign) UIInterfaceOrientation statusBarOrientation;
+
+@property (nonatomic, strong) NSString *serverURL;
+
 @property(nonatomic, strong) RTCEAGLVideoView* localVideoView;
 @property(nonatomic, strong) RTCEAGLVideoView* remoteVideoView;
+
 @property(nonatomic, strong) Peer *peer;
 @property(nonatomic) BOOL isInitiater;
 
@@ -47,6 +59,8 @@ BOOL videoCallViewsAreEstablished = FALSE;
     [super loadView];
     NSLog(@"VideoChatViewController: loadView ...");
     
+    _dvcTabBarController = (DVCTabBarController *)(self.tabBarController);
+    
     for (UIViewController *viewController in self.tabBarController.viewControllers)
     {
         if ([viewController isKindOfClass:[MainViewController class]])
@@ -55,18 +69,19 @@ BOOL videoCallViewsAreEstablished = FALSE;
         }
     }
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSessionRouteChange:) name:AVAudioSessionRouteChangeNotification object:nil];
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSessionRouteChange:) name:AVAudioSessionRouteChangeNotification object:nil];
     
     self.remoteVideoView =
     [[RTCEAGLVideoView alloc] initWithFrame:self.blackView.bounds];
     self.remoteVideoView.delegate = self;
-    self.remoteVideoView.transform = CGAffineTransformMakeScale(-1, 1);
     [self.blackView addSubview:self.remoteVideoView];
+    self.remoteVideoView.layer.zPosition = LARGE_VIEW_Z_POS;
     
     self.localVideoView =
     [[RTCEAGLVideoView alloc] initWithFrame:self.blackView.bounds];
     self.localVideoView.delegate = self;
     [self.blackView addSubview:self.localVideoView];
+    self.localVideoView.layer.zPosition = SMALL_VIEW_Z_POS;
     
     self.statusBarOrientation =
     [UIApplication sharedApplication].statusBarOrientation;
@@ -180,66 +195,17 @@ BOOL videoCallViewsAreEstablished = FALSE;
 
 - (void)onConnectToServer:(NSString *)serverURL
 {
-    // Create Configuration object.
-    NSDictionary *config = @{@"host": serverURL,
-                             @"port": @(9876),
-                             @"id": @"1",
-                             @"path": @"/dvc",
-                             @"secure": @(NO)};
+    NSLog(@"VideoChatViewController: onConnectToServer ...");
     
-    __block typeof(self) __self = self;
+    _serverURL = serverURL;
     
-    // Create Instance of Peer.
-    _peer = [[Peer alloc] initWithConfig:config];
-    
-    // Set Callbacks.
-    _peer.onOpen = ^(NSString *id) {
-        NSLog(@"onOpen");
-        __self.idField.text = id;
-    };
-    
-    _peer.onCall = ^(RTCSessionDescription *sdp) {
-        NSLog(@"onCall");
-        [__self peerClient:__self.peer didReceiveOfferWithSdp:sdp];
-    };
-    
-    _peer.onReceiveLocalVideoTrack = ^(RTCVideoTrack *videoTrack) {
-        NSLog(@"onReceiveLocalVideoTrack");
-        [__self peerClient:__self.peer didReceiveLocalVideoTrack:videoTrack];
-    };
-    
-    _peer.onRemoveLocalVideoTrack = ^() {
-        NSLog(@"onRemoveLocalVideoTrack");
-        [__self peerClientWillRemoveLocalVideoTrack:__self.peer];
-    };
-    
-    _peer.onReceiveRemoteVideoTrack = ^(RTCVideoTrack *videoTrack) {
-        NSLog(@"onReceiveRemoteVideoTrack");
-        [__self peerClient:__self.peer didReceiveRemoteVideoTrack:videoTrack];
-    };
-    
-    _peer.onError = ^(NSError *error) {
-        NSLog(@"onError: %@", error);
-        [__self peerClient:__self.peer didError:error];
-    };
-    
-    _peer.onClose = ^() {
-        NSLog(@"onClose");
-        [__self resetUI];
-    };
-    
-    // Start signaling to peerjs-server.
-    [_peer start:^(NSError *error)
-     {
-         if (error)
-         {
-             NSLog(@"Error while openning websocket: %@", error);
-         }
-     }];
+    [self startConnectionWithURL:_serverURL];
 }
 
 - (void)onDisconnectFromServer
 {
+    NSLog(@"VideoChatViewController: onDisconnectFromServer ...");
+    
     [self disconnect];
 }
 
@@ -289,6 +255,13 @@ BOOL videoCallViewsAreEstablished = FALSE;
     [self disconnect];
 }
 
+- (void)peerClientDidClose:(Peer *)client
+{
+    [self resetUI];
+    //[self disconnect];
+    //[self startConnectionWithURL:_serverURL];
+}
+
 
 #pragma mark - RTCEAGLVideoViewDelegate
 
@@ -334,6 +307,70 @@ BOOL videoCallViewsAreEstablished = FALSE;
 
 #pragma mark - Private
 
+- (void)startConnectionWithURL:(NSString *)serverURL
+{
+    // Create Configuration object.
+    //NSDictionary *config = @{@"id": @"1", @"key": @"s51s84ud22jwz5mi", @"port": @(9000)};
+    NSDictionary *config = @{@"host": serverURL,
+                             @"port": @(9876),
+                             @"path": @"/dvc",
+                             @"secure": @(NO)};
+    
+    __block typeof(self) __self = self;
+    
+    // Create Instance of Peer.
+    _peer = [[Peer alloc] initWithConfig:config];
+    
+    // Set Callbacks.
+    _peer.onOpen = ^(NSString *id) {
+        NSLog(@"onOpen");
+        __self.idField.text = id;
+        
+        // Send peer ID to server.
+        NSArray *args = [[NSArray alloc] initWithObjects:id, nil];
+        [__self.dvcTabBarController.socket emit:@"MobileClientPeerID" withItems:args];
+    };
+    
+    _peer.onCall = ^(RTCSessionDescription *sdp) {
+        NSLog(@"onCall");
+        [__self peerClient:__self.peer didReceiveOfferWithSdp:sdp];
+    };
+    
+    _peer.onReceiveLocalVideoTrack = ^(RTCVideoTrack *videoTrack) {
+        NSLog(@"onReceiveLocalVideoTrack");
+        [__self peerClient:__self.peer didReceiveLocalVideoTrack:videoTrack];
+    };
+    
+    _peer.onRemoveLocalVideoTrack = ^() {
+        NSLog(@"onRemoveLocalVideoTrack");
+        [__self peerClientWillRemoveLocalVideoTrack:__self.peer];
+    };
+    
+    _peer.onReceiveRemoteVideoTrack = ^(RTCVideoTrack *videoTrack) {
+        NSLog(@"onReceiveRemoteVideoTrack");
+        [__self peerClient:__self.peer didReceiveRemoteVideoTrack:videoTrack];
+    };
+    
+    _peer.onError = ^(NSError *error) {
+        NSLog(@"onError: %@", error);
+        [__self peerClient:__self.peer didError:error];
+    };
+    
+    _peer.onClose = ^() {
+        NSLog(@"onClose");
+        [__self peerClientDidClose:__self.peer];
+    };
+    
+    // Start signaling to peerjs-server.
+    [_peer start:^(NSError *error)
+     {
+         if (error)
+         {
+             NSLog(@"Error while openning websocket: %@", error);
+         }
+     }];
+}
+
 - (void)disconnect
 {
     [self resetUI];
@@ -377,15 +414,30 @@ BOOL videoCallViewsAreEstablished = FALSE;
     CGSize localAspectRatio = CGSizeEqualToSize(_localVideoSize, CGSizeZero) ? defaultAspectRatio : _localVideoSize;
     CGSize remoteAspectRatio = CGSizeEqualToSize(_remoteVideoSize, CGSizeZero) ? defaultAspectRatio : _remoteVideoSize;
     
-    CGRect remoteVideoFrame = AVMakeRectWithAspectRatioInsideRect(remoteAspectRatio, self.blackView.bounds);
-    self.remoteVideoView.frame = remoteVideoFrame;
+    CGRect largeVideoFrame = AVMakeRectWithAspectRatioInsideRect(remoteViewIsLargeView ? remoteAspectRatio : localAspectRatio, self.blackView.bounds);
     
-    CGRect localVideoFrame = AVMakeRectWithAspectRatioInsideRect(localAspectRatio, self.blackView.bounds);
-    localVideoFrame.size.width = localVideoFrame.size.width / 3;
-    localVideoFrame.size.height = localVideoFrame.size.height / 3;
-    localVideoFrame.origin.x = CGRectGetMaxX(self.blackView.bounds) - localVideoFrame.size.width - kLocalViewPadding;
-    localVideoFrame.origin.y = CGRectGetMaxY(self.blackView.bounds) - localVideoFrame.size.height - kLocalViewPadding;
-    self.localVideoView.frame = localVideoFrame;
+    CGRect smallVideoFrame = AVMakeRectWithAspectRatioInsideRect(remoteViewIsLargeView ? localAspectRatio : remoteAspectRatio, self.blackView.bounds);
+    smallVideoFrame.size.width = smallVideoFrame.size.width / 2.5;
+    smallVideoFrame.size.height = smallVideoFrame.size.height / 2.5;
+    smallVideoFrame.origin.x = CGRectGetMaxX(self.blackView.bounds) - smallVideoFrame.size.width - kLocalViewPadding;
+    smallVideoFrame.origin.y = CGRectGetMaxY(self.blackView.bounds) - smallVideoFrame.size.height - kLocalViewPadding;
+    
+    if (remoteViewIsLargeView)
+    {
+        self.remoteVideoView.frame = largeVideoFrame;
+        self.localVideoView.frame = smallVideoFrame;
+        
+        self.remoteVideoView.layer.zPosition = LARGE_VIEW_Z_POS;
+        self.localVideoView.layer.zPosition = SMALL_VIEW_Z_POS;
+    }
+    else
+    {
+        self.remoteVideoView.frame = smallVideoFrame;
+        self.localVideoView.frame = largeVideoFrame;
+        
+        self.remoteVideoView.layer.zPosition = SMALL_VIEW_Z_POS;
+        self.localVideoView.layer.zPosition = LARGE_VIEW_Z_POS;
+    }
 }
 
 - (IBAction)swapCameras:(id)sender
@@ -393,12 +445,34 @@ BOOL videoCallViewsAreEstablished = FALSE;
     if (videoCallViewsAreEstablished)
     {
         [_peer swapCaptureDevicePosition];
+        if (_peer.cameraPosition == AVCaptureDevicePositionFront)
+        {
+            self.localVideoView.transform = CGAffineTransformMakeScale(-1, 1);
+        }
+        else
+        {
+            self.localVideoView.transform = CGAffineTransformMakeScale(1, 1);
+        }
     }
+}
+
+- (IBAction)repositionViews:(id)sender
+{
+    if (remoteViewIsLargeView)
+    {
+        remoteViewIsLargeView = FALSE;
+    }
+    else
+    {
+        remoteViewIsLargeView = TRUE;
+    }
+    [self updateVideoViewLayout];
 }
 
 - (IBAction)finishCall:(id)sender
 {
     [self disconnect];
+    [self startConnectionWithURL:_serverURL];
 }
 
 

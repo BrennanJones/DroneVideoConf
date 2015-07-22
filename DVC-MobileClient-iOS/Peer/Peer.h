@@ -52,6 +52,7 @@ typedef NS_ENUM(NSInteger, PeerClientState) {
 @property(nonatomic, strong) NSString *path;
 @property(nonatomic) BOOL secure;
 @property(nonatomic) NSInteger port;
+@property(nonatomic) NSInteger cameraPosition;
 @property(nonatomic, strong) void(^onOpen)(NSString *id);
 @property(nonatomic, strong) void(^onCall)(RTCSessionDescription *sdp);
 @property(nonatomic, strong) void(^onClose)();

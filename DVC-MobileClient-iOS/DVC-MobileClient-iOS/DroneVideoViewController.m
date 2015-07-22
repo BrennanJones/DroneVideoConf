@@ -13,6 +13,8 @@
 
 @interface DroneVideoViewController ()
 
+@property (nonatomic, strong) DVCTabBarController *dvcTabBarController;
+
 @end
 
 
@@ -24,6 +26,8 @@
 {
     [super loadView];
     NSLog(@"DroneVideoViewController: loadView ...");
+    
+    _dvcTabBarController = (DVCTabBarController *)(self.tabBarController);
 }
 
 - (void)viewDidLoad
@@ -48,9 +52,9 @@
     [super viewDidAppear:animated];
     NSLog(@"DroneVideoViewController: viewDidAppear ... ");
     
-    if (((DVCTabBarController *)self.tabBarController).deviceController != nil)
+    if (_dvcTabBarController.deviceController != nil)
     {
-        [((DVCTabBarController *)self.tabBarController).deviceController setDroneVideoDelegate:self];
+        [_dvcTabBarController.deviceController setDroneVideoDelegate:self];
     }
 }
 

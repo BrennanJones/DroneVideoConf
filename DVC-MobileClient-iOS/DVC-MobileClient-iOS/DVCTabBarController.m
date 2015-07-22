@@ -3,24 +3,22 @@
 //  DVC-MobileClient-iOS
 //
 
+
 #import "DVCTabBarController.h"
+
 
 @interface DVCTabBarController ()
 
 @end
+
 
 @implementation DVCTabBarController
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
     
     [self.viewControllers makeObjectsPerformSelector:@selector(view)];
-    /*for (UIViewController *viewController in self.viewControllers)
-    {
-        viewController.extendedLayoutIncludesOpaqueBars =  YES;
-    }*/
 }
 
 - (void)didReceiveMemoryWarning

@@ -34,6 +34,7 @@
 //  DVC-MobileClient-iOS
 //
 
+
 #import <Foundation/Foundation.h>
 #import <libARSAL/ARSAL.h>
 #import <libARDiscovery/ARDiscovery.h>
@@ -42,6 +43,7 @@
 #import <libARDataTransfer/ARDataTransfer.h>
 #import <libARNetwork/ARNetwork.h>
 #import <libARNetworkAL/ARNetworkAL.h>
+
 
 typedef struct
 {
@@ -113,4 +115,3 @@ typedef struct
 - (void)getLastMediaAsync;
 
 @end
-

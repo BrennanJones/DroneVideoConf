@@ -40,7 +40,6 @@
 #import <libARDiscovery/ARDISCOVERY_BonjourDiscovery.h>
 
 #import "DeviceController.h"
-#import "DVC-Swift.h"
 
 
 @class MainViewController;
@@ -56,8 +55,6 @@
 @property (nonatomic, weak) id <ServerConnectionDelegate> serverConnectionDelegate;
 
 @property (nonatomic, strong) ARService *service;
-
-@property (nonatomic, strong) SocketIOClient *socket;
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
 

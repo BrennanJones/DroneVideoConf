@@ -64,7 +64,6 @@ static NSInteger kPeerClientErrorSetSDP = -4;
 @property(nonatomic, strong) NSString *connectionId;
 @property(nonatomic, strong) SRWebSocket *webSock;
 @property(nonatomic, strong) void(^webSocketOpenCallBack)(NSString *connectionId, NSError *error);
-@property(nonatomic) NSInteger cameraPosition;
 @property(nonatomic, strong) RTCVideoTrack *localVideoTrack;
 @property(nonatomic, strong) RTCMediaStream *localMediaStream;
 @end
