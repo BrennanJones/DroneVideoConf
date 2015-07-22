@@ -23,19 +23,23 @@ jQuery(function()
 	var camUpButton = jQuery('#camUpButton');
 	var camDownButton = jQuery('#camDownButton');
 	
-	camLeftButton.on('click', function() {
+	camLeftButton.on('click', function()
+	{
 		socket.emit('Command', 'CamLeft');
 	});
 
-	camRightButton.on('click', function() {
+	camRightButton.on('click', function()
+	{
 		socket.emit('Command', 'CamRight');
 	});
 
-	camUpButton.on('click', function() {
+	camUpButton.on('click', function()
+	{
 		socket.emit('Command', 'CamUp');
 	});
 
-	camDownButton.on('click', function() {
+	camDownButton.on('click', function()
+	{
 		socket.emit('Command', 'CamDown');
 	});
 	
@@ -77,6 +81,33 @@ jQuery(function()
 	/**
 	 * SOCKET MESSAGE HANDLERS
 	 */
+
+	/* CONNECTION */
+
+	socket.on('connect', function()
+	{
+		console.log('socket.io connected');
+
+		socket.emit('DesktopClientConnect', null);
+	});
+
+	socket.on('disconnect', function()
+	{
+		console.log('socket.io disconnected');
+
+		alert("Connection with server failed.")
+	});
+
+	/* PEER */
+
+	socket.on('CallCommand', function(mobileClientPeerID)
+	{
+		console.log('CallCommand');
+
+		// Try calling the mobile client.
+	    var call = peer.call(mobileClientPeerID, window.localStream);
+	    step3(call);
+	});
 	
 	/* VIDEO */
 	
@@ -89,7 +120,7 @@ jQuery(function()
 	
 	socket.on('DronePhoto', function(data)
 	{
-		console.log("DronePhoto");
+		console.log('DronePhoto');
 		
 		var binary = '';
 		var bytes = new Uint8Array(data);
@@ -118,36 +149,41 @@ jQuery(function()
     navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
     // PeerJS object
-    var peer = new Peer('0', { host: window.location.hostname, port: 9876, path: '/dvc' });
+    //var peer = new Peer('0', { key: 's51s84ud22jwz5mi', debug: 3 });
+    var peer = new Peer({ host: window.location.hostname, port: 9876, path: '/dvc', secure: false, debug: 3 });
 
     peer.on('open', function()
     {
-    	// ...
+    	console.log('open');
     });
 
     // Receiving a call
     peer.on('call', function(call)
     {
-	    // Answer the call automatically (instead of prompting user) for demo purposes
+	    console.log('call');
+
 	    call.answer(window.localStream);
 	    step3(call);
     });
     
     peer.on('error', function(err)
     {
-	    console.log("Error.");
+	    console.log("error");
 	    
-	    alert(err.message);
+	    //alert(err.message);
 	    step2();
     });
 
     step1();
 
-    function step1 ()
+
+    function step1()
     {
 	    // Get audio/video stream
 	    navigator.getUserMedia({audio: true, video: true}, function(stream)
 	    {
+		    socket.emit('DesktopClientPeerID', peer.id);
+
 		    // Set your video displays
 		    desktopVideo.prop('src', URL.createObjectURL(stream));
 
@@ -156,16 +192,16 @@ jQuery(function()
 	    },
 	    function()
 	    {
-	    	console.log("Step 1 error.");
+	    	console.log("step 1 error");
 	    });
     }
 
-    function step2 ()
+    function step2()
     {
     	// ...
     }
 
-    function step3 (call)
+    function step3(call)
     {
 	    // Hang up on an existing call if present
 	    if (window.existingCall)

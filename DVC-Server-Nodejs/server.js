@@ -26,14 +26,17 @@ app.listen(12345);
 console.log('Server started.');
 
 
+var mobileClientPeerID,
+	desktopClientPeerID;
+
 var numTimelinePhotosReceived = 0;
 
 io.sockets.on('connection', function(socket)
 {	
-	console.log('A user connected.');
+	console.log('A client connected ...');
 	socket.on('disconnect', function()
 	{
-		console.log('A user disconnected.');
+		console.log('A client disconnected ...');
 	});
 	
 	
@@ -53,13 +56,40 @@ io.sockets.on('connection', function(socket)
 	
 	socket.on('MobileClientConnect', function(data)
 	{
-		// do stuff here
+		console.log('MobileClientConnect');
 	});
 	
 	socket.on('DesktopClientConnect', function(data)
 	{
-		// do stuff here
+		console.log('DesktopClientConnect');
 	});
+
+
+	/* PEER */
+
+	socket.on('MobileClientPeerID', function(data)
+	{
+		console.log('MobileClientPeerID: ' + data);
+
+		mobileClientPeerID = data;
+		trySendCallCommand();
+	});
+	
+	socket.on('DesktopClientPeerID', function(data)
+	{
+		console.log('DesktopClientPeerID: ' + data);
+
+		desktopClientPeerID = data;
+		trySendCallCommand();
+	});
+
+	function trySendCallCommand()
+	{
+		if (desktopClientPeerID && mobileClientPeerID)
+		{
+			io.sockets.emit('CallCommand', mobileClientPeerID);
+		}
+	}
 	
 	
 	/* VIDEO */
@@ -82,8 +112,10 @@ io.sockets.on('connection', function(socket)
 	{
 		console.log('DronePhoto');
 
-		filesystem.writeFile("./timelinePhotos/test" + numTimelinePhotosReceived++ + ".jpg", data, function(err) {
-			if(err) {
+		filesystem.writeFile("./timelinePhotos/test" + numTimelinePhotosReceived++ + ".jpg", data, function(err)
+		{
+			if(err)
+			{
 		        return console.log(err);
 		    }
 
