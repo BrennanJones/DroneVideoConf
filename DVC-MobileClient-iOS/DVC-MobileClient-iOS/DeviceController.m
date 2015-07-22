@@ -908,11 +908,11 @@ void onDisconnectNetwork (ARNETWORK_Manager_t *manager, ARNETWORKAL_Manager_t *a
 {
     DeviceController *deviceController = (__bridge DeviceController*)customData;
     
-    NSLog(@"onDisconnectNetwork ... %@ : %@", deviceController, [deviceController delegate]);
+    NSLog(@"onDisconnectNetwork ... %@ : %@", deviceController, [deviceController deviceControllerDelegate]);
     
-    if ((deviceController != nil) && (deviceController.delegate != nil))
+    if ((deviceController != nil) && (deviceController.deviceControllerDelegate != nil))
     {
-        [deviceController.delegate onDisconnectNetwork:deviceController];
+        [deviceController.deviceControllerDelegate onDisconnectNetwork:deviceController];
     }
 }
 
@@ -974,11 +974,11 @@ void batteryStateChangedCallback (uint8_t percent, void *custom)
     // callback of changing of battery level
     DeviceController *deviceController = (__bridge DeviceController*)custom;
     
-    NSLog(@"batteryStateChangedCallback ... %d  ; %@ : %@", percent, deviceController, [deviceController delegate]);
+    NSLog(@"batteryStateChangedCallback ... %d  ; %@ : %@", percent, deviceController, [deviceController deviceControllerDelegate]);
     
-    if ((deviceController != nil) && (deviceController.delegate != nil))
+    if ((deviceController != nil) && (deviceController.deviceControllerDelegate != nil))
     {
-        [deviceController.delegate onUpdateBattery:deviceController batteryLevel:percent];
+        [deviceController.deviceControllerDelegate onUpdateBattery:deviceController batteryLevel:percent];
     }
 }
 
@@ -989,37 +989,37 @@ void flyingStateChangedCallback (eARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATEC
     
     NSLog(@"flyingStateStateChangedCallback ... %d", flyingState);
     
-    if ((deviceController != nil) && (deviceController.delegate != nil))
+    if ((deviceController != nil) && (deviceController.deviceControllerDelegate != nil))
     {
-        [deviceController.delegate onFlyingStateChanged:deviceController flyingState:flyingState];
+        [deviceController.deviceControllerDelegate onFlyingStateChanged:deviceController flyingState:flyingState];
     }
 }
 
 static void positionChangedCallback(double latitude, double longitude, double altitude, void *custom)
 {
     DeviceController *deviceController = (__bridge DeviceController*)custom;
-    [deviceController.delegate onDronePositionChanged:deviceController latitude:latitude longitude:longitude altitude:altitude];
+    [deviceController.deviceControllerDelegate onDronePositionChanged:deviceController latitude:latitude longitude:longitude altitude:altitude];
 }
 
 static void altitudeChangedCallback(double altitude, void *custom)
 {
     DeviceController *deviceController = (__bridge DeviceController*)custom;
     
-    [deviceController.delegate onAltitudeChanged:deviceController altitude:altitude];
+    [deviceController.deviceControllerDelegate onAltitudeChanged:deviceController altitude:altitude];
 }
 
 static void attitudeChangedCallback(float roll, float pitch, float yaw, void *custom)
 {
     DeviceController *deviceController = (__bridge DeviceController*)custom;
     
-    [deviceController.delegate onAttitudeChanged:deviceController roll:roll pitch:pitch yaw:yaw];
+    [deviceController.deviceControllerDelegate onAttitudeChanged:deviceController roll:roll pitch:pitch yaw:yaw];
 }
 
 static void speedChangedCallback(float speedX, float speedY, float speedZ, void *custom)
 {
     DeviceController *deviceController = (__bridge DeviceController*)custom;
     
-    [deviceController.delegate onSpeedChanged:deviceController speedX:speedX speedY:speedY speedZ:speedZ];
+    [deviceController.deviceControllerDelegate onSpeedChanged:deviceController speedX:speedX speedY:speedY speedZ:speedZ];
 }
 
 static void pictureTakenCallback(uint8_t state, uint8_t mass_storage_id, void *custom)
@@ -1679,7 +1679,7 @@ void medias_downloader_completion_callback(void* custom, ARDATATRANSFER_Media_t 
     
     if (!error)
     {
-        [deviceController.delegate onSequentialPhotoReady:deviceController filePath:media->filePath];
+        [deviceController.deviceControllerDelegate onSequentialPhotoReady:deviceController filePath:media->filePath];
     }
     
     ARDATATRANSFER_MediasDownloader_CancelQueueThread(deviceController.dataTransferManager);

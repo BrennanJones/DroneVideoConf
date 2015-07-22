@@ -43,7 +43,17 @@
 #import "DVC-Swift.h"
 
 
+@class MainViewController;
+
+@protocol ServerConnectionDelegate <NSObject>
+- (void)onConnectToServer:(NSString *)serverURL;
+- (void)onDisconnectFromServer;
+@end
+
+
 @interface MainViewController : UIViewController <UITextFieldDelegate, CLLocationManagerDelegate, DeviceControllerDelegate, DroneVideoDelegate>
+
+@property (nonatomic, weak) id <ServerConnectionDelegate> serverConnectionDelegate;
 
 @property (nonatomic, strong) ARService *service;
 

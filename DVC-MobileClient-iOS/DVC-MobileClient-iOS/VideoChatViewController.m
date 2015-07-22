@@ -14,6 +14,8 @@
 // Padding space for local video view with its parent.
 static CGFloat const kLocalViewPadding = 20;
 
+BOOL videoCallViewsAreEstablished = FALSE;
+
 
 @interface VideoChatViewController () <RTCEAGLVideoViewDelegate>
 
@@ -45,6 +47,14 @@ static CGFloat const kLocalViewPadding = 20;
     [super loadView];
     NSLog(@"VideoChatViewController: loadView ...");
     
+    for (UIViewController *viewController in self.tabBarController.viewControllers)
+    {
+        if ([viewController isKindOfClass:[MainViewController class]])
+        {
+            [(MainViewController *)viewController setServerConnectionDelegate:self];
+        }
+    }
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSessionRouteChange:) name:AVAudioSessionRouteChangeNotification object:nil];
     
     self.remoteVideoView =
@@ -67,63 +77,6 @@ static CGFloat const kLocalViewPadding = 20;
     
     if (!_isInitiater) { return; }
     [_peer disconnect];
-    
-    // Create Configuration object.
-    NSDictionary *config = @{@"host": @"csf.cpsc.ucalgary.ca",
-                             @"port": @(9876),
-                             @"id": @"1",
-                             @"path": @"/dvc",
-                             @"secure": @(NO)};
-    
-    __block typeof(self) __self = self;
-    
-    // Create Instance of Peer.
-    _peer = [[Peer alloc] initWithConfig:config];
-    
-    // Set Callbacks.
-    _peer.onOpen = ^(NSString *id) {
-        NSLog(@"onOpen");
-        __self.idField.text = id;
-    };
-    
-    _peer.onCall = ^(RTCSessionDescription *sdp) {
-        NSLog(@"onCall");
-        [__self peerClient:__self.peer didReceiveOfferWithSdp:sdp];
-    };
-    
-    _peer.onReceiveLocalVideoTrack = ^(RTCVideoTrack *videoTrack) {
-        NSLog(@"onReceiveLocalVideoTrack");
-        [__self peerClient:__self.peer didReceiveLocalVideoTrack:videoTrack];
-    };
-    
-    _peer.onRemoveLocalVideoTrack = ^() {
-        NSLog(@"onRemoveLocalVideoTrack");
-        [__self peerClientWillRemoveLocalVideoTrack:__self.peer];
-    };
-    
-    _peer.onReceiveRemoteVideoTrack = ^(RTCVideoTrack *videoTrack) {
-        NSLog(@"onReceiveRemoteVideoTrack");
-        [__self peerClient:__self.peer didReceiveRemoteVideoTrack:videoTrack];
-    };
-    
-    _peer.onError = ^(NSError *error) {
-        NSLog(@"onError: %@", error);
-        [__self peerClient:__self.peer didError:error];
-    };
-    
-    _peer.onClose = ^() {
-        NSLog(@"onClose");
-        [__self resetUI];
-    };
-    
-    // Start signaling to peerjs-server.
-    [_peer start:^(NSError *error)
-     {
-         if (error)
-         {
-             NSLog(@"Error while openning websocket: %@", error);
-         }
-     }];
 }
 
 - (void)viewDidLoad
@@ -223,6 +176,74 @@ static CGFloat const kLocalViewPadding = 20;
 }
 
 
+#pragma mark ServerConnectionDelegate
+
+- (void)onConnectToServer:(NSString *)serverURL
+{
+    // Create Configuration object.
+    NSDictionary *config = @{@"host": serverURL,
+                             @"port": @(9876),
+                             @"id": @"1",
+                             @"path": @"/dvc",
+                             @"secure": @(NO)};
+    
+    __block typeof(self) __self = self;
+    
+    // Create Instance of Peer.
+    _peer = [[Peer alloc] initWithConfig:config];
+    
+    // Set Callbacks.
+    _peer.onOpen = ^(NSString *id) {
+        NSLog(@"onOpen");
+        __self.idField.text = id;
+    };
+    
+    _peer.onCall = ^(RTCSessionDescription *sdp) {
+        NSLog(@"onCall");
+        [__self peerClient:__self.peer didReceiveOfferWithSdp:sdp];
+    };
+    
+    _peer.onReceiveLocalVideoTrack = ^(RTCVideoTrack *videoTrack) {
+        NSLog(@"onReceiveLocalVideoTrack");
+        [__self peerClient:__self.peer didReceiveLocalVideoTrack:videoTrack];
+    };
+    
+    _peer.onRemoveLocalVideoTrack = ^() {
+        NSLog(@"onRemoveLocalVideoTrack");
+        [__self peerClientWillRemoveLocalVideoTrack:__self.peer];
+    };
+    
+    _peer.onReceiveRemoteVideoTrack = ^(RTCVideoTrack *videoTrack) {
+        NSLog(@"onReceiveRemoteVideoTrack");
+        [__self peerClient:__self.peer didReceiveRemoteVideoTrack:videoTrack];
+    };
+    
+    _peer.onError = ^(NSError *error) {
+        NSLog(@"onError: %@", error);
+        [__self peerClient:__self.peer didError:error];
+    };
+    
+    _peer.onClose = ^() {
+        NSLog(@"onClose");
+        [__self resetUI];
+    };
+    
+    // Start signaling to peerjs-server.
+    [_peer start:^(NSError *error)
+     {
+         if (error)
+         {
+             NSLog(@"Error while openning websocket: %@", error);
+         }
+     }];
+}
+
+- (void)onDisconnectFromServer
+{
+    [self disconnect];
+}
+
+
 #pragma mark - ARDAppClientDelegate
 
 - (void)peerClient:(Peer *)client didReceiveOfferWithSdp:(RTCSessionDescription *)sdp
@@ -243,10 +264,14 @@ static CGFloat const kLocalViewPadding = 20;
     _localVideoTrack = localVideoTrack;
     [_localVideoTrack addRenderer:self.localVideoView];
     self.localVideoView.hidden = NO;
+    
+    videoCallViewsAreEstablished = TRUE;
 }
 
 - (void)peerClientWillRemoveLocalVideoTrack:(Peer *)client
 {
+    videoCallViewsAreEstablished = FALSE;
+    
     [_localVideoTrack removeRenderer:self.localVideoView];
     _localVideoTrack = nil;
     [self.localVideoView renderFrame:nil];
@@ -365,7 +390,10 @@ static CGFloat const kLocalViewPadding = 20;
 
 - (IBAction)swapCameras:(id)sender
 {
-    [_peer swapCaptureDevicePosition];
+    if (videoCallViewsAreEstablished)
+    {
+        [_peer swapCaptureDevicePosition];
+    }
 }
 
 - (IBAction)finishCall:(id)sender

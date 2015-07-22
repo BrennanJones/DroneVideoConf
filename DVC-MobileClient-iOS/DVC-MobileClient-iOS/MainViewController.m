@@ -221,7 +221,7 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
                 
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                     _deviceController = [[DeviceController alloc]initWithARService:_service];
-                    [_deviceController setDelegate:self];
+                    [_deviceController setDeviceControllerDelegate:self];
                     [_deviceController setDroneVideoDelegate:self];
                     [(DVCTabBarController *)(self.tabBarController) setDeviceController:_deviceController];
                     
@@ -433,11 +433,9 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 
 - (void)connectToServer:(NSString *)address
 {
-    [self disconnectFromServer];
-    
+    //[self disconnectFromServer];
     
     _socket = [[SocketIOClient alloc] initWithSocketURL:address options:nil];
-    
     
     [_socket on:@"connect" callback:^(NSArray* data, void (^ack)(NSArray*)) {
         NSLog(@"socket connected");
@@ -453,7 +451,6 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
         NSLog(@"socket error");
         [self socketOnError];
     }];
-    
     
     [_socket on:@"Command" callback:^(NSArray* data, void (^ack)(NSArray*)) {
         NSLog(@"socket command");
@@ -471,11 +468,15 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
         [_socket closeWithFast:false];
     }
     _socket = nil;
+    
+    [self socketOnDisconnect];
 }
 
 - (void)socketOnConnect
 {
     [_socket emit:@"MobileClientConnected" withItems:[[NSArray alloc] init]];
+    
+    [_serverConnectionDelegate onConnectToServer:self.serverConnectionTextField.text];
     
     self.serverConnectionStatusLabel.text = @"Connected to server";
     self.serverConnectionStatusLabel.textColor = _dvcGreen;

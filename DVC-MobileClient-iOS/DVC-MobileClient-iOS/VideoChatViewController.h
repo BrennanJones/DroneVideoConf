@@ -3,11 +3,14 @@
 //  DVC-MobileClient-iOS
 //
 
+
 #import <UIKit/UIKit.h>
 
 #import "DeviceController.h"
+#import "MainViewController.h"
 
-@interface VideoChatViewController : UIViewController <UITextFieldDelegate>
+
+@interface VideoChatViewController : UIViewController <UITextFieldDelegate, ServerConnectionDelegate>
 
 @property(weak, nonatomic) IBOutlet UITextField* roomInput;
 @property(weak, nonatomic) IBOutlet UITextView* instructionsView;

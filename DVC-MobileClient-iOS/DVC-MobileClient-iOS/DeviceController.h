@@ -80,7 +80,7 @@ typedef struct
 
 @interface DeviceController : NSObject
 
-@property (nonatomic, weak) id <DeviceControllerDelegate> delegate;
+@property (nonatomic, weak) id <DeviceControllerDelegate> deviceControllerDelegate;
 @property (nonatomic, weak) id <DroneVideoDelegate> droneVideoDelegate;
 
 /** Get the ARService instance associated with this controller. */
