@@ -28,6 +28,7 @@
 #import <Foundation/Foundation.h>
 
 #import "RTCVideoTrack.h"
+#import "RTCPeerConnection.h"
 #import "RTCSessionDescription.h"
 #import "RTCTypes.h"
 #import "RTCEAGLVideoView.h"
@@ -45,6 +46,7 @@ typedef NS_ENUM(NSInteger, PeerClientState) {
 
 @interface Peer : NSObject
 
+@property(nonatomic, strong) RTCPeerConnection *peerConnection;
 @property(nonatomic, readonly) PeerClientState state;
 @property(nonatomic, strong) NSString *key;
 @property(nonatomic, strong) NSString *id;

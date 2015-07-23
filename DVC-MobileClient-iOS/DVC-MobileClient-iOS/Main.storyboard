@@ -395,7 +395,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="805-j8-9B1">
+                            <button opaque="NO" alpha="0.75" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="805-j8-9B1">
                                 <rect key="frame" x="16" y="28" width="35" height="35"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <accessibility key="accessibilityConfiguration">
@@ -413,7 +413,7 @@
                                     <action selector="repositionViews:" destination="TPD-hW-o9V" eventType="touchUpInside" id="xEe-ou-w09"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xLc-UB-mUN">
+                            <button opaque="NO" alpha="0.75" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xLc-UB-mUN">
                                 <rect key="frame" x="549" y="28" width="35" height="35"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <accessibility key="accessibilityConfiguration">
@@ -436,13 +436,25 @@
                         <constraints>
                             <constraint firstItem="805-j8-9B1" firstAttribute="top" secondItem="Vu8-rP-Og8" secondAttribute="bottom" constant="8" id="1tt-ub-cZv"/>
                             <constraint firstAttribute="bottomMargin" secondItem="4HT-61-mlM" secondAttribute="bottom" id="6Hn-tK-vXG"/>
+                            <constraint firstAttribute="trailing" secondItem="4HT-61-mlM" secondAttribute="trailing" id="9YD-40-ugL"/>
                             <constraint firstItem="4HT-61-mlM" firstAttribute="top" secondItem="Trh-RR-7hr" secondAttribute="topMargin" id="DeG-ge-2M7"/>
+                            <constraint firstAttribute="bottom" secondItem="4HT-61-mlM" secondAttribute="bottom" id="E4z-XX-7ve"/>
                             <constraint firstItem="xLc-UB-mUN" firstAttribute="trailing" secondItem="Trh-RR-7hr" secondAttribute="trailingMargin" id="OeJ-sY-B7G"/>
+                            <constraint firstItem="4HT-61-mlM" firstAttribute="top" secondItem="Trh-RR-7hr" secondAttribute="top" id="bYW-C0-8Np"/>
                             <constraint firstItem="4HT-61-mlM" firstAttribute="leading" secondItem="Trh-RR-7hr" secondAttribute="leadingMargin" id="dpR-kQ-oH5"/>
+                            <constraint firstItem="4HT-61-mlM" firstAttribute="leading" secondItem="Trh-RR-7hr" secondAttribute="leading" id="gtW-TP-Qyo"/>
                             <constraint firstItem="xLc-UB-mUN" firstAttribute="top" secondItem="Vu8-rP-Og8" secondAttribute="bottom" constant="8" id="nPk-N0-1FN"/>
                             <constraint firstAttribute="trailingMargin" secondItem="4HT-61-mlM" secondAttribute="trailing" id="vKf-9p-fbk"/>
                             <constraint firstItem="805-j8-9B1" firstAttribute="leading" secondItem="Trh-RR-7hr" secondAttribute="leadingMargin" id="wN1-yG-5mq"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="6Hn-tK-vXG"/>
+                                <exclude reference="DeG-ge-2M7"/>
+                                <exclude reference="dpR-kQ-oH5"/>
+                                <exclude reference="vKf-9p-fbk"/>
+                            </mask>
+                        </variation>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout" top="YES"/>
                     <tabBarItem key="tabBarItem" title="Video Chat" image="ic_videocam" id="pPG-dC-wDU"/>
