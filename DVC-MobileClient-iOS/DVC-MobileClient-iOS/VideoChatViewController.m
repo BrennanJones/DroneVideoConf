@@ -24,7 +24,7 @@ static const CGFloat LARGE_VIEW_Z_POS = -2.0f;
 BOOL videoCallViewsAreEstablished = FALSE;
 
 BOOL communicatingWithServer = FALSE;
-//BOOL inACall = FALSE;
+BOOL inACall = FALSE;
 
 
 @interface VideoChatViewController () <RTCEAGLVideoViewDelegate>
@@ -216,16 +216,16 @@ BOOL communicatingWithServer = FALSE;
 
 - (void)peerClient:(Peer *)client didReceiveOfferWithSdp:(RTCSessionDescription *)sdp
 {
-    //if (!inACall)
-    //{
-        //inACall = TRUE;
+    if (!inACall)
+    {
+        inACall = TRUE;
         
         NSLog(@"setup CaptureSession!");
         _isInitiater = NO;
         [self setupCaptureSession];
         
         [client answerWithSdp:sdp];
-    //}
+    }
 }
 
 - (void)peerClient:(Peer *)client didReceiveLocalVideoTrack:(RTCVideoTrack *)localVideoTrack
@@ -260,8 +260,9 @@ BOOL communicatingWithServer = FALSE;
 
 - (void)peerClientDidClose:(Peer *)client
 {
-    if (communicatingWithServer)
+    if (inACall && communicatingWithServer)
     {
+        inACall = FALSE;
         [self restartConnectionWithURL:_serverURL];
     }
 }
@@ -325,7 +326,7 @@ BOOL communicatingWithServer = FALSE;
     // Create Instance of Peer.
     _peer = [[Peer alloc] initWithConfig:config];
     
-    //inACall = FALSE;
+    inACall = FALSE;
     
     // Set Callbacks.
     _peer.onOpen = ^(NSString *id) {
@@ -441,7 +442,7 @@ BOOL communicatingWithServer = FALSE;
 
 - (IBAction)swapCameras:(id)sender
 {
-    if (videoCallViewsAreEstablished)
+    if (communicatingWithServer && videoCallViewsAreEstablished)
     {
         [_peer swapCaptureDevicePosition];
         if (_peer.cameraPosition == AVCaptureDevicePositionFront)
@@ -457,15 +458,18 @@ BOOL communicatingWithServer = FALSE;
 
 - (IBAction)repositionViews:(id)sender
 {
-    if (remoteViewIsLargeView)
+    if (communicatingWithServer)
     {
-        remoteViewIsLargeView = FALSE;
+        if (remoteViewIsLargeView)
+        {
+            remoteViewIsLargeView = FALSE;
+        }
+        else
+        {
+            remoteViewIsLargeView = TRUE;
+        }
+        [self updateVideoViewLayout];
     }
-    else
-    {
-        remoteViewIsLargeView = TRUE;
-    }
-    [self updateVideoViewLayout];
 }
 
 
