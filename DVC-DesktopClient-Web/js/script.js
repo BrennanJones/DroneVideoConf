@@ -150,7 +150,16 @@ jQuery(function()
 
     // PeerJS object
     //var peer = new Peer('0', { key: 's51s84ud22jwz5mi', debug: 3 });
-    var peer = new Peer({ host: window.location.hostname, port: 9876, path: '/dvc', secure: false, debug: 3 });
+    var peer = new Peer(
+    	{ host: window.location.hostname, port: 9876, path: '/dvc', secure: false, debug: 3 },
+    	{ config: {'iceServers': [
+        	{
+				url: 'turn:numb.viagenie.ca',
+				credential: 'dvc',
+				username: 'brennandgj@gmail.com',
+				password: 'dvcchat'
+    		}
+    	]}});
 
     peer.on('open', function()
     {
