@@ -486,12 +486,16 @@
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="1Au-Ll-kOk" firstAttribute="leading" secondItem="iEe-xN-r3O" secondAttribute="leading" id="1nR-O7-e6Z"/>
                             <constraint firstAttribute="trailingMargin" secondItem="1Au-Ll-kOk" secondAttribute="trailing" id="5Sd-c9-Ofa"/>
+                            <constraint firstItem="1Au-Ll-kOk" firstAttribute="top" secondItem="iEe-xN-r3O" secondAttribute="top" id="6pq-U7-Led"/>
                             <constraint firstItem="1Au-Ll-kOk" firstAttribute="width" secondItem="iEe-xN-r3O" secondAttribute="width" id="9oQ-8y-TwJ"/>
                             <constraint firstItem="1Au-Ll-kOk" firstAttribute="leading" secondItem="iEe-xN-r3O" secondAttribute="leadingMargin" id="Ai4-gc-upo"/>
                             <constraint firstItem="1Au-Ll-kOk" firstAttribute="top" secondItem="iEe-xN-r3O" secondAttribute="topMargin" id="E1A-H4-yRw"/>
+                            <constraint firstAttribute="bottom" secondItem="1Au-Ll-kOk" secondAttribute="bottom" id="FSO-cA-Go7"/>
                             <constraint firstAttribute="trailingMargin" secondItem="1Au-Ll-kOk" secondAttribute="trailing" id="Hgl-Md-Q9Y"/>
                             <constraint firstAttribute="bottomMargin" secondItem="1Au-Ll-kOk" secondAttribute="bottom" id="Jpc-ll-NSb"/>
+                            <constraint firstAttribute="trailing" secondItem="1Au-Ll-kOk" secondAttribute="trailing" id="KXE-qm-e6x"/>
                             <constraint firstAttribute="bottomMargin" secondItem="1Au-Ll-kOk" secondAttribute="bottom" id="OKV-IT-tG5"/>
                             <constraint firstAttribute="centerY" secondItem="1Au-Ll-kOk" secondAttribute="centerY" id="QCD-NS-dFM"/>
                             <constraint firstAttribute="trailingMargin" secondItem="1Au-Ll-kOk" secondAttribute="trailing" id="SFf-Z7-NR9"/>
@@ -512,9 +516,12 @@
                                 <exclude reference="5Sd-c9-Ofa"/>
                                 <exclude reference="9oQ-8y-TwJ"/>
                                 <exclude reference="Ai4-gc-upo"/>
+                                <exclude reference="E1A-H4-yRw"/>
                                 <exclude reference="Hgl-Md-Q9Y"/>
                                 <exclude reference="Jpc-ll-NSb"/>
+                                <exclude reference="OKV-IT-tG5"/>
                                 <exclude reference="QCD-NS-dFM"/>
+                                <exclude reference="SFf-Z7-NR9"/>
                                 <exclude reference="SiB-6J-BnQ"/>
                                 <exclude reference="UiC-8J-Hz9"/>
                                 <exclude reference="add-oX-E7l"/>
@@ -523,6 +530,7 @@
                                 <exclude reference="pbl-z4-piy"/>
                                 <exclude reference="pgm-q6-kzM"/>
                                 <exclude reference="q5L-hH-BmZ"/>
+                                <exclude reference="qx7-rM-iHW"/>
                                 <exclude reference="vlr-b8-bki"/>
                                 <exclude reference="yng-oa-3ML"/>
                             </mask>

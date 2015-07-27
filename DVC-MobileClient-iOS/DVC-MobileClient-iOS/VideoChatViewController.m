@@ -319,7 +319,12 @@ BOOL inACall = FALSE;
     NSDictionary *config = @{@"host": serverURL,
                              @"port": @(9876),
                              @"path": @"/dvc",
-                             @"secure": @(NO)};
+                             @"secure": @(NO),
+                             @"config": @{
+                                     @"iceServers": @[
+                                             @{@"url": @"turn:numb.viagenie.ca", @"credential": @"dvc", @"user": @"brennandgj@gmail.com", @"password": @"dvcchat"}
+                                     ]
+                            }};
     
     __block typeof(self) __self = self;
     
