@@ -55,7 +55,6 @@ static NSInteger kPeerClientErrorSetSDP = -4;
 
 @interface Peer () <RTCPeerConnectionDelegate, RTCSessionDescriptionDelegate, SRWebSocketDelegate>
 
-@property(nonatomic, strong) RTCPeerConnection *peerConnection;
 @property(nonatomic, strong) RTCPeerConnectionFactory *factory;
 @property(nonatomic, strong) NSMutableArray *messageQueue;
 @property(nonatomic, strong) NSString *dstId;
@@ -66,6 +65,9 @@ static NSInteger kPeerClientErrorSetSDP = -4;
 @property(nonatomic, strong) void(^webSocketOpenCallBack)(NSString *connectionId, NSError *error);
 @property(nonatomic, strong) RTCVideoTrack *localVideoTrack;
 @property(nonatomic, strong) RTCMediaStream *localMediaStream;
+
+@property (nonatomic, assign) BOOL inACall;
+
 @end
 
 @implementation Peer
@@ -133,6 +135,8 @@ static NSInteger kPeerClientErrorSetSDP = -4;
 
       RTCMediaConstraints *constrains = [self defaultPeerConnectionConstraints];
       _peerConnection = [_factory peerConnectionWithICEServers:_iceServers constraints:constrains delegate:self];
+
+      self.inACall = FALSE;
   }
   return self;
 }
@@ -188,7 +192,8 @@ static NSInteger kPeerClientErrorSetSDP = -4;
 
 - (void)answerWithSdp:(RTCSessionDescription *)sdp
 {
-  [_peerConnection setRemoteDescriptionWithDelegate:self sessionDescription:sdp];
+    [_peerConnection setRemoteDescriptionWithDelegate:self sessionDescription:sdp];
+    self.inACall = TRUE;
 }
 
 // pos is AVCaptureDevicePositionBack or AVCaptureDevicePositionFront.
@@ -224,53 +229,6 @@ static NSInteger kPeerClientErrorSetSDP = -4;
     _localMediaStream = nil;
     RTCMediaStream *localStream = [self createLocalMediaStream];
     [_peerConnection addStream:localStream];
-    
-    
-    /*
-    if (_onRemoveLocalVideoTrack)
-    {
-        _onRemoveLocalVideoTrack();
-    }
-    
-    [_localMediaStream removeVideoTrack:_localVideoTrack];
-    _localVideoTrack = nil;
-    
-    // The iOS simulator doesn't provide any sort of camera capture
-    // support or emulation (http://goo.gl/rHAnC1) so don't bother
-    // trying to open a local stream.
-    // TODO(tkchin): local video capture for OSX. See
-    // https://code.google.com/p/webrtc/issues/detail?id=3417.
-#if !TARGET_IPHONE_SIMULATOR && TARGET_OS_IPHONE
-    NSString *cameraID = nil;
-    for (AVCaptureDevice *captureDevice in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo])
-    {
-        if (captureDevice.position == _cameraPosition)
-        {
-            cameraID = [captureDevice localizedName];
-            break;
-        }
-    }
-    NSAssert(cameraID, @"Unable to get the camera id");
-    
-    RTCVideoCapturer *capturer = [RTCVideoCapturer capturerWithDeviceName:cameraID];
-    RTCMediaConstraints *mediaConstraints = [self defaultMediaStreamConstraints];
-    RTCVideoSource *videoSource = [_factory videoSourceWithCapturer:capturer
-                                                        constraints:mediaConstraints];
-    RTCVideoTrack *localVideoTrack = [_factory videoTrackWithID:@"ARDAMSv0" source:videoSource];
-    
-    if (localVideoTrack)
-    {
-        [_localMediaStream addVideoTrack:localVideoTrack];
-        
-        _localVideoTrack = localVideoTrack;
-        
-        if (_onReceiveLocalVideoTrack)
-        {
-            _onReceiveLocalVideoTrack(localVideoTrack);
-        }
-    }
-#endif
-    */
 }
 
 #pragma API Helper
@@ -326,11 +284,11 @@ static NSInteger kPeerClientErrorSetSDP = -4;
 {
   NSString *type = (NSString *)[message objectForKey:@"type"];
 
-  if      ([@"OPEN" isEqualToString:type])      {[self processOpenWithMessage:message];}
-  else if ([@"CANDIDATE" isEqualToString:type]) {[self processCandidateWithMessage:message];}
-  else if ([@"OFFER" isEqualToString:type])     {[self processOfferWithMessage:message];}
-  else if ([@"ANSWER" isEqualToString:type])    {[self processAnswerWithMessage:message];}
-  else if ([@"LEAVE" isEqualToString:type])     {[self processLeaveWithMessage:message];}
+  if      ([@"OPEN" isEqualToString:type])                       {[self processOpenWithMessage:message];}
+  else if ([@"CANDIDATE" isEqualToString:type])                  {[self processCandidateWithMessage:message];}
+  else if ([@"OFFER" isEqualToString:type] && !self.inACall)     {[self processOfferWithMessage:message];}
+  else if ([@"ANSWER" isEqualToString:type])                     {[self processAnswerWithMessage:message];}
+  else if ([@"LEAVE" isEqualToString:type])                      {[self processLeaveWithMessage:message];}
 }
 
 - (void)processOpenWithMessage:(NSDictionary *)message
@@ -381,6 +339,7 @@ static NSInteger kPeerClientErrorSetSDP = -4;
   NSString *sdpMessage = [sdpObj objectForKey:@"sdp"]; NSLog(@"remote sdp: %@", sdpMessage);
   RTCSessionDescription *sdp = [[RTCSessionDescription alloc] initWithType:@"answer" sdp:sdpMessage];
   [_peerConnection setRemoteDescriptionWithDelegate:self sessionDescription:sdp];
+  self.inACall = TRUE;
 }
 
 - (void)processLeaveWithMessage:(NSDictionary *)message
@@ -395,6 +354,8 @@ static NSInteger kPeerClientErrorSetSDP = -4;
   if (_state == kPeerClientStateDisconnected) {
     return;
   }
+
+  self.inACall = FALSE;
 
   [_peerConnection close];
 

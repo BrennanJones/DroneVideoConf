@@ -10,6 +10,7 @@
 
 #import "DVCTabBarController.h"
 #import "Peer.h"
+#import "RTCPeerConnection.h"
 #import "Utility.h"
 
 
@@ -21,6 +22,9 @@ static const CGFloat SMALL_VIEW_Z_POS = -1.0f;
 static const CGFloat LARGE_VIEW_Z_POS = -2.0f;
 
 BOOL videoCallViewsAreEstablished = FALSE;
+
+BOOL communicatingWithServer = FALSE;
+BOOL inACall = FALSE;
 
 
 @interface VideoChatViewController () <RTCEAGLVideoViewDelegate>
@@ -49,7 +53,6 @@ BOOL videoCallViewsAreEstablished = FALSE;
 }
 
 
-@synthesize idField = _idField;
 @synthesize isInitiater = _isInitiater;
 @synthesize peer = _peer;
 
@@ -85,8 +88,6 @@ BOOL videoCallViewsAreEstablished = FALSE;
     
     self.statusBarOrientation =
     [UIApplication sharedApplication].statusBarOrientation;
-    self.roomInput.delegate = self;
-    [self.roomInput becomeFirstResponder];
     
     _isInitiater = YES;
     
@@ -191,21 +192,22 @@ BOOL videoCallViewsAreEstablished = FALSE;
 }
 
 
-#pragma mark ServerConnectionDelegate
+#pragma mark - ServerConnectionDelegate
 
 - (void)onConnectToServer:(NSString *)serverURL
 {
     NSLog(@"VideoChatViewController: onConnectToServer ...");
     
+    communicatingWithServer = TRUE;
     _serverURL = serverURL;
-    
-    [self startConnectionWithURL:_serverURL];
+    [self restartConnectionWithURL:_serverURL];
 }
 
 - (void)onDisconnectFromServer
 {
     NSLog(@"VideoChatViewController: onDisconnectFromServer ...");
     
+    communicatingWithServer = FALSE;
     [self disconnect];
 }
 
@@ -214,15 +216,16 @@ BOOL videoCallViewsAreEstablished = FALSE;
 
 - (void)peerClient:(Peer *)client didReceiveOfferWithSdp:(RTCSessionDescription *)sdp
 {
-    NSLog(@"setup CaptureSession!");
-    _isInitiater = NO;
-    [_roomInput resignFirstResponder];
-    _roomInput.hidden = YES;
-    self.instructionsView.hidden = YES;
-    self.logView.hidden = NO;
-    [self setupCaptureSession];
-    
-    [client answerWithSdp:sdp];
+    if (!inACall)
+    {
+        inACall = TRUE;
+        
+        NSLog(@"setup CaptureSession!");
+        _isInitiater = NO;
+        [self setupCaptureSession];
+        
+        [client answerWithSdp:sdp];
+    }
 }
 
 - (void)peerClient:(Peer *)client didReceiveLocalVideoTrack:(RTCVideoTrack *)localVideoTrack
@@ -257,9 +260,11 @@ BOOL videoCallViewsAreEstablished = FALSE;
 
 - (void)peerClientDidClose:(Peer *)client
 {
-    [self resetUI];
-    //[self disconnect];
-    //[self startConnectionWithURL:_serverURL];
+    if (inACall && communicatingWithServer)
+    {
+        inACall = FALSE;
+        [self restartConnectionWithURL:_serverURL];
+    }
 }
 
 
@@ -290,8 +295,6 @@ BOOL videoCallViewsAreEstablished = FALSE;
     
     _isInitiater = YES;
     textField.hidden = YES;
-    self.instructionsView.hidden = YES;
-    self.logView.hidden = NO;
     [_peer callWithId:dstId];
     [self setupCaptureSession];
 }
@@ -307,24 +310,32 @@ BOOL videoCallViewsAreEstablished = FALSE;
 
 #pragma mark - Private
 
-- (void)startConnectionWithURL:(NSString *)serverURL
+- (void)restartConnectionWithURL:(NSString *)serverURL
 {
+    [self disconnect];
+    
     // Create Configuration object.
     //NSDictionary *config = @{@"id": @"1", @"key": @"s51s84ud22jwz5mi", @"port": @(9000)};
     NSDictionary *config = @{@"host": serverURL,
                              @"port": @(9876),
                              @"path": @"/dvc",
-                             @"secure": @(NO)};
+                             @"secure": @(NO),
+                             @"config": @{
+                                     @"iceServers": @[
+                                             @{@"url": @"turn:numb.viagenie.ca", @"credential": @"dvc", @"user": @"brennandgj@gmail.com", @"password": @"dvcchat"}
+                                     ]
+                            }};
     
     __block typeof(self) __self = self;
     
     // Create Instance of Peer.
     _peer = [[Peer alloc] initWithConfig:config];
     
+    inACall = FALSE;
+    
     // Set Callbacks.
     _peer.onOpen = ^(NSString *id) {
         NSLog(@"onOpen");
-        __self.idField.text = id;
         
         // Send peer ID to server.
         NSArray *args = [[NSArray alloc] initWithObjects:id, nil];
@@ -379,12 +390,6 @@ BOOL videoCallViewsAreEstablished = FALSE;
 
 - (void)resetUI
 {
-    [self.roomInput resignFirstResponder];
-    self.roomInput.text = nil;
-    self.roomInput.hidden = NO;
-    self.logView.hidden = YES;
-    self.logView.text = nil;
-    
     if (_localVideoTrack)
     {
         [_localVideoTrack removeRenderer:self.localVideoView];
@@ -417,8 +422,8 @@ BOOL videoCallViewsAreEstablished = FALSE;
     CGRect largeVideoFrame = AVMakeRectWithAspectRatioInsideRect(remoteViewIsLargeView ? remoteAspectRatio : localAspectRatio, self.blackView.bounds);
     
     CGRect smallVideoFrame = AVMakeRectWithAspectRatioInsideRect(remoteViewIsLargeView ? localAspectRatio : remoteAspectRatio, self.blackView.bounds);
-    smallVideoFrame.size.width = smallVideoFrame.size.width / 2.5;
-    smallVideoFrame.size.height = smallVideoFrame.size.height / 2.5;
+    smallVideoFrame.size.width = smallVideoFrame.size.width / 2.75;
+    smallVideoFrame.size.height = smallVideoFrame.size.height / 2.75;
     smallVideoFrame.origin.x = CGRectGetMaxX(self.blackView.bounds) - smallVideoFrame.size.width - kLocalViewPadding;
     smallVideoFrame.origin.y = CGRectGetMaxY(self.blackView.bounds) - smallVideoFrame.size.height - kLocalViewPadding;
     
@@ -442,7 +447,7 @@ BOOL videoCallViewsAreEstablished = FALSE;
 
 - (IBAction)swapCameras:(id)sender
 {
-    if (videoCallViewsAreEstablished)
+    if (communicatingWithServer && videoCallViewsAreEstablished)
     {
         [_peer swapCaptureDevicePosition];
         if (_peer.cameraPosition == AVCaptureDevicePositionFront)
@@ -458,21 +463,18 @@ BOOL videoCallViewsAreEstablished = FALSE;
 
 - (IBAction)repositionViews:(id)sender
 {
-    if (remoteViewIsLargeView)
+    if (communicatingWithServer)
     {
-        remoteViewIsLargeView = FALSE;
+        if (remoteViewIsLargeView)
+        {
+            remoteViewIsLargeView = FALSE;
+        }
+        else
+        {
+            remoteViewIsLargeView = TRUE;
+        }
+        [self updateVideoViewLayout];
     }
-    else
-    {
-        remoteViewIsLargeView = TRUE;
-    }
-    [self updateVideoViewLayout];
-}
-
-- (IBAction)finishCall:(id)sender
-{
-    [self disconnect];
-    [self startConnectionWithURL:_serverURL];
 }
 
 
