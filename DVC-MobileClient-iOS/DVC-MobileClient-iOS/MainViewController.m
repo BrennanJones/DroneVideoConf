@@ -240,16 +240,16 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
                             
                             self.droneConnectionStatusLabel.text = @"Connected";
                             self.droneConnectionStatusLabel.textColor = _dvcGreen;
+                            
+                            droneKalmanFilter = alloc_filter_velocity2d(1.0);
+                            phoneKalmanFilter = alloc_filter_velocity2d(1.0);
+                            
+                            [self initializePhoneGPS];
+                            
+                            _droneControlLoopThread = [[NSThread alloc] initWithTarget:self selector:@selector(droneControlLoopRun) object:nil];
+                            droneControlLoopRunning = true;
+                            [_droneControlLoopThread start];
                         });
-                        
-                        droneKalmanFilter = alloc_filter_velocity2d(1.0);
-                        phoneKalmanFilter = alloc_filter_velocity2d(1.0);
-                        
-                        [self initializePhoneGPS];
-                        
-                        _droneControlLoopThread = [[NSThread alloc] initWithTarget:self selector:@selector(droneControlLoopRun) object:nil];
-                        droneControlLoopRunning = true;
-                        [_droneControlLoopThread start];
                     }
                 });
                 
@@ -617,7 +617,7 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
                     });
                 }
                 
-                if (altDrone >= DRONE_REQUIRED_ALTITUDE_LOWER_BOUND && altDrone <= DRONE_REQUIRED_ALTITUDE_UPPER_BOUND)
+                if (altDrone >= DRONE_REQUIRED_ALTITUDE_LOWER_BOUND - 0.5 && altDrone <= DRONE_REQUIRED_ALTITUDE_UPPER_BOUND + 0.5)
                 {
                     [self droneAdjustBearing];
                     [self droneFollowTarget];
