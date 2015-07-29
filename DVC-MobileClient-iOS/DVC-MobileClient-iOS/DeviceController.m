@@ -60,7 +60,7 @@ static const int BD_NET_DC_VIDEO_MAX_NUMBER_OF_FRAG = 128;
 
 static const int D2C_PORT = 43210;  // fixed by the app, but should be sent to drone in json
 
-static const int PCMD_LOOP_IN_MS = 25000; // piloting command sending interval
+static const int PCMD_LOOP_IN_MS = 25; // piloting command sending interval
 
 static ARNETWORK_IOBufferParam_t C2D_PARAMS[] = {
     {
@@ -769,14 +769,14 @@ void *looperRun (void* data)
         while (deviceController.run)
         {
             [deviceController sendPCMD];
-            usleep(PCMD_LOOP_IN_MS);
+            usleep(PCMD_LOOP_IN_MS * 1000);
             
             if (deviceController.cameraOrientationChangeNeeded == YES)
             {
                 [deviceController sendCameraOrientation];
                 deviceController.cameraOrientationChangeNeeded = NO;
                 
-                usleep(PCMD_LOOP_IN_MS);
+                usleep(PCMD_LOOP_IN_MS * 1000);
             }
         }
     }

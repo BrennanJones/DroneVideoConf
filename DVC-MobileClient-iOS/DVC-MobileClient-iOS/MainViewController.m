@@ -562,16 +562,8 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
                     NSString *lonText;
                     NSString *altText = [[NSString alloc] initWithFormat:@"%f", altDrone];
                     
-                    if (posDroneSet)
-                    {
-                        latText = [[NSString alloc] initWithFormat:@"%f", latDroneEst];
-                        lonText = [[NSString alloc] initWithFormat:@"%f", lonDroneEst];
-                    }
-                    else
-                    {
-                        latText = @"--";
-                        lonText = @"--";
-                    }
+                    latText = [[NSString alloc] initWithFormat:@"%f", latDroneEst];
+                    lonText = [[NSString alloc] initWithFormat:@"%f", lonDroneEst];
                     
                     [_latDroneLabel setText:latText];
                     [_lonDroneLabel setText:lonText];
