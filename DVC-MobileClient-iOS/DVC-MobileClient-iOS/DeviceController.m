@@ -55,8 +55,8 @@ static const int BD_NET_D2C_NAVDATA = 127;
 static const int BD_NET_D2C_EVENTS = 126;
 static const int BD_NET_D2C_VIDEO_DATA = 125;
 
-static const int BD_NET_DC_VIDEO_FRAG_SIZE = 1000;
-static const int BD_NET_DC_VIDEO_MAX_NUMBER_OF_FRAG = 128;
+static const int BD_NET_DC_VIDEO_FRAG_SIZE = 65000;
+static const int BD_NET_DC_VIDEO_MAX_NUMBER_OF_FRAG = 4;
 
 static const int D2C_PORT = 43210;  // fixed by the app, but should be sent to drone in json
 
