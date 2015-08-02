@@ -105,7 +105,7 @@ jQuery(function()
 		console.log('CallCommand');
 
 		// Try calling the mobile client.
-	    var call = peer.call(mobileClientPeerID, window.localStream);
+		var call = peer.call(mobileClientPeerID, window.localStream);
 	    step3(call);
 	});
 	
@@ -148,42 +148,46 @@ jQuery(function()
 	// Compatibility shim
     navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
-    // PeerJS object
-    //var peer = new Peer('0', { key: 's51s84ud22jwz5mi', debug: 3 });
-    var peer = new Peer(
-    	{ host: window.location.hostname, port: 9876, path: '/dvc', secure: false, debug: 3 },
-    	{ config: {'iceServers': [
-        	{
-				url: 'turn:numb.viagenie.ca',
-				credential: 'dvc',
-				username: 'brennandgj@gmail.com',
-				password: 'dvcchat'
-    		}
-    	]}});
+    var peer;
 
-    peer.on('open', function()
-    {
-    	console.log('open');
-    });
+    setTimeout(function () {
+    	// PeerJS object
+	    //var peer = new Peer('0', { key: 's51s84ud22jwz5mi', debug: 3 });
+	    peer = new Peer(
+	    	{ host: window.location.hostname, port: 9876, path: '/dvc', secure: false, debug: 3 },
+	    	{ config: {'iceServers': [
+	        	{
+					url: 'turn:numb.viagenie.ca',
+					credential: 'dvc',
+					username: 'brennandgj@gmail.com',
+					password: 'dvcchat'
+	    		}
+	    	]}});
 
-    // Receiving a call
-    peer.on('call', function(call)
-    {
-	    console.log('call');
+	    peer.on('open', function()
+	    {
+	    	console.log('open');
+	    });
 
-	    call.answer(window.localStream);
-	    step3(call);
-    });
-    
-    peer.on('error', function(err)
-    {
-	    console.log("error");
+	    // Receiving a call
+	    peer.on('call', function(call)
+	    {
+		    console.log('call');
+
+		    call.answer(window.localStream);
+		    step3(call);
+	    });
 	    
-	    //alert(err.message);
-	    step2();
-    });
+	    peer.on('error', function(err)
+	    {
+		    console.log("error");
+		    
+		    //alert(err.message);
+		    step2();
+	    });
 
-    step1();
+	    step1();
+    }, 6000);
 
 
     function step1()
