@@ -12,7 +12,7 @@
 
 @interface VideoChatViewController : UIViewController <UITextFieldDelegate, ServerConnectionDelegate>
 
-@property(weak, nonatomic) IBOutlet UIView* blackView;
+@property (weak, nonatomic) IBOutlet UIView* blackView;
 
 - (IBAction)swapCameras:(id)sender;
 - (IBAction)repositionViews:(id)sender;

@@ -31,15 +31,15 @@ BOOL inACall = FALSE;
 
 @property (nonatomic, strong) DVCTabBarController *dvcTabBarController;
 
-@property(nonatomic, assign) UIInterfaceOrientation statusBarOrientation;
+@property (nonatomic, assign) UIInterfaceOrientation statusBarOrientation;
 
 @property (nonatomic, strong) NSString *serverURL;
 
-@property(nonatomic, strong) RTCEAGLVideoView* localVideoView;
-@property(nonatomic, strong) RTCEAGLVideoView* remoteVideoView;
+@property (nonatomic, strong) RTCEAGLVideoView* localVideoView;
+@property (nonatomic, strong) RTCEAGLVideoView* remoteVideoView;
 
-@property(nonatomic, strong) Peer *peer;
-@property(nonatomic) BOOL isInitiater;
+@property (nonatomic, strong) Peer *peer;
+@property (nonatomic) BOOL isInitiater;
 
 @end
 
@@ -207,6 +207,7 @@ BOOL inACall = FALSE;
 {
     NSLog(@"VideoChatViewController: onDisconnectFromServer ...");
     
+    inACall = FALSE;
     communicatingWithServer = FALSE;
     [self disconnect];
 }
@@ -241,9 +242,12 @@ BOOL inACall = FALSE;
 {
     videoCallViewsAreEstablished = FALSE;
     
-    [_localVideoTrack removeRenderer:self.localVideoView];
-    _localVideoTrack = nil;
-    [self.localVideoView renderFrame:nil];
+    if (_localVideoTrack)
+    {
+        [_localVideoTrack removeRenderer:self.localVideoView];
+        _localVideoTrack = nil;
+        [self.localVideoView renderFrame:nil];
+    }
 }
 
 - (void)peerClient:(Peer *)client didReceiveRemoteVideoTrack:(RTCVideoTrack *)remoteVideoTrack
@@ -283,36 +287,11 @@ BOOL inACall = FALSE;
 }
 
 
-#pragma mark - UITextFieldDelegate
-
-- (void)textFieldDidEndEditing:(UITextField*)textField
-{
-    NSString* dstId = textField.text;
-    
-    if ([dstId length] == 0) {
-        return;
-    }
-    
-    _isInitiater = YES;
-    textField.hidden = YES;
-    [_peer callWithId:dstId];
-    [self setupCaptureSession];
-}
-
-- (BOOL)textFieldShouldReturn:(UITextField*)textField
-{
-    // There is no other control that can take focus, so manually resign focus
-    // when return (Join) is pressed to trigger |textFieldDidEndEditing|.
-    [textField resignFirstResponder];
-    return YES;
-}
-
-
 #pragma mark - Private
 
 - (void)restartConnectionWithURL:(NSString *)serverURL
 {
-    [self disconnect];
+    //[self disconnect];
     
     // Create Configuration object.
     //NSDictionary *config = @{@"id": @"1", @"key": @"s51s84ud22jwz5mi", @"port": @(9000)};
@@ -335,40 +314,40 @@ BOOL inACall = FALSE;
     
     // Set Callbacks.
     _peer.onOpen = ^(NSString *id) {
-        NSLog(@"onOpen");
+        NSLog(@"Peer: onOpen");
         
         // Send peer ID to server.
         NSArray *args = [[NSArray alloc] initWithObjects:id, nil];
         [__self.dvcTabBarController.socket emit:@"MobileClientPeerID" withItems:args];
     };
     
-    _peer.onCall = ^(RTCSessionDescription *sdp) {
-        NSLog(@"onCall");
+    _peer.onCall = ^(RTCSessionDescription *sdp, NSDictionary *metadata) {
+        NSLog(@"Peer: onCall");
         [__self peerClient:__self.peer didReceiveOfferWithSdp:sdp];
     };
     
     _peer.onReceiveLocalVideoTrack = ^(RTCVideoTrack *videoTrack) {
-        NSLog(@"onReceiveLocalVideoTrack");
+        NSLog(@"Peer: onReceiveLocalVideoTrack");
         [__self peerClient:__self.peer didReceiveLocalVideoTrack:videoTrack];
     };
     
     _peer.onRemoveLocalVideoTrack = ^() {
-        NSLog(@"onRemoveLocalVideoTrack");
+        NSLog(@"Peer: onRemoveLocalVideoTrack");
         [__self peerClientWillRemoveLocalVideoTrack:__self.peer];
     };
     
     _peer.onReceiveRemoteVideoTrack = ^(RTCVideoTrack *videoTrack) {
-        NSLog(@"onReceiveRemoteVideoTrack");
+        NSLog(@"Peer: onReceiveRemoteVideoTrack");
         [__self peerClient:__self.peer didReceiveRemoteVideoTrack:videoTrack];
     };
     
     _peer.onError = ^(NSError *error) {
-        NSLog(@"onError: %@", error);
+        NSLog(@"Peer: onError: %@", error);
         [__self peerClient:__self.peer didError:error];
     };
     
     _peer.onClose = ^() {
-        NSLog(@"onClose");
+        NSLog(@"Peer: onClose");
         [__self peerClientDidClose:__self.peer];
     };
     

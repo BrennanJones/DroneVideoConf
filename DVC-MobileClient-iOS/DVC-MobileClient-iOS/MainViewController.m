@@ -43,6 +43,7 @@
 #import "DeviceController.h"
 #import "DVCTabBarController.h"
 #import "gps.h"
+#import "NSMutableArray+Queue.h"
 #import "Utility.h"
 
 
@@ -90,6 +91,9 @@ BOOL droneAtProperDistance = false;
 static const double DRONE_REQUIRED_ALTITUDE_LOWER_BOUND = 4.0;
 static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 
+static const int OUTPUT_VIDEO_STREAM_LOOP_IN_MS = 20;  // output video stream loop interval
+BOOL outputVideoStreamLoopRunning = false;
+
 
 @interface MainViewController ()
 
@@ -99,6 +103,10 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 
 @property (nonatomic, strong) UIColor *dvcRed;
 @property (nonatomic, strong) UIColor *dvcGreen;
+
+@property (nonatomic, strong) NSThread *outputVideoStreamLoopThread;
+@property (nonatomic, strong) NSMutableArray *outputVideoStreamFrameQueue;
+@property (nonatomic, strong) NSLock *outputVideoStreamFrameQueueLock;
 
 @end
 
@@ -125,6 +133,13 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
     
     self.droneConnectionStatusLabel.text = @"Not connected";
     self.droneConnectionStatusLabel.textColor = _dvcRed;
+    
+    _outputVideoStreamFrameQueue = [NSMutableArray array];
+    _outputVideoStreamFrameQueueLock = [[NSLock alloc] init];
+    
+    _outputVideoStreamLoopThread = [[NSThread alloc] initWithTarget:self selector:@selector(outputVideoStreamLoopRun) object:nil];
+    outputVideoStreamLoopRunning = true;
+    [_outputVideoStreamLoopThread start];
     
     [_emergencyBt setEnabled:NO];
     
@@ -174,6 +189,7 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
         free_filter(droneKalmanFilter);
         
         droneControlLoopRunning = false;
+        outputVideoStreamLoopRunning = false;
     });
 }
 
@@ -224,7 +240,6 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                     _dvcTabBarController.deviceController = [[DeviceController alloc]initWithARService:_service];
                     [_dvcTabBarController.deviceController setDeviceControllerDelegate:self];
-                    [_dvcTabBarController.deviceController setDroneVideoDelegate:self];
                     
                     BOOL connectError = [_dvcTabBarController.deviceController start];
                     NSLog(@"connectError = %d", connectError);
@@ -376,12 +391,33 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
 {
     NSLog(@"MainViewController: onFrameComplete ...");
     
-    if (_dvcTabBarController.socket.connected)
+    // Check what type of NAL unit(s) are in the data.
+    int startCodeIndex = 0;
+    for (int i = 0; i < 4; i++)
     {
-        NSData *data = [[NSData alloc] initWithBytes:frame length:frameSize];
-        NSArray *args = [[NSArray alloc] initWithObjects:data, nil];
-        [_dvcTabBarController.socket emit:@"DroneVideoFrame" withItems:args];
+        startCodeIndex = i + 1;
+        if (frame[i] == 0x01)
+        {
+            break;
+        }
     }
+    int nalu_type = ((uint8_t)frame[startCodeIndex] & 0x1F);
+    
+    // If a key frame and/or SPS/PPS data found, clear the frame queue.
+    if (nalu_type == 5 || nalu_type == 7 || nalu_type == 8)
+    {
+        [_outputVideoStreamFrameQueueLock lock];
+        if (_outputVideoStreamFrameQueue.count)
+        {
+            [_outputVideoStreamFrameQueue removeAllObjects];
+        }
+        [_outputVideoStreamFrameQueueLock unlock];
+    }
+    
+    // Add next frame to queue.
+    [_outputVideoStreamFrameQueueLock lock];
+    [_outputVideoStreamFrameQueue enqueue:[[NSData alloc] initWithBytes:frame length:frameSize]];
+    [_outputVideoStreamFrameQueueLock unlock];
 }
 
 - (void)onDisconnectNetwork:(DeviceController *)deviceController
@@ -731,6 +767,27 @@ static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
     {
         [_dvcTabBarController.deviceController setFlag:0];
         [_dvcTabBarController.deviceController setPitch:0];
+    }
+}
+
+
+#pragma mark Output Video Stream Methods
+
+- (void)outputVideoStreamLoopRun
+{
+    while (outputVideoStreamLoopRunning)
+    {
+        [_outputVideoStreamFrameQueueLock lock];
+        NSData *nextFrame = (NSData *)[_outputVideoStreamFrameQueue dequeue];
+        [_outputVideoStreamFrameQueueLock unlock];
+        
+        if (nextFrame != nil && _dvcTabBarController.socket.connected)
+        {
+            NSArray *args = [[NSArray alloc] initWithObjects:nextFrame, nil];
+            [_dvcTabBarController.socket emit:@"DroneVideoFrame" withItems:args];
+        }
+        
+        usleep(OUTPUT_VIDEO_STREAM_LOOP_IN_MS * 1000);
     }
 }
 

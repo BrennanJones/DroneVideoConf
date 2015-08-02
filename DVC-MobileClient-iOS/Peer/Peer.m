@@ -55,16 +55,22 @@ static NSInteger kPeerClientErrorSetSDP = -4;
 
 @interface Peer () <RTCPeerConnectionDelegate, RTCSessionDescriptionDelegate, SRWebSocketDelegate>
 
+@property(nonatomic, strong) RTCPeerConnection *peerConnection;
 @property(nonatomic, strong) RTCPeerConnectionFactory *factory;
 @property(nonatomic, strong) NSMutableArray *messageQueue;
 @property(nonatomic, strong) NSString *dstId;
+@property(nonatomic, strong) NSDictionary *metadata;
 @property(nonatomic, assign) BOOL isInitiator;
 @property(nonatomic, strong) NSMutableArray *iceServers;
 @property(nonatomic, strong) NSString *connectionId;
 @property(nonatomic, strong) SRWebSocket *webSock;
 @property(nonatomic, strong) void(^webSocketOpenCallBack)(NSString *connectionId, NSError *error);
 @property(nonatomic, strong) RTCVideoTrack *localVideoTrack;
+@property(nonatomic, strong) RTCAudioTrack *localAudioTrack;
 @property(nonatomic, strong) RTCMediaStream *localMediaStream;
+@property(nonatomic, strong) RTCVideoTrack *remoteVideoTrack;
+@property(nonatomic, strong) RTCAudioTrack *remoteAudioTrack;
+@property(nonatomic, strong) RTCMediaStream *remoteMediaStream;
 
 @property (nonatomic, assign) BOOL inACall;
 
@@ -77,6 +83,7 @@ static NSInteger kPeerClientErrorSetSDP = -4;
 @synthesize factory = _factory;
 @synthesize messageQueue = _messageQueue;
 @synthesize dstId = _dstId;
+@synthesize metadata = _metadata;
 @synthesize isInitiator = _isInitiator;
 @synthesize iceServers = _iceServers;
 
@@ -93,11 +100,17 @@ static NSInteger kPeerClientErrorSetSDP = -4;
 @synthesize onOpen = _onOpen;
 @synthesize onCall = _onCall;
 @synthesize onClose = _onClose;
+@synthesize onLeave = _onLeave;
 @synthesize onError = _onError;
 @synthesize onReceiveRemoteVideoTrack = _onReceiveRemoteVideoTrack;
 @synthesize onReceiveLocalVideoTrack = _onReceiveLocalVideoTrack;
 @synthesize localVideoTrack = _localVideoTrack;
+@synthesize localAudioTrack = _localAudioTrack;
 @synthesize localMediaStream = _localMediaStream;
+@synthesize remoteVideoTrack = _remoteVideoTrack;
+@synthesize remoteAudioTrack = _remoteAudioTrack;
+@synthesize remoteMediaStream = _remoteMediaStream;
+
 
 - (instancetype)initWithConfig:(NSDictionary *)args {
     if (self = [super init]) {
@@ -112,9 +125,13 @@ static NSInteger kPeerClientErrorSetSDP = -4;
       _secure = NO;
       _webSock = nil;
       _isInitiator = NO;
-      _cameraPosition = AVCaptureDevicePositionBack;
+      _cameraPosition = AVCaptureDevicePositionFront;
       _localVideoTrack = nil;
+      _localAudioTrack = nil;
       _localMediaStream = nil;
+      _remoteVideoTrack = nil;
+      _remoteAudioTrack = nil;
+      _remoteMediaStream = nil;
 
       if ([args objectForKey:@"key"]   ) {_key = [args objectForKey:@"key"];}
       if ([args objectForKey:@"id"]    ) {_id = [args objectForKey:@"id"];}
@@ -181,9 +198,10 @@ static NSInteger kPeerClientErrorSetSDP = -4;
   }
 }
 
-- (void)callWithId:(NSString*)dstId
+- (void)callWithId:(NSString*)dstId metadata:(NSDictionary *)metadata
 {
   _dstId = dstId;
+  _metadata = metadata;
   _isInitiator = YES;
   _connectionId = [_id stringByAppendingString:[self randStringWithMaxLenght:20]];
   [self setupLocalMedia];
@@ -192,15 +210,15 @@ static NSInteger kPeerClientErrorSetSDP = -4;
 
 - (void)answerWithSdp:(RTCSessionDescription *)sdp
 {
-    [_peerConnection setRemoteDescriptionWithDelegate:self sessionDescription:sdp];
-    self.inACall = TRUE;
+  [_peerConnection setRemoteDescriptionWithDelegate:self sessionDescription:sdp];
+  self.inACall = TRUE;
 }
 
 // pos is AVCaptureDevicePositionBack or AVCaptureDevicePositionFront.
 - (void)setCaptureDevicePosition:(NSInteger)pos
 {
   if (pos != AVCaptureDevicePositionBack && pos != AVCaptureDevicePositionFront) {
-    NSString *errorMsg = [[NSString alloc] initWithFormat:@"Invalid CaptureDevicePosition: %ld", pos];
+    NSString *errorMsg = [[NSString alloc] initWithFormat:@"Invalid CaptureDevicePosition: %ld", (long)pos];
     @throw errorMsg;
   }
 
@@ -258,8 +276,11 @@ static NSInteger kPeerClientErrorSetSDP = -4;
 - (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
 {
   NSLog(@"WebSocket closed. reason:%@", reason);
-  [self deleteLocalMediaStream];
   _state = kPeerClientStateDisconnected;
+
+  if (_onClose) {
+    _onClose();
+  }
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error
@@ -274,21 +295,20 @@ static NSInteger kPeerClientErrorSetSDP = -4;
   if (_onClose) {
     _onClose();
   }
-
-  [self deleteLocalMediaStream];
 }
 
 #pragma process signaling messsage methods
 
 - (void)processSignalingMessage:(NSDictionary *)message
 {
+  NSLog(@"RECV MESSAGE: %@", message);
   NSString *type = (NSString *)[message objectForKey:@"type"];
 
-  if      ([@"OPEN" isEqualToString:type])                       {[self processOpenWithMessage:message];}
-  else if ([@"CANDIDATE" isEqualToString:type])                  {[self processCandidateWithMessage:message];}
-  else if ([@"OFFER" isEqualToString:type] && !self.inACall)     {[self processOfferWithMessage:message];}
-  else if ([@"ANSWER" isEqualToString:type])                     {[self processAnswerWithMessage:message];}
-  else if ([@"LEAVE" isEqualToString:type])                      {[self processLeaveWithMessage:message];}
+  if      ([@"OPEN" isEqualToString:type])                      {[self processOpenWithMessage:message];}
+  else if ([@"CANDIDATE" isEqualToString:type])                 {[self processCandidateWithMessage:message];}
+  else if ([@"OFFER" isEqualToString:type] && !self.inACall)    {[self processOfferWithMessage:message];}
+  else if ([@"ANSWER" isEqualToString:type])                    {[self processAnswerWithMessage:message];}
+  else if ([@"LEAVE" isEqualToString:type])                     {[self processLeaveWithMessage:message];}
 }
 
 - (void)processOpenWithMessage:(NSDictionary *)message
@@ -320,6 +340,7 @@ static NSInteger kPeerClientErrorSetSDP = -4;
   NSDictionary *payload = [message objectForKey:@"payload"];
   NSDictionary *sdpObj = [payload objectForKey:@"sdp"];
   NSString *sdpMessage = [sdpObj objectForKey:@"sdp"];
+  NSDictionary *metadata = [payload objectForKey:@"metadata"];
   NSString *connectionType = [payload objectForKey:@"type"];
   _connectionId = [payload objectForKey:@"connectionId"];
   _dstId = [message objectForKey:@"src"];
@@ -328,7 +349,7 @@ static NSInteger kPeerClientErrorSetSDP = -4;
     NSLog(@"connectionType: %@", connectionType);
     [self setupLocalMedia];
     RTCSessionDescription *sdp = [[RTCSessionDescription alloc] initWithType:@"offer" sdp:sdpMessage];
-    if(_onCall) { _onCall(sdp); }
+    if(_onCall) { _onCall(sdp, metadata); }
   }
 }
 
@@ -344,7 +365,9 @@ static NSInteger kPeerClientErrorSetSDP = -4;
 
 - (void)processLeaveWithMessage:(NSDictionary *)message
 {
-  [self disconnect];
+  if (_onLeave) {
+    _onLeave();
+  }
 }
 
 # pragma --
@@ -357,13 +380,15 @@ static NSInteger kPeerClientErrorSetSDP = -4;
 
   self.inACall = FALSE;
 
-  [_peerConnection close];
+  NSLog(@"disconnecting....");
+  [self deleteRemoteMediaStream];
+  [self deleteLocalMediaStream];
 
   _dstId = nil;
   _isInitiator = NO;
   _messageQueue = [NSMutableArray array];
-  _peerConnection = nil;
   _state = kPeerClientStateDisconnected;
+
   [_webSock close];
 }
 
@@ -372,16 +397,33 @@ static NSInteger kPeerClientErrorSetSDP = -4;
 - (void)peerConnection:(RTCPeerConnection *)peerConnection
     signalingStateChanged:(RTCSignalingState)stateChanged {
   NSLog(@"Signaling state changed: %d", stateChanged);
+
+  switch (stateChanged) {
+    case RTCSignalingClosed:
+      NSLog(@"Signaling state disconnected.");
+      [self disconnect];
+      _peerConnection = nil;
+      break;
+    default:
+      break;
+  }
 }
 
 - (void)peerConnection:(RTCPeerConnection *)peerConnection
-           addedStream:(RTCMediaStream *)stream {
+           addedStream:(RTCMediaStream *)stream
+{
+  __block Peer *__self = self;
+
   dispatch_async(dispatch_get_main_queue(), ^{
     NSLog(@"Received %lu video tracks and %lu audio tracks",
         (unsigned long)stream.videoTracks.count,
         (unsigned long)stream.audioTracks.count);
     if (stream.videoTracks.count) {
+      __self.remoteMediaStream = stream;
       RTCVideoTrack *videoTrack = stream.videoTracks[0];
+      __self.remoteVideoTrack = videoTrack;
+      RTCAudioTrack *audioTrack = stream.audioTracks[0];
+      __self.remoteAudioTrack = audioTrack;
 
       if (_onReceiveRemoteVideoTrack) {
         _onReceiveRemoteVideoTrack(videoTrack);
@@ -407,11 +449,11 @@ static NSInteger kPeerClientErrorSetSDP = -4;
   switch (newState) {
     case RTCICEConnectionDisconnected:
       NSLog(@"ICE disconnected.");
-      if (_onClose) { _onClose(); }
+      [_peerConnection close];
       break;
     case RTCICEConnectionClosed:
       NSLog(@"ICE closed.");
-      if (_onClose) { _onClose(); }
+      [_peerConnection close];
       break;
     default:
         break;
@@ -494,14 +536,14 @@ static NSInteger kPeerClientErrorSetSDP = -4;
 
 #pragma mark - Private
 
-- (void)sendOffer {
+- (void)sendOffer
+{
   [_peerConnection createOfferWithDelegate:self
                                constraints:[self defaultOfferConstraints]];
 }
 
 - (void)sendOfferMessage:(NSString *)sdpStr
 {
-  NSLog(@"sdp: %@", sdpStr);
   NSDictionary *message = @{@"type": @"OFFER",
                             @"src": _id,
                             @"dst": _dstId,
@@ -510,6 +552,7 @@ static NSInteger kPeerClientErrorSetSDP = -4;
                                 @"serialization": @"binary",
                                 @"type": @"media",
                                 @"connectionId": _connectionId,
+                                @"metadata": _metadata,
                                 @"sdp": @{@"sdp": sdpStr, @"type": @"offer"} }
                             };
   [self sendMessage:message];
@@ -517,7 +560,6 @@ static NSInteger kPeerClientErrorSetSDP = -4;
 
 - (void)sendAnswerMessage:(NSString *)sdpStr
 {
-  NSLog(@"sdp: %@", sdpStr);
   NSDictionary *message = @{@"type": @"ANSWER",
                             @"src": _id,
                             @"dst": _dstId,
@@ -573,6 +615,7 @@ static NSInteger kPeerClientErrorSetSDP = -4;
 - (RTCMediaStream *)createLocalMediaStream {
   RTCMediaStream* localStream = [_factory mediaStreamWithLabel:@"ARDAMS"];
   RTCVideoTrack* localVideoTrack = nil;
+  RTCAudioTrack* localAudioTrack = nil;
 
   // The iOS simulator doesn't provide any sort of camera capture
   // support or emulation (http://goo.gl/rHAnC1) so don't bother
@@ -595,6 +638,7 @@ static NSInteger kPeerClientErrorSetSDP = -4;
   RTCVideoSource *videoSource = [_factory videoSourceWithCapturer:capturer
                                                       constraints:mediaConstraints];
   localVideoTrack = [_factory videoTrackWithID:@"ARDAMSv0" source:videoSource];
+  localAudioTrack = [_factory audioTrackWithID:@"ARDAMSa0"];
 
   if (localVideoTrack) {
     [localStream addVideoTrack:localVideoTrack];
@@ -605,8 +649,9 @@ static NSInteger kPeerClientErrorSetSDP = -4;
   }
 
 #endif
-  [localStream addAudioTrack:[_factory audioTrackWithID:@"ARDAMSa0"]];
+  [localStream addAudioTrack:localAudioTrack];
   _localVideoTrack = localVideoTrack;
+  _localAudioTrack = localAudioTrack;
   _localMediaStream = localStream;
   return localStream;
 }
@@ -619,8 +664,28 @@ static NSInteger kPeerClientErrorSetSDP = -4;
 
   if (_localMediaStream != nil && _localVideoTrack != nil) {
     [_localMediaStream removeVideoTrack:_localVideoTrack];
+    [_localMediaStream removeAudioTrack:_localAudioTrack];
+    [_peerConnection removeStream:_localMediaStream];
     _localVideoTrack = nil;
-    NSLog(@"local video track remove from media stream");
+    _localMediaStream = nil;
+    NSLog(@"local video audio track remove from media stream");
+  }
+}
+
+/**
+ * @brief リモートのビデオストリームを削除する
+ */
+- (void)deleteRemoteMediaStream {
+  NSLog(@"deleteRemoteMediaStream");
+
+  if (_remoteMediaStream != nil && _remoteVideoTrack != nil) {
+    [_remoteMediaStream removeVideoTrack:_remoteVideoTrack];
+    [_remoteMediaStream removeAudioTrack:_remoteAudioTrack];
+    [_peerConnection removeStream:_remoteMediaStream];
+    _remoteVideoTrack = nil;
+    _remoteAudioTrack = nil;
+    _remoteMediaStream = nil;
+    NSLog(@"remote video audio track remove from media stream");
   }
 }
 

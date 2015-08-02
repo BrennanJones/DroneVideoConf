@@ -147,6 +147,7 @@ static int COMMAND_BUFFER_IDS[] = {
 static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / sizeof(int);
 
 static const int SEQUENTIAL_PHOTO_LOOP_IN_MS = 30000;   // sequential photo loop interval
+
 BOOL sequentialPhotoLoopRunning;
 
 
@@ -902,7 +903,7 @@ eARNETWORK_MANAGER_CALLBACK_RETURN arnetworkCmdCallback(int buffer_id, uint8_t *
 }
 
 /**
- * @brief fuction called on disconnect
+ * @brief function called on disconnect
  * @param manager The manager
  */
 void onDisconnectNetwork (ARNETWORK_Manager_t *manager, ARNETWORKAL_Manager_t *alManager, void *customData)

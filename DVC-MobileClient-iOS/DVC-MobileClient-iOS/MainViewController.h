@@ -50,7 +50,7 @@
 @end
 
 
-@interface MainViewController : UIViewController <UITextFieldDelegate, CLLocationManagerDelegate, DeviceControllerDelegate, DroneVideoDelegate>
+@interface MainViewController : UIViewController <UITextFieldDelegate, CLLocationManagerDelegate, DeviceControllerDelegate>
 
 @property (nonatomic, weak) id <ServerConnectionDelegate> serverConnectionDelegate;
 
