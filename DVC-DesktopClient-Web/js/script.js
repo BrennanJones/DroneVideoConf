@@ -104,9 +104,11 @@ jQuery(function()
 	{
 		console.log('CallCommand');
 
-		// Try calling the mobile client.
-		var call = peer.call(mobileClientPeerID, window.localStream);
-	    step3(call);
+		// Wait 8 seconds, then try calling the mobile client.
+		setTimeout(function () {
+    		var call = peer.call(mobileClientPeerID, window.localStream);
+			step3(call);
+    	}, 8000);
 	});
 	
 	/* VIDEO */
@@ -137,6 +139,18 @@ jQuery(function()
 		div.prepend(img);
 	});
 
+	/* OTHER */
+
+	socket.on('ClientDisconnect', function(clientType)
+	{
+		console.log('ClientDisconnect: ' + clientType);
+
+		if (clientType == 'Mobile' && window.existingCall)
+	    {
+	    	window.existingCall.close();
+	    }
+	})
+
 
 	/**
 	 * PHONE VIDEO CHAT
@@ -150,45 +164,42 @@ jQuery(function()
 
     var peer;
 
-    setTimeout(function () {
-    	// PeerJS object
-	    //var peer = new Peer('0', { key: 's51s84ud22jwz5mi', debug: 3 });
-	    peer = new Peer(
-	    	{ host: window.location.hostname, port: 9876, path: '/dvc', secure: false, debug: 3 },
-	    	{ config: {'iceServers': [
-	        	{
-					url: 'turn:numb.viagenie.ca',
-					credential: 'dvc',
-					username: 'brennandgj@gmail.com',
-					password: 'dvcchat'
-	    		}
-	    	]}});
+    // PeerJS object
+    //var peer = new Peer('0', { key: 's51s84ud22jwz5mi', debug: 3 });
+    peer = new Peer(
+    	{ host: window.location.hostname, port: 9876, path: '/dvc', secure: false, debug: 3 },
+    	{ config: {'iceServers': [
+        	{
+				url: 'turn:numb.viagenie.ca',
+				credential: 'dvc',
+				username: 'brennandgj@gmail.com',
+				password: 'dvcchat'
+    		}
+    	]}});
 
-	    peer.on('open', function()
-	    {
-	    	console.log('open');
-	    });
+    peer.on('open', function()
+    {
+    	console.log('open');
+    });
 
-	    // Receiving a call
-	    peer.on('call', function(call)
-	    {
-		    console.log('call');
+    // Receiving a call
+    peer.on('call', function(call)
+    {
+	    console.log('call');
 
-		    call.answer(window.localStream);
-		    step3(call);
-	    });
+	    call.answer(window.localStream);
+	    step3(call);
+    });
+    
+    peer.on('error', function(err)
+    {
+	    console.log("error");
 	    
-	    peer.on('error', function(err)
-	    {
-		    console.log("error");
-		    
-		    //alert(err.message);
-		    step2();
-	    });
+	    //alert(err.message);
+	    step2();
+    });
 
-	    step1();
-    }, 6000);
-
+    step1();
 
     function step1()
     {

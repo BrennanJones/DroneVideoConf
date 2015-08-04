@@ -34,9 +34,13 @@ var numTimelinePhotosReceived = 0;
 io.sockets.on('connection', function(socket)
 {	
 	console.log('A client connected ...');
+
+	var clientType;
+
 	socket.on('disconnect', function()
 	{
-		console.log('A client disconnected ...');
+		console.log(clientType + ' client disconnected');
+		io.sockets.emit('ClientDisconnect', clientType);
 	});
 	
 	
@@ -57,11 +61,13 @@ io.sockets.on('connection', function(socket)
 	socket.on('MobileClientConnect', function(data)
 	{
 		console.log('MobileClientConnect');
+		clientType = 'Mobile';
 	});
 	
 	socket.on('DesktopClientConnect', function(data)
 	{
 		console.log('DesktopClientConnect');
+		clientType = 'Desktop';
 	});
 
 
