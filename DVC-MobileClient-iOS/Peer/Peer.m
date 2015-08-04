@@ -125,7 +125,7 @@ static NSInteger kPeerClientErrorSetSDP = -4;
       _secure = NO;
       _webSock = nil;
       _isInitiator = NO;
-      _cameraPosition = AVCaptureDevicePositionFront;
+      _cameraPosition = AVCaptureDevicePositionBack;
       _localVideoTrack = nil;
       _localAudioTrack = nil;
       _localMediaStream = nil;
@@ -153,7 +153,7 @@ static NSInteger kPeerClientErrorSetSDP = -4;
       RTCMediaConstraints *constrains = [self defaultPeerConnectionConstraints];
       _peerConnection = [_factory peerConnectionWithICEServers:_iceServers constraints:constrains delegate:self];
 
-      self.inACall = FALSE;
+      _inACall = FALSE;
   }
   return self;
 }
@@ -211,7 +211,7 @@ static NSInteger kPeerClientErrorSetSDP = -4;
 - (void)answerWithSdp:(RTCSessionDescription *)sdp
 {
   [_peerConnection setRemoteDescriptionWithDelegate:self sessionDescription:sdp];
-  self.inACall = TRUE;
+  _inACall = TRUE;
 }
 
 // pos is AVCaptureDevicePositionBack or AVCaptureDevicePositionFront.
@@ -278,6 +278,8 @@ static NSInteger kPeerClientErrorSetSDP = -4;
   NSLog(@"WebSocket closed. reason:%@", reason);
   _state = kPeerClientStateDisconnected;
 
+  _inACall = false;
+
   if (_onClose) {
     _onClose();
   }
@@ -287,6 +289,8 @@ static NSInteger kPeerClientErrorSetSDP = -4;
 {
   NSLog(@"WebSocket Error: %@", error);
   _state = kPeerClientStateDisconnected;
+
+  _inACall = FALSE;
 
   if (_onError) {
     _onError(error);
@@ -304,11 +308,11 @@ static NSInteger kPeerClientErrorSetSDP = -4;
   NSLog(@"RECV MESSAGE: %@", message);
   NSString *type = (NSString *)[message objectForKey:@"type"];
 
-  if      ([@"OPEN" isEqualToString:type])                      {[self processOpenWithMessage:message];}
-  else if ([@"CANDIDATE" isEqualToString:type])                 {[self processCandidateWithMessage:message];}
-  else if ([@"OFFER" isEqualToString:type] && !self.inACall)    {[self processOfferWithMessage:message];}
-  else if ([@"ANSWER" isEqualToString:type])                    {[self processAnswerWithMessage:message];}
-  else if ([@"LEAVE" isEqualToString:type])                     {[self processLeaveWithMessage:message];}
+  if      ([@"OPEN" isEqualToString:type])                  {[self processOpenWithMessage:message];}
+  else if ([@"CANDIDATE" isEqualToString:type])             {[self processCandidateWithMessage:message];}
+  else if ([@"OFFER" isEqualToString:type] && !_inACall)    {[self processOfferWithMessage:message];}
+  else if ([@"ANSWER" isEqualToString:type])                {[self processAnswerWithMessage:message];}
+  else if ([@"LEAVE" isEqualToString:type])                 {[self processLeaveWithMessage:message];}
 }
 
 - (void)processOpenWithMessage:(NSDictionary *)message
@@ -360,7 +364,7 @@ static NSInteger kPeerClientErrorSetSDP = -4;
   NSString *sdpMessage = [sdpObj objectForKey:@"sdp"]; NSLog(@"remote sdp: %@", sdpMessage);
   RTCSessionDescription *sdp = [[RTCSessionDescription alloc] initWithType:@"answer" sdp:sdpMessage];
   [_peerConnection setRemoteDescriptionWithDelegate:self sessionDescription:sdp];
-  self.inACall = TRUE;
+  _inACall = TRUE;
 }
 
 - (void)processLeaveWithMessage:(NSDictionary *)message
@@ -378,7 +382,7 @@ static NSInteger kPeerClientErrorSetSDP = -4;
     return;
   }
 
-  self.inACall = FALSE;
+  _inACall = FALSE;
 
   NSLog(@"disconnecting....");
   [self deleteRemoteMediaStream];
@@ -662,11 +666,17 @@ static NSInteger kPeerClientErrorSetSDP = -4;
 - (void)deleteLocalMediaStream {
   NSLog(@"deleteLocalMediaStream");
 
+  if (_onRemoveLocalVideoTrack)
+  {
+      _onRemoveLocalVideoTrack();
+  }
+
   if (_localMediaStream != nil && _localVideoTrack != nil) {
     [_localMediaStream removeVideoTrack:_localVideoTrack];
     [_localMediaStream removeAudioTrack:_localAudioTrack];
     [_peerConnection removeStream:_localMediaStream];
     _localVideoTrack = nil;
+    _localAudioTrack = nil;
     _localMediaStream = nil;
     NSLog(@"local video audio track remove from media stream");
   }

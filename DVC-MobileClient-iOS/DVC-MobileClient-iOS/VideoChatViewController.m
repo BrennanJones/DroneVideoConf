@@ -198,18 +198,21 @@ BOOL inACall = FALSE;
 {
     NSLog(@"VideoChatViewController: onConnectToServer ...");
     
-    communicatingWithServer = TRUE;
     _serverURL = serverURL;
-    [self restartConnectionWithURL:_serverURL];
+    if (!inACall)
+    {
+        [self restartConnectionWithURL:_serverURL];
+    }
+    communicatingWithServer = TRUE;
 }
 
 - (void)onDisconnectFromServer
 {
     NSLog(@"VideoChatViewController: onDisconnectFromServer ...");
     
-    inACall = FALSE;
+    //inACall = FALSE;
     communicatingWithServer = FALSE;
-    [self disconnect];
+    //[self disconnect];
 }
 
 
@@ -291,7 +294,7 @@ BOOL inACall = FALSE;
 
 - (void)restartConnectionWithURL:(NSString *)serverURL
 {
-    //[self disconnect];
+    [self disconnect];
     
     // Create Configuration object.
     //NSDictionary *config = @{@"id": @"1", @"key": @"s51s84ud22jwz5mi", @"port": @(9000)};
@@ -318,7 +321,10 @@ BOOL inACall = FALSE;
         
         // Send peer ID to server.
         NSArray *args = [[NSArray alloc] initWithObjects:id, nil];
-        [__self.dvcTabBarController.socket emit:@"MobileClientPeerID" withItems:args];
+        if (__self.dvcTabBarController.socket.connected)
+        {
+            [__self.dvcTabBarController.socket emit:@"MobileClientPeerID" withItems:args];
+        }
     };
     
     _peer.onCall = ^(RTCSessionDescription *sdp, NSDictionary *metadata) {
@@ -364,7 +370,10 @@ BOOL inACall = FALSE;
 - (void)disconnect
 {
     [self resetUI];
-    [_peer disconnect];
+    if (_peer != nil)
+    {
+        [_peer disconnect];
+    }
 }
 
 - (void)resetUI
