@@ -42,11 +42,31 @@ jQuery(function()
 	{
 		socket.emit('Command', 'CamDown');
 	});
+
+	jQuery('body').keydown(function(e)
+	{
+		if (e.which == 37) // left
+		{
+	    	socket.emit('Command', 'CamLeft');
+	  	}
+	  	else if (e.which == 39) // right
+	  	{
+	    	socket.emit('Command', 'CamRight');
+	  	}
+	  	else if (e.which == 38) // up
+	  	{
+	  		socket.emit('Command', 'CamUp');
+	  	}
+	  	else if (e.which == 40) // down
+	  	{
+	  		socket.emit('Command', 'CamDown');
+	  	}
+	});
 	
 	
-	var div = jQuery('.videoFrameContainer');
+	var div = jQuery('.droneVideoFrameContainer');
 	var canvas = document.createElement('canvas');
-	canvas.className = 'videoFrameCanvas';
+	canvas.className = 'droneVideoFrameCanvas';
 	var size = new Size(640, 368);
 	var webGLCanvas = new YUVWebGLCanvas(canvas, size);
 	div.append(canvas);
@@ -106,7 +126,7 @@ jQuery(function()
 
 		// Wait 8 seconds, then try calling the mobile client.
 		setTimeout(function () {
-    		var call = peer.call(mobileClientPeerID, window.localStream);
+    		var call = peer.call(mobileClientPeerID, videoChatWindow.localStream);
 			step3(call);
     	}, 8000);
 	});
@@ -116,6 +136,7 @@ jQuery(function()
 	socket.on('DroneVideoFrame', function(data)
 	{
 		avc.decode(new Uint8Array(data));
+		jQuery('.droneVideoFrameTitle').hide();
 	});
 	
 	/* SEQUENTIAL PHOTOS */
@@ -145,9 +166,14 @@ jQuery(function()
 	{
 		console.log('ClientDisconnect: ' + clientType);
 
-		if (clientType == 'Mobile' && window.existingCall)
+		if (clientType == 'Mobile')
 	    {
-	    	window.existingCall.close();
+	    	jQuery('.droneVideoFrameTitle').show();
+
+	    	if (videoChatWindow.existingCall)
+	    	{
+		    	videoChatWindow.existingCall.close();
+		    }
 	    }
 	})
 
@@ -156,13 +182,11 @@ jQuery(function()
 	 * PHONE VIDEO CHAT
 	 */
 
-	var phoneVideo = jQuery('.phoneVideo');
-	var desktopVideo = jQuery('.desktopVideo');
-
 	// Compatibility shim
     navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
     var peer;
+    var videoChatWindow;
 
     // PeerJS object
     //var peer = new Peer('0', { key: 's51s84ud22jwz5mi', debug: 3 });
@@ -187,7 +211,7 @@ jQuery(function()
     {
 	    console.log('call');
 
-	    call.answer(window.localStream);
+	    call.answer(videoChatWindow.localStream);
 	    step3(call);
     });
     
@@ -199,6 +223,15 @@ jQuery(function()
 	    step2();
     });
 
+    window.onbeforeunload = function()
+    {
+    	if (videoChatWindow)
+    	{
+    		videoChatWindow.close();
+    	}
+	}
+    videoChatWindow = window.open('video_chat_window.html','secondary','width=640,height=480');
+    
     step1();
 
     function step1()
@@ -208,11 +241,14 @@ jQuery(function()
 	    {
 		    socket.emit('DesktopClientPeerID', peer.id);
 
-		    // Set your video displays
-		    desktopVideo.prop('src', URL.createObjectURL(stream));
+		    if (videoChatWindow)
+		    {
+		    	// Set your video displays
+			    videoChatWindow.desktopVideo.prop('src', URL.createObjectURL(stream));
 
-		    window.localStream = stream;
-		    step2();
+			    videoChatWindow.localStream = stream;
+			    step2();
+		    }
 	    },
 	    function()
 	    {
@@ -228,9 +264,9 @@ jQuery(function()
     function step3(call)
     {
 	    // Hang up on an existing call if present
-	    if (window.existingCall)
+	    if (videoChatWindow.existingCall)
 	    {
-	    	window.existingCall.close();
+	    	videoChatWindow.existingCall.close();
 	    }
 
 	    // Wait for stream on the call, then set peer video display
@@ -238,10 +274,13 @@ jQuery(function()
 	    {
 	    	console.log('stream');
 
-	    	phoneVideo.prop('src', URL.createObjectURL(stream));
+	    	if (videoChatWindow)
+	    	{
+	    		videoChatWindow.phoneVideo.prop('src', URL.createObjectURL(stream));
+	    	}
 	    });
 
-	    window.existingCall = call;
+	    videoChatWindow.existingCall = call;
 	    call.on('close', step2);
     }
 });

@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>C3ABF9A4-7EB9-47AC-B881-8290558BBADC</string>
 	<key>IDESourceControlProjectName</key>
-	<string>DVC-MobileClient-iOS</string>
+	<string>project</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>F08318398EADA1A2008A41E28BFC18DC956979AB</key>
 		<string>https://github.com/BrennanJones/DroneVideoConf.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>DVC-MobileClient-iOS/DVC-MobileClient-iOS.xcodeproj</string>
+	<string>DVC-MobileClient-iOS/DVC-MobileClient-iOS.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>F08318398EADA1A2008A41E28BFC18DC956979AB</key>

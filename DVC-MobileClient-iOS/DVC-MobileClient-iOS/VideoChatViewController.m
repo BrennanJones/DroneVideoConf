@@ -210,9 +210,7 @@ BOOL inACall = FALSE;
 {
     NSLog(@"VideoChatViewController: onDisconnectFromServer ...");
     
-    //inACall = FALSE;
     communicatingWithServer = FALSE;
-    //[self disconnect];
 }
 
 
@@ -267,9 +265,9 @@ BOOL inACall = FALSE;
 
 - (void)peerClientDidClose:(Peer *)client
 {
-    if (inACall && communicatingWithServer)
+    inACall = FALSE;
+    if (communicatingWithServer)
     {
-        inACall = FALSE;
         [self restartConnectionWithURL:_serverURL];
     }
 }

@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <title>DVC Video Chat</title>
+        <link href="./lib/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+        <link href="./css/style.css" rel="stylesheet" type="text/css"/>
+    </head>
+    
+    <body>
+    	<script src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript" src="/lib/js/jquery.min.js"></script>
+    	<script type="text/javascript" src="/lib/js/peer.min.js"></script>
+        
+        <div class="phoneVideoContainer">
+            <video class="phoneVideo" autoplay></video>
+            <video class="desktopVideo" muted="true" autoplay></video>
+        </div>
+        
+        <script type="text/javascript">
+            jQuery(function()
+            {
+                window.phoneVideo = jQuery('.phoneVideo');
+                window.desktopVideo = jQuery('.desktopVideo');
+            });
+        </script>
+    </body>
+</html>

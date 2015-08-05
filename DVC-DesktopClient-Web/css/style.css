@@ -1,80 +1,100 @@
-/*
-h1
+body
 {
-	font-family: sans-serif;
-	font-size: 24px;
-	font-weight: bold;
+	height: 100%;
+	width: 100%;
+	margin: 0;
 }
 
-button
-{
-	background-color: #FFF;
-}
-*/
 
-.videoFrameContainer
+.droneVideoFrameContainer
 {
-	width: 960px;
-	height: 540px;
-	position: relative;
-	margin-left: auto;
-    margin-right: auto;
+	position:fixed;
+    top:0;
+    left: 0;
+    width:100%;
+    height:100%;
+    background: #000;
 }
 
-.videoFrameCanvas
+.droneVideoFrameCanvas
+{
+	background: #000;
+	width: 100vw; 
+    height: 56.25vw;		/* height:width ratio = 9/16 = .5625  */
+	max-height: 100vh;
+    max-width: 177.78vh;	/* 16/9 = 1.778 */
+    margin: auto;
+    position: absolute;
+    top:0; bottom:0;		/* vertical center */
+    left:0; right:0;		/* horizontal center */
+    z-index: 0;
+}
+
+.droneVideoFrameTitle
 {
 	background: #000;
 	width: 100%;
 	height: 100%;
+	position: absolute;
+	opacity: 0.5;
+	z-index: 2;
+}
+
+.droneVideoFrameTitle p
+{
+	text-align: center;
+	font-family: sans-serif;
+	font-size: 24px;
+	font-weight: bold;
+	color: #FFF;
+	width: 100%;
+	position: absolute;
+	top: calc(50% - 12px);
 }
 
 .camControlButton
 {
 	position: absolute;
 	opacity: 0.75;
+	z-index: 1;
 }
 
 #camLeftButton
 {
 	content: url(/images/buttons/cam-arrows/left.png);
-	left:-55px;
-	top: 174px;
+	left: -55px;
+	top: calc(50% - 96px);
 }
 
 #camRightButton
 {
 	content: url(/images/buttons/cam-arrows/right.png);
 	right:-55px;
-	top: 174px;
+	top: calc(50% - 96px);
 }
 
 #camUpButton
 {
 	content: url(/images/buttons/cam-arrows/up.png);
-	left: 384px;
+	left: calc(50% - 96px);
 	top: -55px;
 }
 
 #camDownButton
 {
 	content: url(/images/buttons/cam-arrows/down.png);
-	left: 384px;
+	left: calc(50% - 96px);
 	bottom: -55px;
 }
 
-.mapContainer
-{
-	width: 480px;
-	height: 540px;
-	background-color: #090;
-}
 
 .phoneVideoContainer
 {
-	position: relative;
-	/*width: 480px;*/
-	width: 405px;
-	height: 540px;
+	position:fixed;
+    top:0;
+    left: 0;
+    width:100%;
+    height:100%;
 	background-color: #000;
 }
 
@@ -90,10 +110,19 @@ button
 	position: absolute;
 	bottom: 2%;
 	right: 2%;
-	width: 40%;
+	width: 20%;
 	height: auto;
 	background-color: #000;
 }
+
+
+.mapContainer
+{
+	width: 480px;
+	height: 540px;
+	background-color: #090;
+}
+
 
 .photoTimelineContainer
 {
