@@ -14,7 +14,7 @@
 		<string>https://github.com/BrennanJones/DroneVideoConf.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>DVC-MobileClient-iOS/DVC-MobileClient-iOS.xcodeproj</string>
+	<string>DVC-InvestigatorClient-iOS/DVC-MobileClient-iOS.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>F08318398EADA1A2008A41E28BFC18DC956979AB</key>
