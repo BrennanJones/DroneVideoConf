@@ -828,7 +828,7 @@ BOOL outputVideoStreamLoopRunning = false;
         self.serverConnectionStatusLabel.text = @"Connecting to server...";
         self.serverConnectionStatusLabel.textColor = [UIColor blackColor];
         
-        [self connectToServer:[NSString stringWithFormat:@"%@%@", self.serverConnectionTextField.text, @":12345"]];
+        [self connectToServer:[NSString stringWithFormat:@"%@%@", self.serverConnectionTextField.text, @":8081"]];
     }
 }
 
