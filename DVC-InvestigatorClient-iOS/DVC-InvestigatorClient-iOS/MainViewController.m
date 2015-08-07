@@ -10,7 +10,6 @@
 #import <libARDataTransfer/ARDataTransfer.h>
 
 #import "DVCTabBarController.h"
-#import "NSMutableArray+Queue.h"
 #import "Utility.h"
 
 
@@ -218,7 +217,7 @@
         self.serverConnectionStatusLabel.text = @"Connecting to server...";
         self.serverConnectionStatusLabel.textColor = [UIColor blackColor];
         
-        [self connectToServer:[NSString stringWithFormat:@"%@%@", self.serverConnectionTextField.text, @":12345"]];
+        [self connectToServer:[NSString stringWithFormat:@"%@%@", self.serverConnectionTextField.text, @":8081"]];
     }
 }
 

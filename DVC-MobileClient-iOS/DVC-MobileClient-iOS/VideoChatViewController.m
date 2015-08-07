@@ -297,7 +297,7 @@ BOOL inACall = FALSE;
     // Create Configuration object.
     //NSDictionary *config = @{@"id": @"1", @"key": @"s51s84ud22jwz5mi", @"port": @(9000)};
     NSDictionary *config = @{@"host": serverURL,
-                             @"port": @(9876),
+                             @"port": @(9001),
                              @"path": @"/dvc",
                              @"secure": @(NO),
                              @"config": @{

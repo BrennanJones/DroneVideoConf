@@ -20,7 +20,6 @@
 		E96553CD1B74018C0003A2BC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E96553BC1B74018C0003A2BC /* main.m */; };
 		E96553CE1B74018C0003A2BC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E96553BD1B74018C0003A2BC /* Main.storyboard */; };
 		E96553CF1B74018C0003A2BC /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E96553BF1B74018C0003A2BC /* MainViewController.m */; };
-		E96553D01B74018C0003A2BC /* NSMutableArray+Queue.m in Sources */ = {isa = PBXBuildFile; fileRef = E96553C11B74018C0003A2BC /* NSMutableArray+Queue.m */; };
 		E96553D11B74018C0003A2BC /* Utility.m in Sources */ = {isa = PBXBuildFile; fileRef = E96553C31B74018C0003A2BC /* Utility.m */; };
 		E96553FC1B740B500003A2BC /* SocketAckManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96553EF1B740B500003A2BC /* SocketAckManager.swift */; };
 		E96553FD1B740B500003A2BC /* SocketAnyEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96553F01B740B500003A2BC /* SocketAnyEvent.swift */; };
@@ -68,8 +67,6 @@
 		E96553BD1B74018C0003A2BC /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		E96553BE1B74018C0003A2BC /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
 		E96553BF1B74018C0003A2BC /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
-		E96553C01B74018C0003A2BC /* NSMutableArray+Queue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableArray+Queue.h"; sourceTree = "<group>"; };
-		E96553C11B74018C0003A2BC /* NSMutableArray+Queue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableArray+Queue.m"; sourceTree = "<group>"; };
 		E96553C21B74018C0003A2BC /* Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utility.h; sourceTree = "<group>"; };
 		E96553C31B74018C0003A2BC /* Utility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utility.m; sourceTree = "<group>"; };
 		E96553EF1B740B500003A2BC /* SocketAckManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketAckManager.swift; sourceTree = "<group>"; };
@@ -173,8 +170,6 @@
 				E965540A1B7414530003A2BC /* ManualOverrideViewController.m */,
 				E96553BE1B74018C0003A2BC /* MainViewController.h */,
 				E96553BF1B74018C0003A2BC /* MainViewController.m */,
-				E96553C01B74018C0003A2BC /* NSMutableArray+Queue.h */,
-				E96553C11B74018C0003A2BC /* NSMutableArray+Queue.m */,
 				E96553C21B74018C0003A2BC /* Utility.h */,
 				E96553C31B74018C0003A2BC /* Utility.m */,
 			);
@@ -290,7 +285,6 @@
 				E96553CF1B74018C0003A2BC /* MainViewController.m in Sources */,
 				E96553CD1B74018C0003A2BC /* main.m in Sources */,
 				E96553D11B74018C0003A2BC /* Utility.m in Sources */,
-				E96553D01B74018C0003A2BC /* NSMutableArray+Queue.m in Sources */,
 				E96554061B740B500003A2BC /* SocketTypes.swift in Sources */,
 				E96554041B740B500003A2BC /* SocketPacket.swift in Sources */,
 			);
