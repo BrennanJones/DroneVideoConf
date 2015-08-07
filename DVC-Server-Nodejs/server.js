@@ -11,7 +11,7 @@ var app = require('http').createServer(handler),
 	fs = new static.Server('../DVC-DesktopClient-Web/'),
 	filesystem = require('fs'),
 	PeerServer = require('peer').PeerServer,
-	server = PeerServer({port: 9876, path: '/dvc'});
+	server = PeerServer({port: 9001, path: '/dvc'});
 
 // If the URL of the server is opened in a browser.
 function handler(request, response)
@@ -21,7 +21,7 @@ function handler(request, response)
 	}).resume();
 }
 
-app.listen(12345);
+app.listen(8081);
 
 console.log('Server started.');
 
@@ -30,6 +30,8 @@ var mobileClientPeerID,
 	desktopClientPeerID;
 
 var numTimelinePhotosReceived = 0;
+
+var wstream = filesystem.createWriteStream('DroneVideo.264');
 
 io.sockets.on('connection', function(socket)
 {	
@@ -103,6 +105,7 @@ io.sockets.on('connection', function(socket)
 	socket.on('DroneVideoFrame', function(data)
 	{
 		socket.broadcast.emit('DroneVideoFrame', data);
+		wstream.write(data);
 	});
 	
 	

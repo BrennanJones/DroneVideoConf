@@ -10,7 +10,7 @@
 
 jQuery(function()
 {
-	var url = "http://" + window.location.hostname + ":12345";
+	var url = "http://" + window.location.hostname + ":8081";
 	
 	var socket = io.connect(url);
 	
@@ -191,7 +191,7 @@ jQuery(function()
     // PeerJS object
     //var peer = new Peer('0', { key: 's51s84ud22jwz5mi', debug: 3 });
     peer = new Peer(
-    	{ host: window.location.hostname, port: 9876, path: '/dvc', secure: false, debug: 3 },
+    	{ host: window.location.hostname, port: 9001, path: '/dvc', secure: false, debug: 3 },
     	{ config: {'iceServers': [
         	{
 				url: 'turn:numb.viagenie.ca',
