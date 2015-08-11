@@ -3,13 +3,22 @@
 //  DVC-InvestigatorClient-iOS
 //
 
+
 #import "ManualOverrideViewController.h"
+
+#import "DVCTabBarController.h"
+
 
 @interface ManualOverrideViewController ()
 
+@property (nonatomic, strong) DVCTabBarController *dvcTabBarController;
+
 @end
 
+
 @implementation ManualOverrideViewController
+
+#pragma mark Initialization Methods
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -32,14 +41,185 @@
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+#pragma mark ServerConnectionDelegate
+
+- (void)onConnectToServer:(NSString *)serverURL
+{
+    NSLog(@"ManualOverrideViewController: onConnectToServer ...");
 }
-*/
+
+- (void)onDisconnectFromServer
+{
+    NSLog(@"ManualOverrideViewController: onDisconnectFromServer ...");
+    
+    _takeoffBt.enabled = false;
+    _landingBt.enabled = false;
+    _emergencyBt.enabled = false;
+    
+    _manualOverrideSwitch.on = false;
+    _manualOverrideSwitch.enabled = false;
+    [_manualOverrideStateChangeIndicator stopAnimating];
+    
+    _rollForwardButton.enabled = false;
+    _rollBackButton.enabled = false;
+    _rollLeftButton.enabled = false;
+    _rollRightButton.enabled = false;
+    _yawUpButton.enabled = false;
+    _yawDownButton.enabled = false;
+    _yawLeftButton.enabled = false;
+    _yawRightButton.enabled = false;
+}
+
+
+#pragma mark ManualOverrideStateDelegate
+
+- (void)onManualOverrideStateChanged:(BOOL)newState
+{
+    [_manualOverrideStateChangeIndicator stopAnimating];
+    _manualOverrideSwitch.on = newState;
+    _manualOverrideSwitch.enabled = true;
+    
+    _rollForwardButton.enabled = _manualOverrideSwitch.on;
+    _rollBackButton.enabled = _manualOverrideSwitch.on;
+    _rollLeftButton.enabled = _manualOverrideSwitch.on;
+    _rollRightButton.enabled = _manualOverrideSwitch.on;
+    _yawUpButton.enabled = _manualOverrideSwitch.on;
+    _yawDownButton.enabled = _manualOverrideSwitch.on;
+    _yawLeftButton.enabled = _manualOverrideSwitch.on;
+    _yawRightButton.enabled = _manualOverrideSwitch.on;
+}
+
+
+#pragma mark UI Event Handler Methods
+
+- (IBAction)emergencyClick:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"Emergency", nil];
+    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+}
+
+- (IBAction)takeoffClick:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"Takeoff", nil];
+    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+}
+
+- (IBAction)landingClick:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"Land", nil];
+    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+}
+
+- (IBAction)manualOverrideSwitchValueChanged:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:[NSNumber numberWithBool:_manualOverrideSwitch.on], nil];
+    [_dvcTabBarController.socket emit:@"ManualOverrideStateRequestChange" withItems:args];
+    
+    _manualOverrideSwitch.enabled = false;
+    [_manualOverrideStateChangeIndicator startAnimating];
+}
+
+- (IBAction)returnToHomeClick:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"ReturnToHome", nil];
+    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+}
+
+- (IBAction)rollForwardTouchDown:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"RollForwardStart", nil];
+    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+}
+
+- (IBAction)rollBackTouchDown:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"RollBackStart", nil];
+    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+}
+
+- (IBAction)rollLeftTouchDown:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"RollLeftStart", nil];
+    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+}
+
+- (IBAction)rollRightTouchDown:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"RollRightStart", nil];
+    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+}
+
+- (IBAction)yawUpTouchDown:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"YawUpStart", nil];
+    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+}
+
+- (IBAction)yawDownTouchDown:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"YawDownStart", nil];
+    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+}
+
+- (IBAction)yawLeftTouchDown:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"YawLeftStart", nil];
+    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+}
+
+- (IBAction)yawRightTouchDown:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"YawRightStart", nil];
+    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+}
+
+- (IBAction)rollForwardTouchUp:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"RollForwardEnd", nil];
+    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+}
+
+- (IBAction)rollBackTouchUp:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"RollBackEnd", nil];
+    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+}
+
+- (IBAction)rollLeftTouchUp:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"RollLeftEnd", nil];
+    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+}
+
+- (IBAction)rollRightTouchUp:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"RollRightEnd", nil];
+    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+}
+
+- (IBAction)yawUpTouchUp:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"YawUpEnd", nil];
+    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+}
+
+- (IBAction)yawDownTouchUp:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"YawDownEnd", nil];
+    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+}
+
+- (IBAction)yawLeftTouchUp:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"YawLeftEnd", nil];
+    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+}
+
+- (IBAction)yawRightTouchUp:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"YawRightEnd", nil];
+    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+}
 
 @end

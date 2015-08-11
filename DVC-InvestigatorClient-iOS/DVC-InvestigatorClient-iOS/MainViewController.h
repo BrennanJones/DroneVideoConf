@@ -5,8 +5,6 @@
 
 
 #import <UIKit/UIKit.h>
-#import <CoreLocation/CoreLocation.h>
-#import <libARDiscovery/ARDISCOVERY_BonjourDiscovery.h>
 
 
 @class MainViewController;
@@ -16,10 +14,15 @@
 - (void)onDisconnectFromServer;
 @end
 
+@protocol ManualOverrideStateDelegate <NSObject>
+- (void)onManualOverrideStateChanged:(BOOL)newState;
+@end
 
-@interface MainViewController : UIViewController <UITextFieldDelegate, CLLocationManagerDelegate>
+
+@interface MainViewController : UIViewController <UITextFieldDelegate>
 
 @property (nonatomic, weak) id <ServerConnectionDelegate> serverConnectionDelegate;
+@property (nonatomic, weak) id <ManualOverrideStateDelegate> manualOverrideStateDelegate;
 
 @property (nonatomic, strong) IBOutlet UILabel *batteryLabel;
 @property (nonatomic, strong) IBOutlet UIButton *takeoffBt;
@@ -35,5 +38,8 @@
 - (IBAction)emergencyClick:(id)sender;
 - (IBAction)takeoffClick:(id)sender;
 - (IBAction)landingClick:(id)sender;
+
+- (IBAction)upClick:(id)sender;
+- (IBAction)downClick:(id)sender;
 
 @end

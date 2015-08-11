@@ -115,7 +115,7 @@
                                         <fontDescription key="fontDescription" type="system" weight="light" pointSize="14"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="szj-CZ-TqE">
+                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="szj-CZ-TqE">
                                         <rect key="frame" x="240" y="76" width="89" height="35"/>
                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
@@ -133,8 +133,11 @@
                                                 <exclude reference="eCh-au-dCe"/>
                                             </mask>
                                         </variation>
+                                        <connections>
+                                            <action selector="downClick:" destination="h7l-W5-mPq" eventType="touchUpInside" id="5Rt-gY-4ta"/>
+                                        </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uST-qK-nSZ">
+                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uST-qK-nSZ">
                                         <rect key="frame" x="240" y="29" width="89" height="35"/>
                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
@@ -152,6 +155,9 @@
                                                 <exclude reference="wYA-0o-pYf"/>
                                             </mask>
                                         </variation>
+                                        <connections>
+                                            <action selector="upClick:" destination="h7l-W5-mPq" eventType="touchUpInside" id="NZc-cJ-kkU"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -326,7 +332,7 @@
         <!--manualOverrideViewController-->
         <scene sceneID="BGZ-ed-ibw">
             <objects>
-                <viewController restorationIdentifier="cbT-PJ-jrv" title="manualOverrideViewController" id="TPD-hW-o9V" sceneMemberID="viewController">
+                <viewController restorationIdentifier="cbT-PJ-jrv" title="manualOverrideViewController" id="TPD-hW-o9V" customClass="ManualOverrideViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Vu8-rP-Og8"/>
                         <viewControllerLayoutGuide type="bottom" id="xYP-VQ-O5m"/>
@@ -336,15 +342,18 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Manual override:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RpM-KD-Jcd">
-                                <rect key="frame" x="16" y="31" width="122" height="21"/>
+                                <rect key="frame" x="16" y="31" width="121.5" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" weight="light" pointSize="17"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="HBS-Lw-UVX">
-                                <rect key="frame" x="146" y="28" width="51" height="31"/>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="HBS-Lw-UVX">
+                                <rect key="frame" x="145" y="28" width="51" height="31"/>
+                                <connections>
+                                    <action selector="manualOverrideSwitchValueChanged:" destination="TPD-hW-o9V" eventType="valueChanged" id="QAo-gO-g3w"/>
+                                </connections>
                             </switch>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fif-wK-oO8">
+                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fif-wK-oO8">
                                 <rect key="frame" x="454" y="211" width="75" height="30"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -354,8 +363,13 @@
                                 <state key="normal" title="up">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="yawUpTouchDown:" destination="TPD-hW-o9V" eventType="touchDown" id="5ug-WS-ncD"/>
+                                    <action selector="yawUpTouchUp:" destination="TPD-hW-o9V" eventType="touchUpInside" id="Spk-1X-Hoh"/>
+                                    <action selector="yawUpTouchUp:" destination="TPD-hW-o9V" eventType="touchUpOutside" id="yFn-Mj-Knr"/>
+                                </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1Oc-aQ-luC">
+                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1Oc-aQ-luC">
                                 <rect key="frame" x="404" y="261" width="50" height="30"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -365,8 +379,13 @@
                                 <state key="normal" title="left">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="yawLeftTouchDown:" destination="TPD-hW-o9V" eventType="touchDown" id="EOb-0N-v1B"/>
+                                    <action selector="yawLeftTouchUp:" destination="TPD-hW-o9V" eventType="touchUpInside" id="RxH-Rt-pew"/>
+                                    <action selector="yawLeftTouchUp:" destination="TPD-hW-o9V" eventType="touchUpOutside" id="aME-K7-G1H"/>
+                                </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zNC-FN-u8c">
+                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zNC-FN-u8c">
                                 <rect key="frame" x="529" y="261" width="50" height="30"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -376,6 +395,11 @@
                                 <state key="normal" title="right">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="yawRightTouchDown:" destination="TPD-hW-o9V" eventType="touchDown" id="u6b-f5-AI6"/>
+                                    <action selector="yawRightTouchUp:" destination="TPD-hW-o9V" eventType="touchUpInside" id="dUc-aI-Mvk"/>
+                                    <action selector="yawRightTouchUp:" destination="TPD-hW-o9V" eventType="touchUpOutside" id="nzl-s2-H1D"/>
+                                </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="yaw" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Ce-QZ-cbH">
                                 <rect key="frame" x="454" y="261" width="75" height="30"/>
@@ -387,7 +411,7 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yBe-ne-xtz">
+                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yBe-ne-xtz">
                                 <rect key="frame" x="454" y="311" width="75" height="30"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -397,8 +421,13 @@
                                 <state key="normal" title="down">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="yawDownTouchDown:" destination="TPD-hW-o9V" eventType="touchDown" id="wTQ-Wu-yF4"/>
+                                    <action selector="yawDownTouchUp:" destination="TPD-hW-o9V" eventType="touchUpInside" id="LwG-gb-Tva"/>
+                                    <action selector="yawDownTouchUp:" destination="TPD-hW-o9V" eventType="touchUpOutside" id="Y7h-h9-9g5"/>
+                                </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zh1-Y4-Oj1">
+                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zh1-Y4-Oj1">
                                 <rect key="frame" x="71" y="211" width="75" height="30"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -408,8 +437,13 @@
                                 <state key="normal" title="forward">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="rollForwardTouchDown:" destination="TPD-hW-o9V" eventType="touchDown" id="7rQ-NV-24A"/>
+                                    <action selector="rollForwardTouchUp:" destination="TPD-hW-o9V" eventType="touchUpInside" id="b7B-JM-h33"/>
+                                    <action selector="rollForwardTouchUp:" destination="TPD-hW-o9V" eventType="touchUpOutside" id="bvk-xI-kTB"/>
+                                </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W4J-KT-fVj">
+                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W4J-KT-fVj">
                                 <rect key="frame" x="71" y="311" width="75" height="30"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -419,8 +453,13 @@
                                 <state key="normal" title="back">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="rollBackTouchDown:" destination="TPD-hW-o9V" eventType="touchDown" id="hFb-Z5-rIU"/>
+                                    <action selector="rollBackTouchUp:" destination="TPD-hW-o9V" eventType="touchUpInside" id="KoS-aV-sJX"/>
+                                    <action selector="rollBackTouchUp:" destination="TPD-hW-o9V" eventType="touchUpOutside" id="gmC-0z-PBo"/>
+                                </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Wq-b6-tFb">
+                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Wq-b6-tFb">
                                 <rect key="frame" x="21" y="261" width="50" height="30"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -430,8 +469,13 @@
                                 <state key="normal" title="left">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="rollLeftTouchDown:" destination="TPD-hW-o9V" eventType="touchDown" id="rHA-vA-912"/>
+                                    <action selector="rollLeftTouchUp:" destination="TPD-hW-o9V" eventType="touchUpInside" id="I5R-or-EmC"/>
+                                    <action selector="rollLeftTouchUp:" destination="TPD-hW-o9V" eventType="touchUpOutside" id="wO3-Vc-QSt"/>
+                                </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xl2-Gn-pwn">
+                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xl2-Gn-pwn">
                                 <rect key="frame" x="146" y="261" width="50" height="30"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -441,6 +485,11 @@
                                 <state key="normal" title="right">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="rollRightTouchDown:" destination="TPD-hW-o9V" eventType="touchDown" id="MI5-7u-4kA"/>
+                                    <action selector="rollRightTouchUp:" destination="TPD-hW-o9V" eventType="touchUpInside" id="cfD-bI-DYG"/>
+                                    <action selector="rollRightTouchUp:" destination="TPD-hW-o9V" eventType="touchUpOutside" id="gbU-wf-dnj"/>
+                                </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="roll" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JQx-i8-dqJ">
                                 <rect key="frame" x="71" y="261" width="75" height="30"/>
@@ -463,6 +512,7 @@
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
+                                    <action selector="takeoffClick:" destination="TPD-hW-o9V" eventType="touchUpInside" id="67J-Kx-UL8"/>
                                     <action selector="takeoffClick:" destination="h7l-W5-mPq" eventType="touchUpInside" id="Fee-rE-K0A"/>
                                 </connections>
                             </button>
@@ -477,6 +527,7 @@
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
+                                    <action selector="emergencyClick:" destination="TPD-hW-o9V" eventType="touchUpInside" id="OfN-de-W81"/>
                                     <action selector="emergencyClick:" destination="h7l-W5-mPq" eventType="touchUpInside" id="fsD-U0-ra9"/>
                                 </connections>
                             </button>
@@ -491,18 +542,47 @@
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
+                                    <action selector="landingClick:" destination="TPD-hW-o9V" eventType="touchUpInside" id="Ut5-Rb-omd"/>
                                     <action selector="landingClick:" destination="h7l-W5-mPq" eventType="touchUpInside" id="YVQ-Vy-V8f"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1Mq-yV-IOq">
+                                <rect key="frame" x="467" y="28" width="117" height="30"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="80" id="4Va-mQ-BbL"/>
+                                    <constraint firstAttribute="height" constant="30" id="YA9-a4-rje"/>
+                                    <constraint firstAttribute="height" constant="30" id="fdD-5b-mZt"/>
+                                    <constraint firstAttribute="width" constant="117" id="jvV-xn-0L6"/>
+                                </constraints>
+                                <state key="normal" title="Return to home">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="4Va-mQ-BbL"/>
+                                        <exclude reference="YA9-a4-rje"/>
+                                    </mask>
+                                </variation>
+                                <connections>
+                                    <action selector="returnToHomeClick:" destination="TPD-hW-o9V" eventType="touchUpInside" id="4iQ-Ud-Bos"/>
+                                    <action selector="takeoffClick:" destination="h7l-W5-mPq" eventType="touchUpInside" id="9bg-XG-ya4"/>
+                                </connections>
+                            </button>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="ASB-MS-LXH">
+                                <rect key="frame" x="202" y="31" width="20" height="20"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="centerY" secondItem="1Oc-aQ-luC" secondAttribute="centerY" constant="-0.5" id="0BY-J7-9i9"/>
+                            <constraint firstItem="1Mq-yV-IOq" firstAttribute="top" secondItem="Vu8-rP-Og8" secondAttribute="bottom" constant="8" id="3Fx-TM-ubK"/>
                             <constraint firstAttribute="centerY" secondItem="W4J-KT-fVj" secondAttribute="centerY" constant="-50.5" id="3Ph-Iq-9OO"/>
                             <constraint firstItem="xYP-VQ-O5m" firstAttribute="top" secondItem="8Sg-tD-dSm" secondAttribute="bottom" constant="8" id="6kd-lY-FBw"/>
                             <constraint firstItem="HBS-Lw-UVX" firstAttribute="top" secondItem="Vu8-rP-Og8" secondAttribute="bottom" constant="8" id="8aH-5q-9C9"/>
                             <constraint firstItem="W4J-KT-fVj" firstAttribute="leading" secondItem="Trh-RR-7hr" secondAttribute="leadingMargin" constant="55" id="ADB-7b-UM4"/>
                             <constraint firstAttribute="centerX" secondItem="6Wq-b6-tFb" secondAttribute="centerX" constant="254" id="AMl-66-4C3"/>
+                            <constraint firstItem="ASB-MS-LXH" firstAttribute="leading" secondItem="HBS-Lw-UVX" secondAttribute="trailing" constant="8" id="ATw-Ie-LLW"/>
                             <constraint firstItem="RpM-KD-Jcd" firstAttribute="top" secondItem="Vu8-rP-Og8" secondAttribute="bottom" constant="11" id="AeL-xm-BHN"/>
                             <constraint firstAttribute="centerY" secondItem="yBe-ne-xtz" secondAttribute="centerY" constant="-50.5" id="AfR-pD-OMa"/>
                             <constraint firstItem="xl2-Gn-pwn" firstAttribute="leading" secondItem="Trh-RR-7hr" secondAttribute="leadingMargin" constant="130" id="EDt-TD-DFW"/>
@@ -518,6 +598,7 @@
                             <constraint firstAttribute="centerY" secondItem="fif-wK-oO8" secondAttribute="centerY" constant="49.5" id="Te0-BQ-DYw"/>
                             <constraint firstAttribute="trailingMargin" secondItem="yBe-ne-xtz" secondAttribute="trailing" constant="55" id="UZi-EH-lgH"/>
                             <constraint firstItem="94i-SC-TvR" firstAttribute="leading" secondItem="Trh-RR-7hr" secondAttribute="leadingMargin" constant="90" id="VVm-ua-BAa"/>
+                            <constraint firstItem="1Mq-yV-IOq" firstAttribute="trailing" secondItem="Trh-RR-7hr" secondAttribute="trailingMargin" id="XsS-Db-l5a"/>
                             <constraint firstItem="8Sg-tD-dSm" firstAttribute="trailing" secondItem="Trh-RR-7hr" secondAttribute="trailingMargin" id="ddo-Hc-wb5"/>
                             <constraint firstItem="HBS-Lw-UVX" firstAttribute="leading" secondItem="RpM-KD-Jcd" secondAttribute="trailing" constant="8" id="g8d-1r-T9E"/>
                             <constraint firstAttribute="trailingMargin" secondItem="fif-wK-oO8" secondAttribute="trailing" constant="55" id="hdw-2g-zdX"/>
@@ -525,6 +606,7 @@
                             <constraint firstAttribute="centerY" secondItem="JQx-i8-dqJ" secondAttribute="centerY" constant="-0.5" id="jUJ-Dc-eNw"/>
                             <constraint firstAttribute="centerY" secondItem="6Wq-b6-tFb" secondAttribute="centerY" constant="-0.5" id="kf2-Wc-CEB"/>
                             <constraint firstItem="zh1-Y4-Oj1" firstAttribute="leading" secondItem="Trh-RR-7hr" secondAttribute="leadingMargin" constant="55" id="lkl-r6-anB"/>
+                            <constraint firstItem="ASB-MS-LXH" firstAttribute="top" secondItem="Vu8-rP-Og8" secondAttribute="bottom" constant="11" id="lrd-v6-bVe"/>
                             <constraint firstAttribute="centerY" secondItem="xl2-Gn-pwn" secondAttribute="centerY" constant="-0.5" id="sjW-8p-CXg"/>
                             <constraint firstItem="xYP-VQ-O5m" firstAttribute="top" secondItem="94i-SC-TvR" secondAttribute="bottom" constant="8" id="taC-Cd-cLq"/>
                             <constraint firstItem="RpM-KD-Jcd" firstAttribute="leading" secondItem="Trh-RR-7hr" secondAttribute="leadingMargin" id="xCR-27-0KL"/>
@@ -540,6 +622,21 @@
                     <extendedEdge key="edgesForExtendedLayout" top="YES"/>
                     <tabBarItem key="tabBarItem" title="Manual Override" image="ic_drone" id="pPG-dC-wDU"/>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
+                    <connections>
+                        <outlet property="emergencyBt" destination="8Sg-tD-dSm" id="ZJG-kc-0x0"/>
+                        <outlet property="landingBt" destination="94i-SC-TvR" id="DtD-LI-9BN"/>
+                        <outlet property="manualOverrideStateChangeIndicator" destination="ASB-MS-LXH" id="ndL-qE-Esr"/>
+                        <outlet property="manualOverrideSwitch" destination="HBS-Lw-UVX" id="NYp-ce-bms"/>
+                        <outlet property="rollBackButton" destination="W4J-KT-fVj" id="GbH-7l-iEx"/>
+                        <outlet property="rollForwardButton" destination="zh1-Y4-Oj1" id="gfE-7y-thl"/>
+                        <outlet property="rollLeftButton" destination="6Wq-b6-tFb" id="S1w-sz-irJ"/>
+                        <outlet property="rollRightButton" destination="xl2-Gn-pwn" id="ihz-wJ-ixI"/>
+                        <outlet property="takeoffBt" destination="vfG-tZ-qI2" id="Bfp-DB-wRU"/>
+                        <outlet property="yawDownButton" destination="yBe-ne-xtz" id="fdk-td-Y3O"/>
+                        <outlet property="yawLeftButton" destination="1Oc-aQ-luC" id="XCE-4a-XnT"/>
+                        <outlet property="yawRightButton" destination="zNC-FN-u8c" id="dGs-q9-4QM"/>
+                        <outlet property="yawUpButton" destination="fif-wK-oO8" id="Pzo-F5-sX1"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MCv-7r-8ub" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

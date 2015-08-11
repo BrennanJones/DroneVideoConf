@@ -39,22 +39,12 @@
 
 /* Begin PBXFileReference section */
 		1D9DF2351A6D580F000941ED /* DVCInvestigator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DVCInvestigator.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		96245C051AD3741500A3C03B /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
-		963AF21D1B0D3B3A0018B4FE /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		96DD80171ABC8A3300646F7D /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
 		96DD80191ABC8A3F00646F7D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		96DD801B1ABC8A4A00646F7D /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		96DD801D1ABC8A5400646F7D /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		96DD801F1ABC8A5D00646F7D /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		E90514361B4EE63000584AC4 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
-		E90514381B4EE64400584AC4 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		E905143A1B4EE65500584AC4 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		E905143C1B4EE66E00584AC4 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
-		E905143E1B4EE67500584AC4 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
-		E90514401B4EE67B00584AC4 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
-		E90514421B4EE68D00584AC4 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		E90514441B4EE6A200584AC4 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
-		E90514461B4EE6B100584AC4 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		E96226D41B1FBDDC00BF584B /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		E96553B11B74018C0003A2BC /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		E96553B21B74018C0003A2BC /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -88,7 +78,6 @@
 		E9BA9C7A1B45AA0A0078A35E /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		E9BA9C7C1B45AA170078A35E /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
 		E9BA9C7E1B45AA2A0078A35E /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
-		E9BA9C801B45AA3B0078A35E /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,15 +117,7 @@
 		1D9DF26B1A6D62CB000941ED /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E90514381B4EE64400584AC4 /* AudioToolbox.framework */,
-				E905143A1B4EE65500584AC4 /* AVFoundation.framework */,
 				96DD801F1ABC8A5D00646F7D /* CFNetwork.framework */,
-				E905143C1B4EE66E00584AC4 /* CoreAudio.framework */,
-				E90514421B4EE68D00584AC4 /* CoreGraphics.framework */,
-				963AF21D1B0D3B3A0018B4FE /* CoreLocation.framework */,
-				E905143E1B4EE67500584AC4 /* CoreMedia.framework */,
-				E90514401B4EE67B00584AC4 /* CoreVideo.framework */,
-				E9BA9C801B45AA3B0078A35E /* GLKit.framework */,
 				E9BA9C781B45A9FC0078A35E /* libc++.dylib */,
 				96DD80171ABC8A3300646F7D /* libicucore.dylib */,
 				E9BA9C7C1B45AA170078A35E /* libresolv.dylib */,
@@ -145,11 +126,8 @@
 				E9BA9C7E1B45AA2A0078A35E /* libxml2.dylib */,
 				E96226D41B1FBDDC00BF584B /* libz.dylib */,
 				96DD801D1ABC8A5400646F7D /* MobileCoreServices.framework */,
-				E90514441B4EE6A200584AC4 /* OpenGLES.framework */,
-				E90514461B4EE6B100584AC4 /* QuartzCore.framework */,
 				96DD80191ABC8A3F00646F7D /* Security.framework */,
 				96DD801B1ABC8A4A00646F7D /* SystemConfiguration.framework */,
-				96245C051AD3741500A3C03B /* VideoToolbox.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

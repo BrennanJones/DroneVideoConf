@@ -470,8 +470,6 @@ BOOL outputVideoStreamLoopRunning = false;
 
 - (void)connectToServer:(NSString *)address
 {
-    //[self disconnectFromServer];
-    
     _dvcTabBarController.socket = [[SocketIOClient alloc] initWithSocketURL:address options:nil];
     
     [_dvcTabBarController.socket on:@"connect" callback:^(NSArray* data, void (^ack)(NSArray*)) {

@@ -6,9 +6,6 @@
 
 #import "MainViewController.h"
 
-#import <CoreLocation/CoreLocation.h>
-#import <libARDataTransfer/ARDataTransfer.h>
-
 #import "DVCTabBarController.h"
 #import "Utility.h"
 
@@ -51,7 +48,7 @@
     [self connectToServerClick:nil];
 }
 
--(void)viewWillAppear:(BOOL)animated
+- (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     NSLog(@"MainViewController: viewWillAppear ... ");
@@ -126,8 +123,6 @@
 
 - (void)connectToServer:(NSString *)address
 {
-    //[self disconnectFromServer];
-    
     _dvcTabBarController.socket = [[SocketIOClient alloc] initWithSocketURL:address options:nil];
     
     [_dvcTabBarController.socket on:@"connect" callback:^(NSArray* data, void (^ack)(NSArray*)) {
@@ -145,7 +140,10 @@
         [self socketOnError];
     }];
     
-    // ...
+    [_dvcTabBarController.socket on:@"ManualOverrideStateChanged" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+        NSLog(@"Socket: ManualOverrideStateChanged");
+        [_manualOverrideStateDelegate onManualOverrideStateChanged:(BOOL)data[0]];
+    }];
     
     [_dvcTabBarController.socket connect];
 }
@@ -240,6 +238,14 @@
     NSLog(@"landingClick");
     
     // ...
+}
+
+- (IBAction)upClick:(id)sender
+{
+}
+
+- (IBAction)downClick:(id)sender
+{
 }
 
 @end
