@@ -547,13 +547,14 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1Mq-yV-IOq">
-                                <rect key="frame" x="467" y="28" width="117" height="30"/>
+                                <rect key="frame" x="464" y="28" width="120" height="30"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="80" id="4Va-mQ-BbL"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="120" id="MDf-tf-2CQ"/>
                                     <constraint firstAttribute="height" constant="30" id="YA9-a4-rje"/>
                                     <constraint firstAttribute="height" constant="30" id="fdD-5b-mZt"/>
-                                    <constraint firstAttribute="width" constant="117" id="jvV-xn-0L6"/>
+                                    <constraint firstAttribute="width" constant="120" id="jvV-xn-0L6"/>
                                 </constraints>
                                 <state key="normal" title="Return to home">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -561,6 +562,7 @@
                                 <variation key="default">
                                     <mask key="constraints">
                                         <exclude reference="4Va-mQ-BbL"/>
+                                        <exclude reference="MDf-tf-2CQ"/>
                                         <exclude reference="YA9-a4-rje"/>
                                     </mask>
                                 </variation>

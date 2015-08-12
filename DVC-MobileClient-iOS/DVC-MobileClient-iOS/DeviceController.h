@@ -106,6 +106,7 @@ typedef struct
 
 - (BOOL) resetHome;
 - (BOOL) setHomeWithLatitude:(double)latitude withLongitude:(double)longitude withAltitude:(double)altitude;
+- (BOOL) sendNavigateHomeWithStart:(uint8_t)start;
 
 - (BOOL) sendEmergency;
 - (BOOL) sendTakeoff;

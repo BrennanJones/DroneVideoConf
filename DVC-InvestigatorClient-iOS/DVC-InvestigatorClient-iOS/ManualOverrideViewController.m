@@ -20,9 +20,27 @@
 
 #pragma mark Initialization Methods
 
-- (void)viewDidLoad {
+- (void)loadView
+{
+    [super loadView];
+    NSLog(@"ManualOverrideViewController: loadView ...");
+    
+    _dvcTabBarController = (DVCTabBarController *)(self.tabBarController);
+    
+    for (UIViewController *viewController in self.tabBarController.viewControllers)
+    {
+        if ([viewController isKindOfClass:[MainViewController class]])
+        {
+            [(MainViewController *)viewController setServerConnectionDelegate:self];
+            [(MainViewController *)viewController setManualOverrideStateDelegate:self];
+        }
+    }
+}
+
+- (void)viewDidLoad
+{
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    NSLog(@"ManualOverrideViewController: viewDidLoad ...");
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -76,6 +94,8 @@
 
 - (void)onManualOverrideStateChanged:(BOOL)newState
 {
+    NSLog(@"ManualOverrideViewController: onManualOverrideStateChanged: %d", newState);
+    
     [_manualOverrideStateChangeIndicator stopAnimating];
     _manualOverrideSwitch.on = newState;
     _manualOverrideSwitch.enabled = true;
@@ -96,19 +116,19 @@
 - (IBAction)emergencyClick:(id)sender
 {
     NSArray *args = [[NSArray alloc] initWithObjects:@"Emergency", nil];
-    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+    [_dvcTabBarController.socket emit:@"InvestigatorCommand" withItems:args];
 }
 
 - (IBAction)takeoffClick:(id)sender
 {
     NSArray *args = [[NSArray alloc] initWithObjects:@"Takeoff", nil];
-    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+    [_dvcTabBarController.socket emit:@"InvestigatorCommand" withItems:args];
 }
 
 - (IBAction)landingClick:(id)sender
 {
     NSArray *args = [[NSArray alloc] initWithObjects:@"Land", nil];
-    [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+    [_dvcTabBarController.socket emit:@"InvestigatorCommand" withItems:args];
 }
 
 - (IBAction)manualOverrideSwitchValueChanged:(id)sender

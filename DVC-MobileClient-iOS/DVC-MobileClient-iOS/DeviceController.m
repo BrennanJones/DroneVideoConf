@@ -1178,7 +1178,7 @@ static void pictureTakenCallback(uint8_t state, uint8_t mass_storage_id, void *c
     cmdError = ARCOMMANDS_Generator_GenerateARDrone3PilotingPCMD(cmdBuffer, sizeof(cmdBuffer), &cmdSize, _dataPCMD.flag, _dataPCMD.roll, _dataPCMD.pitch, _dataPCMD.yaw, _dataPCMD.gaz, _dataPCMD.psi);
     if (cmdError == ARCOMMANDS_GENERATOR_OK)
     {
-        // The commands sent in loop should be sent to a buffer not acknowledged ; here JS_NET_CD_NONACK_ID
+        // The commands sent in loop should be sent to a buffer not acknowledged ; here BD_NET_CD_NONACK_ID
         netError = ARNETWORK_Manager_SendData(_netManager, BD_NET_C2D_NONACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
     }
     
@@ -1227,7 +1227,32 @@ static void pictureTakenCallback(uint8_t state, uint8_t mass_storage_id, void *c
     cmdError = ARCOMMANDS_Generator_GenerateARDrone3GPSSettingsSetHome(cmdBuffer, sizeof(cmdBuffer), &cmdSize, latitude, longitude, altitude);
     if (cmdError == ARCOMMANDS_GENERATOR_OK)
     {
-        // The commands sent in loop should be sent to a buffer not acknowledged ; here JS_NET_CD_NONACK_ID
+        // The commands sent in loop should be sent to a buffer not acknowledged ; here BD_NET_CD_NONACK_ID
+        netError = ARNETWORK_Manager_SendData(_netManager, BD_NET_C2D_NONACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
+    }
+    
+    if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
+    {
+        sentStatus = NO;
+    }
+    
+    return sentStatus;
+}
+
+- (BOOL) sendNavigateHomeWithStart:(uint8_t)start
+{
+    BOOL sentStatus = YES;
+    u_int8_t cmdBuffer[128];
+    int32_t cmdSize = 0;
+    eARCOMMANDS_GENERATOR_ERROR cmdError;
+    eARNETWORK_ERROR netError = ARNETWORK_ERROR;
+    
+    // Send NavigateHome command
+    sentStatus = NO;
+    cmdError = ARCOMMANDS_Generator_GenerateARDrone3PilotingNavigateHome(cmdBuffer, sizeof(cmdBuffer), &cmdSize, start);
+    if (cmdError == ARCOMMANDS_GENERATOR_OK)
+    {
+        // The commands sent in loop should be sent to a buffer not acknowledged ; here BD_NET_CD_NONACK_ID
         netError = ARNETWORK_Manager_SendData(_netManager, BD_NET_C2D_NONACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
     }
     

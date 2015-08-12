@@ -56,6 +56,8 @@ KalmanFilter phoneKalmanFilter;
 static const int DRONE_CONTROL_LOOP_IN_MS = 25;  // control loop interval
 BOOL droneControlLoopRunning = false;
 
+uint8_t droneBatteryPercentage = 0;
+
 double latPhone;
 double lonPhone;
 
@@ -88,11 +90,13 @@ BOOL distanceApartSet = false;
 BOOL droneProperlyOriented = false;
 BOOL droneAtProperDistance = false;
 
-static const double DRONE_REQUIRED_ALTITUDE_LOWER_BOUND = 4.0;
-static const double DRONE_REQUIRED_ALTITUDE_UPPER_BOUND = 6.0;
+double droneRequiredAltitudeLowerBound = 4.0;
+double droneRequiredAltitudeUpperBound = 6.0;
 
 static const int OUTPUT_VIDEO_STREAM_LOOP_IN_MS = 20;  // output video stream loop interval
 BOOL outputVideoStreamLoopRunning = false;
+
+BOOL manualOverrideOn = false;
 
 
 @interface MainViewController ()
@@ -264,6 +268,12 @@ BOOL outputVideoStreamLoopRunning = false;
                             _droneControlLoopThread = [[NSThread alloc] initWithTarget:self selector:@selector(droneControlLoopRun) object:nil];
                             droneControlLoopRunning = true;
                             [_droneControlLoopThread start];
+                            
+                            if (_dvcTabBarController.socket.connected)
+                            {
+                                NSArray *args = [[NSArray alloc] initWithObjects:[NSNumber numberWithUnsignedInteger:1], nil];
+                                [_dvcTabBarController.socket emit:@"DroneConnectionUpdate" withItems:args];
+                            }
                         });
                     }
                 });
@@ -310,8 +320,12 @@ BOOL outputVideoStreamLoopRunning = false;
 {
     NSLog(@"onUpdateBattery");
     
-    // update battery label on the UI thread
+    droneBatteryPercentage = percent;
+    
     dispatch_async(dispatch_get_main_queue(), ^{
+        NSArray *args = [[NSArray alloc] initWithObjects:[NSNumber numberWithUnsignedInteger:percent], nil];
+        [_dvcTabBarController.socket emit:@"DroneBatteryUpdate" withItems:args];
+        
         NSString *text = [[NSString alloc] initWithFormat:@"%d%%", percent];
         [_batteryLabel setText:text];
     });
@@ -427,6 +441,9 @@ BOOL outputVideoStreamLoopRunning = false;
     _service = nil;
     
     dispatch_async(dispatch_get_main_queue(), ^{
+        NSArray *args = [[NSArray alloc] initWithObjects:[NSNumber numberWithUnsignedInteger:0], nil];
+        [_dvcTabBarController.socket emit:@"DroneConnectionUpdate" withItems:args];
+        
         self.droneConnectionStatusLabel.text = @"Not connected";
         self.droneConnectionStatusLabel.textColor = _dvcRed;
         
@@ -473,23 +490,38 @@ BOOL outputVideoStreamLoopRunning = false;
     _dvcTabBarController.socket = [[SocketIOClient alloc] initWithSocketURL:address options:nil];
     
     [_dvcTabBarController.socket on:@"connect" callback:^(NSArray* data, void (^ack)(NSArray*)) {
-        NSLog(@"socket connected");
+        NSLog(@"Socket connected");
         [self socketOnConnect];
     }];
     
     [_dvcTabBarController.socket on:@"disconnect" callback:^(NSArray* data, void (^ack)(NSArray*)) {
-        NSLog(@"socket disconnect");
+        NSLog(@"Socket disconnected");
         [self socketOnDisconnect];
     }];
     
     [_dvcTabBarController.socket on:@"error" callback:^(NSArray* data, void (^ack)(NSArray*)) {
-        NSLog(@"socket error");
+        NSLog(@"Socket error");
         [self socketOnError];
     }];
     
     [_dvcTabBarController.socket on:@"Command" callback:^(NSArray* data, void (^ack)(NSArray*)) {
-        NSLog(@"socket command");
+        NSLog(@"Socket: Command");
         [self socketOnCommand:data];
+    }];
+    
+    [_dvcTabBarController.socket on:@"InvestigatorCommand" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+        NSLog(@"Socket: ManualOverrideCommand");
+        [self socketOnInvestigatorCommand:data];
+    }];
+    
+    [_dvcTabBarController.socket on:@"ManualOverrideStateChanged" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+        NSLog(@"Socket: ManualOverrideStateChanged");
+        [self socketOnManualOverrideStateChanged:data];
+    }];
+    
+    [_dvcTabBarController.socket on:@"ManualOverrideCommand" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+        NSLog(@"Socket: ManualOverrideCommand");
+        [self socketOnManualOverrideCommand:data];
     }];
     
     [_dvcTabBarController.socket connect];
@@ -511,6 +543,12 @@ BOOL outputVideoStreamLoopRunning = false;
     [_dvcTabBarController.socket emit:@"MobileClientConnect" withItems:[[NSArray alloc] init]];
     
     [_serverConnectionDelegate onConnectToServer:self.serverConnectionTextField.text];
+    
+    NSArray *args = [[NSArray alloc] initWithObjects:[NSNumber numberWithUnsignedInteger:1], nil];
+    [_dvcTabBarController.socket emit:@"DroneConnectionUpdate" withItems:args];
+    
+    args = [[NSArray alloc] initWithObjects:[NSNumber numberWithUnsignedInteger:droneBatteryPercentage], nil];
+    [_dvcTabBarController.socket emit:@"DroneBatteryUpdate" withItems:args];
     
     self.serverConnectionStatusLabel.text = @"Connected to server";
     self.serverConnectionStatusLabel.textColor = _dvcGreen;
@@ -548,17 +586,155 @@ BOOL outputVideoStreamLoopRunning = false;
     {
         [_dvcTabBarController.deviceController setCamPan:-10];
     }
-    if([(NSString *)data[0] isEqualToString:@"CamRight"])
+    else if([(NSString *)data[0] isEqualToString:@"CamRight"])
     {
         [_dvcTabBarController.deviceController setCamPan:10];
     }
-    if([(NSString *)data[0] isEqualToString:@"CamUp"])
+    else if([(NSString *)data[0] isEqualToString:@"CamUp"])
     {
         [_dvcTabBarController.deviceController setCamTilt:10];
     }
-    if([(NSString *)data[0] isEqualToString:@"CamDown"])
+    else if([(NSString *)data[0] isEqualToString:@"CamDown"])
     {
         [_dvcTabBarController.deviceController setCamTilt:-10];
+    }
+}
+
+- (void)socketOnManualOverrideStateChanged:(NSArray *)data
+{
+    manualOverrideOn = [(NSNumber *)data[0] boolValue];
+    
+    [_dvcTabBarController.deviceController setRoll:0];
+    [_dvcTabBarController.deviceController setPitch:0];
+    [_dvcTabBarController.deviceController setYaw:0];
+    [_dvcTabBarController.deviceController setGaz:0];
+    [_dvcTabBarController.deviceController setFlag:0];
+    
+    [_dvcTabBarController.deviceController sendNavigateHomeWithStart:0];
+}
+
+- (void)socketOnInvestigatorCommand:(NSArray *)data
+{
+    if([(NSString *)data[0] isEqualToString:@"Emergency"])
+    {
+        if (_emergencyBt.enabled)
+        {
+            [_dvcTabBarController.deviceController sendEmergency];
+        }
+    }
+    else if([(NSString *)data[0] isEqualToString:@"Takeoff"])
+    {
+        if (_takeoffBt.enabled)
+        {
+            [_dvcTabBarController.deviceController sendTakeoff];
+        }
+    }
+    else if([(NSString *)data[0] isEqualToString:@"Land"])
+    {
+        if (_landingBt.enabled)
+        {
+            [_dvcTabBarController.deviceController sendLanding];
+        }
+    }
+    else if([(NSString *)data[0] isEqualToString:@"MoveUp"])
+    {
+        droneRequiredAltitudeLowerBound += 0.5;
+        droneRequiredAltitudeUpperBound += 0.5;
+    }
+    else if([(NSString *)data[0] isEqualToString:@"MoveDown"])
+    {
+        if (droneRequiredAltitudeLowerBound >= 0.5)
+        {
+            droneRequiredAltitudeLowerBound -= 0.5;
+            droneRequiredAltitudeUpperBound -= 0.5;
+        }
+    }
+}
+
+- (void)socketOnManualOverrideCommand:(NSArray *)data
+{
+    if (manualOverrideOn)
+    {
+        if([(NSString *)data[0] isEqualToString:@"ReturnToHome"])
+        {
+            [_dvcTabBarController.deviceController sendNavigateHomeWithStart:1];
+        }
+        
+        else if([(NSString *)data[0] isEqualToString:@"RollForwardStart"])
+        {
+            [_dvcTabBarController.deviceController setFlag:1];
+            [_dvcTabBarController.deviceController setPitch:50];
+        }
+        else if([(NSString *)data[0] isEqualToString:@"RollBackStart"])
+        {
+            [_dvcTabBarController.deviceController setFlag:1];
+            [_dvcTabBarController.deviceController setPitch:-50];
+        }
+        else if([(NSString *)data[0] isEqualToString:@"RollLeftStart"])
+        {
+            [_dvcTabBarController.deviceController setFlag:1];
+            [_dvcTabBarController.deviceController setRoll:-50];
+        }
+        else if([(NSString *)data[0] isEqualToString:@"RollRightStart"])
+        {
+            [_dvcTabBarController.deviceController setFlag:1];
+            [_dvcTabBarController.deviceController setRoll:50];
+        }
+        
+        else if([(NSString *)data[0] isEqualToString:@"YawUpStart"])
+        {
+            [_dvcTabBarController.deviceController setGaz:50];
+        }
+        else if([(NSString *)data[0] isEqualToString:@"YawDownStart"])
+        {
+            [_dvcTabBarController.deviceController setGaz:-50];
+        }
+        else if([(NSString *)data[0] isEqualToString:@"YawLeftStart"])
+        {
+            [_dvcTabBarController.deviceController setYaw:-50];
+        }
+        else if([(NSString *)data[0] isEqualToString:@"YawRightStart"])
+        {
+            [_dvcTabBarController.deviceController setYaw:50];
+        }
+        
+        else if([(NSString *)data[0] isEqualToString:@"RollForwardEnd"])
+        {
+            [_dvcTabBarController.deviceController setFlag:0];
+            [_dvcTabBarController.deviceController setPitch:0];
+        }
+        else if([(NSString *)data[0] isEqualToString:@"RollBackEnd"])
+        {
+            [_dvcTabBarController.deviceController setFlag:0];
+            [_dvcTabBarController.deviceController setPitch:0];
+        }
+        else if([(NSString *)data[0] isEqualToString:@"RollLeftEnd"])
+        {
+            [_dvcTabBarController.deviceController setFlag:0];
+            [_dvcTabBarController.deviceController setRoll:0];
+        }
+        else if([(NSString *)data[0] isEqualToString:@"RollRightEnd"])
+        {
+            [_dvcTabBarController.deviceController setFlag:0];
+            [_dvcTabBarController.deviceController setRoll:0];
+        }
+        
+        else if([(NSString *)data[0] isEqualToString:@"YawUpEnd"])
+        {
+            [_dvcTabBarController.deviceController setGaz:0];
+        }
+        else if([(NSString *)data[0] isEqualToString:@"YawDownEnd"])
+        {
+            [_dvcTabBarController.deviceController setGaz:0];
+        }
+        else if([(NSString *)data[0] isEqualToString:@"YawLeftEnd"])
+        {
+            [_dvcTabBarController.deviceController setYaw:0];
+        }
+        else if([(NSString *)data[0] isEqualToString:@"YawRightEnd"])
+        {
+            [_dvcTabBarController.deviceController setYaw:0];
+        }
     }
 }
 
@@ -643,32 +819,38 @@ BOOL outputVideoStreamLoopRunning = false;
                     });
                 }
                 
-                if (altDrone >= DRONE_REQUIRED_ALTITUDE_LOWER_BOUND - 0.5 && altDrone <= DRONE_REQUIRED_ALTITUDE_UPPER_BOUND + 0.5)
+                if (!manualOverrideOn)
                 {
-                    [self droneAdjustBearing];
-                    [self droneFollowTarget];
-                }
-                else
-                {
-                    [_dvcTabBarController.deviceController setYaw:0];
-                    
-                    [_dvcTabBarController.deviceController setFlag:0];
-                    [_dvcTabBarController.deviceController setPitch:0];
+                    if (altDrone >= droneRequiredAltitudeLowerBound - 0.5 && altDrone <= droneRequiredAltitudeUpperBound + 0.5)
+                    {
+                        [self droneAdjustBearing];
+                        [self droneFollowTarget];
+                    }
+                    else
+                    {
+                        [_dvcTabBarController.deviceController setYaw:0];
+                        
+                        [_dvcTabBarController.deviceController setFlag:0];
+                        [_dvcTabBarController.deviceController setPitch:0];
+                    }
                 }
             }
         }
         
-        if (altDrone < DRONE_REQUIRED_ALTITUDE_LOWER_BOUND)
+        if (!manualOverrideOn)
         {
-            [_dvcTabBarController.deviceController setGaz:50];
-        }
-        else if (altDrone > DRONE_REQUIRED_ALTITUDE_UPPER_BOUND)
-        {
-            [_dvcTabBarController.deviceController setGaz:-50];
-        }
-        else
-        {
-            [_dvcTabBarController.deviceController setGaz:0];
+            if (altDrone < droneRequiredAltitudeLowerBound)
+            {
+                [_dvcTabBarController.deviceController setGaz:50];
+            }
+            else if (altDrone > droneRequiredAltitudeUpperBound)
+            {
+                [_dvcTabBarController.deviceController setGaz:-50];
+            }
+            else
+            {
+                [_dvcTabBarController.deviceController setGaz:0];
+            }
         }
         
         if ([[NSDate date] timeIntervalSinceDate:lastLabelsUpdate] >= 0.5)

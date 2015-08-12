@@ -140,9 +140,19 @@
         [self socketOnError];
     }];
     
+    [_dvcTabBarController.socket on:@"DroneConnectionUpdate" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+        NSLog(@"Socket: DroneConnectionUpdate");
+        [self socketOnDroneConnectionUpdate:data];
+    }];
+    
+    [_dvcTabBarController.socket on:@"DroneBatteryUpdate" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+        NSLog(@"Socket: DroneBatteryUpdate");
+        [self socketOnDroneBatteryUpdate:data];
+    }];
+    
     [_dvcTabBarController.socket on:@"ManualOverrideStateChanged" callback:^(NSArray* data, void (^ack)(NSArray*)) {
         NSLog(@"Socket: ManualOverrideStateChanged");
-        [_manualOverrideStateDelegate onManualOverrideStateChanged:(BOOL)data[0]];
+        [_manualOverrideStateDelegate onManualOverrideStateChanged:[(NSNumber *)data[0] boolValue]];
     }];
     
     [_dvcTabBarController.socket connect];
@@ -180,6 +190,10 @@
     [self.serverConnectionButton setTitle:@"Connect" forState:UIControlStateNormal];
     self.serverConnectionButton.enabled = true;
     self.serverConnectionTextField.enabled = true;
+    
+    _takeoffBt.enabled = false;
+    _landingBt.enabled = false;
+    _emergencyBt.enabled = false;
 }
 
 - (void)socketOnError
@@ -193,6 +207,36 @@
     [self.serverConnectionButton setTitle:@"Connect" forState:UIControlStateNormal];
     self.serverConnectionButton.enabled = true;
     self.serverConnectionTextField.enabled = true;
+    
+    _takeoffBt.enabled = false;
+    _landingBt.enabled = false;
+    _emergencyBt.enabled = false;
+}
+
+- (void)socketOnDroneConnectionUpdate:(NSArray *)data
+{
+    if ([(NSNumber *)data[0] boolValue])
+    {
+        self.droneConnectionStatusLabel.text = @"Connected";
+        self.droneConnectionStatusLabel.textColor = _dvcGreen;
+        
+        _emergencyBt.enabled = true;
+    }
+    else
+    {
+        self.droneConnectionStatusLabel.text = @"Not connected";
+        self.droneConnectionStatusLabel.textColor = _dvcRed;
+        
+        _takeoffBt.enabled = false;
+        _landingBt.enabled = false;
+        _emergencyBt.enabled = false;
+    }
+}
+
+- (void)socketOnDroneBatteryUpdate:(NSArray *)data
+{
+    NSString *text = [[NSString alloc] initWithFormat:@"%d%%", [(NSNumber *)data[0] unsignedIntegerValue]];
+    [_batteryLabel setText:text];
 }
 
 
@@ -221,31 +265,32 @@
 
 - (IBAction)emergencyClick:(id)sender
 {
-    NSLog(@"emergencyClick");
-    
-    // ...
+    NSArray *args = [[NSArray alloc] initWithObjects:@"Emergency", nil];
+    [_dvcTabBarController.socket emit:@"InvestigatorCommand" withItems:args];
 }
 
 - (IBAction)takeoffClick:(id)sender
 {
-    NSLog(@"takeoffClick");
-    
-    // ...
+    NSArray *args = [[NSArray alloc] initWithObjects:@"Takeoff", nil];
+    [_dvcTabBarController.socket emit:@"InvestigatorCommand" withItems:args];
 }
 
 - (IBAction)landingClick:(id)sender
 {
-    NSLog(@"landingClick");
-    
-    // ...
+    NSArray *args = [[NSArray alloc] initWithObjects:@"Land", nil];
+    [_dvcTabBarController.socket emit:@"InvestigatorCommand" withItems:args];
 }
 
 - (IBAction)upClick:(id)sender
 {
+    NSArray *args = [[NSArray alloc] initWithObjects:@"MoveUp", nil];
+    [_dvcTabBarController.socket emit:@"InvestigatorCommand" withItems:args];
 }
 
 - (IBAction)downClick:(id)sender
 {
+    NSArray *args = [[NSArray alloc] initWithObjects:@"MoveDown", nil];
+    [_dvcTabBarController.socket emit:@"InvestigatorCommand" withItems:args];
 }
 
 @end
