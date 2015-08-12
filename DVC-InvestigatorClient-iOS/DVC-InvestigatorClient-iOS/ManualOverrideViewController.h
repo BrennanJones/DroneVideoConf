@@ -9,7 +9,7 @@
 #import "MainViewController.h"
 
 
-@interface ManualOverrideViewController : UIViewController <ServerConnectionDelegate, ManualOverrideStateDelegate>
+@interface ManualOverrideViewController : UIViewController <ServerConnectionDelegate, ManualOverrideStateDelegate, DroneStateDelegate>
 
 @property (nonatomic, strong) IBOutlet UIButton *takeoffBt;
 @property (nonatomic, strong) IBOutlet UIButton *landingBt;

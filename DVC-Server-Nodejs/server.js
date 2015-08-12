@@ -23,27 +23,72 @@ function handler(request, response)
 
 app.listen(8081);
 
-console.log('Server started.');
+console.log('Server started. [' + (new Date()).toUTCString() + ']');
 
 
-var mobileClientPeerID,
-	desktopClientPeerID;
+/* PEER */
+var mobileClientPeerID;
+var desktopClientPeerID;
 
+/* CLIENT SOCKET SESSION IDs */
+var mobileClientSocketSessionID = null;
+var desktopClientSocketSessionID = null;
+var investigatorClientSocketSessionID = null;
+
+/* DRONE STATUSES */
+var droneConnectionState = 0;
+var droneBatteryPercentage = 0;
+
+/* DRONE SEQUENTIAL PHOTO TIMELINE */
 var numTimelinePhotosReceived = 0;
 
-var wstream = filesystem.createWriteStream('DroneVideo.264');
+/* DRONE VIDEO */
+var droneVideoWriteStream = filesystem.createWriteStream('DroneVideo.264');	// file containing the raw H.264 drone video stream from the mobile client
+
+/* MANUAL OVERRIDE */
+var manualOverrideState = 0;
+
 
 io.sockets.on('connection', function(socket)
 {	
-	console.log('A client connected ...');
+	var clientAddress = socket.request.connection.remoteAddress;
+
+	console.log('A client (' + clientAddress + ') connected [' + (new Date()).toUTCString() + ']');
 
 	var clientType;
 
 	socket.on('disconnect', function()
 	{
-		console.log(clientType + ' client disconnected');
+		console.log(clientType + ' client (' + clientAddress + ') disconnected [' + (new Date()).toUTCString() + ']');
 		io.sockets.emit('ClientDisconnect', clientType);
+
+		if (clientType == 'Desktop')
+		{
+			desktopClientSocketSessionID = null;
+		}
+		else if (clientType == 'Mobile')
+		{
+			mobileClientSocketSessionID = null;
+
+			droneConnectionState = 0;
+			socket.broadcast.emit('DroneConnectionUpdate', droneConnectionState);
+
+			droneBatteryPercentage = 0;
+			socket.broadcast.emit('DroneBatteryUpdate', droneBatteryPercentage);
+		}
+		else if (clientType == 'Investigator')
+		{
+			investigatorClientSocketSessionID = null;
+
+			manualOverrideState = 0;
+			io.sockets.emit('ManualOverrideStateChanged', manualOverrideState);
+		}
 	});
+
+
+	socket.emit('DroneConnectionUpdate', droneConnectionState);
+	socket.emit('DroneBatteryUpdate', droneBatteryPercentage);
+	socket.emit('ManualOverrideStateChanged', manualOverrideState);
 	
 	
 	/**
@@ -54,7 +99,7 @@ io.sockets.on('connection', function(socket)
 	
 	socket.on('Echo', function(data)
 	{
-		console.log(data.echo);
+		console.log(data + '[' + (new Date()).toUTCString() + ']');
 	});
 	
 	
@@ -62,14 +107,47 @@ io.sockets.on('connection', function(socket)
 	
 	socket.on('MobileClientConnect', function(data)
 	{
-		console.log('MobileClientConnect');
-		clientType = 'Mobile';
+		if (mobileClientSocketSessionID == null)
+		{
+			mobileClientSocketSessionID = socket.id;
+			console.log('Mobile client connected (' + clientAddress + ') [' + (new Date()).toUTCString() + ']');
+			clientType = 'Mobile';
+		}
+		else
+		{
+			socket.disconnect('unauthorized');
+			console.log('Unauthorized mobile client (' + clientAddress + ') tried to connect [' + (new Date()).toUTCString() + ']');
+		}
 	});
 	
 	socket.on('DesktopClientConnect', function(data)
 	{
-		console.log('DesktopClientConnect');
-		clientType = 'Desktop';
+		if (desktopClientSocketSessionID == null)
+		{
+			desktopClientSocketSessionID = socket.id;
+			console.log('Desktop client connected (' + clientAddress + ') [' + (new Date()).toUTCString() + ']');
+			clientType = 'Desktop';
+		}
+		else
+		{
+			socket.disconnect('unauthorized');
+			console.log('Unauthorized desktop client (' + clientAddress + ') tried to connect [' + (new Date()).toUTCString() + ']');
+		}
+	});
+
+	socket.on('InvestigatorClientConnect', function(data)
+	{
+		if (investigatorClientSocketSessionID == null)
+		{
+			investigatorClientSocketSessionID = socket.id;
+			console.log('Investigator client connected (' + clientAddress + ') [' + (new Date()).toUTCString() + ']');
+			clientType = 'Investigator';
+		}
+		else
+		{
+			socket.disconnect('unauthorized');
+			console.log('Unauthorized investigator client (' + clientAddress + ') tried to connect [' + (new Date()).toUTCString() + ']');
+		}
 	});
 
 
@@ -77,7 +155,7 @@ io.sockets.on('connection', function(socket)
 
 	socket.on('MobileClientPeerID', function(data)
 	{
-		console.log('MobileClientPeerID: ' + data);
+		console.log('MobileClientPeerID: ' + data + ' [' + (new Date()).toUTCString() + ']');
 
 		mobileClientPeerID = data;
 		trySendCallCommand();
@@ -85,7 +163,7 @@ io.sockets.on('connection', function(socket)
 	
 	socket.on('DesktopClientPeerID', function(data)
 	{
-		console.log('DesktopClientPeerID: ' + data);
+		console.log('DesktopClientPeerID: ' + data + ' [' + (new Date()).toUTCString() + ']');
 
 		desktopClientPeerID = data;
 		trySendCallCommand();
@@ -98,14 +176,36 @@ io.sockets.on('connection', function(socket)
 			io.sockets.emit('CallCommand', mobileClientPeerID);
 		}
 	}
+
+
+	/* DRONE STATUSES AND UPDATES */
+
+	socket.on('DroneConnectionUpdate', function(data)
+	{
+		console.log('DroneConnectionUpdate: ' + data + ' [' + (new Date()).toUTCString() + ']');
+		
+		droneConnectionState = data;
+		socket.broadcast.emit('DroneConnectionUpdate', droneConnectionState);
+	});
+
+	socket.on('DroneBatteryUpdate', function(data)
+	{
+		console.log('DroneBatteryUpdate: ' + data + '% [' + (new Date()).toUTCString() + ']');
+		
+		droneBatteryPercentage = data;
+		socket.broadcast.emit('DroneBatteryUpdate', droneBatteryPercentage);
+	});
 	
 	
-	/* VIDEO */
+	/* DRONE VIDEO */
 	
 	socket.on('DroneVideoFrame', function(data)
 	{
-		socket.broadcast.emit('DroneVideoFrame', data);
-		wstream.write(data);
+		droneVideoWriteStream.write(data);
+		if (desktopClientSocketSessionID != null && io.sockets.connected[desktopClientSocketSessionID] != undefined)
+		{
+			io.sockets.connected[desktopClientSocketSessionID].emit('DroneVideoFrame', data);
+		}
 	});
 	
 	
@@ -113,24 +213,60 @@ io.sockets.on('connection', function(socket)
 	
 	socket.on('Command', function(data)
 	{
-		console.log('Command: ' + data);
+		console.log('Command: ' + data + ' [' + (new Date()).toUTCString() + ']');
 		socket.broadcast.emit('Command', data);
 	});
 
+
+	/* INVESTIGATOR COMMANDS */
+
+	socket.on('InvestigatorCommand', function(data)
+	{
+		console.log('InvestigatorCommand: ' + data + ' [' + (new Date()).toUTCString() + ']');
+		socket.broadcast.emit('InvestigatorCommand', data);
+	});
+
+
+	/* MANUAL OVERRIDE */
+
+	socket.on('ManualOverrideStateRequestChange', function(data)
+	{
+		console.log('ManualOverrideStateRequestChange: ' + data + ' [' + (new Date()).toUTCString() + ']');
+		manualOverrideState = data;
+		io.sockets.emit('ManualOverrideStateChanged', manualOverrideState);
+	});
+
+	socket.on('ManualOverrideCommand', function(data)
+	{
+		// Relay command if manual override is turned on.
+		if (manualOverrideState)
+		{
+			console.log('ManualOverrideCommand: ' + data + ' [' + (new Date()).toUTCString() + ']');
+
+			socket.broadcast.emit('ManualOverrideCommand', data);
+		}
+	});
+
+	
+	/* DRONE SEQUENTIAL PHOTO TIMELINE */
+
 	socket.on('DronePhoto', function(data)
 	{
-		console.log('DronePhoto');
+		console.log('DronePhoto: ' + numTimelinePhotosReceived + ' [' + (new Date()).toUTCString() + ']');
 
-		filesystem.writeFile("./timelinePhotos/test" + numTimelinePhotosReceived++ + ".jpg", data, function(err)
+		filesystem.writeFile("./timelinePhotos/test" + numTimelinePhotosReceived++ + ".jpg", data, function(error)
 		{
-			if(err)
+			if (error)
 			{
-		        return console.log(err);
+		        return console.log(error);
 		    }
 
-		    console.log("The file was saved!");
+		    console.log('The file was saved! [' + (new Date()).toUTCString() + ']');
 		});
 
-		socket.broadcast.emit('DronePhoto', data);
+		if (desktopClientSocketSessionID != null && io.sockets.connected[desktopClientSocketSessionID] != undefined)
+		{
+			io.sockets.connected[desktopClientSocketSessionID].emit('DronePhoto', data);
+		}
 	});
 });

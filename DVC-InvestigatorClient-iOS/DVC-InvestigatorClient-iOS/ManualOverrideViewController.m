@@ -33,6 +33,7 @@
         {
             [(MainViewController *)viewController setServerConnectionDelegate:self];
             [(MainViewController *)viewController setManualOverrideStateDelegate:self];
+            [(MainViewController *)viewController setDroneStateDelegate:self];
         }
     }
 }
@@ -240,6 +241,30 @@
 {
     NSArray *args = [[NSArray alloc] initWithObjects:@"YawRightEnd", nil];
     [_dvcTabBarController.socket emit:@"ManualOverrideCommand" withItems:args];
+}
+
+
+#pragma mark DroneStateDelegate
+
+- (void)onDroneConnectionUpdate:(BOOL)newState;
+{
+    if (newState)
+    {
+        _takeoffBt.enabled = true;
+        _landingBt.enabled = true;
+        _emergencyBt.enabled = true;
+    }
+    else
+    {
+        _takeoffBt.enabled = false;
+        _landingBt.enabled = false;
+        _emergencyBt.enabled = false;
+    }
+}
+
+- (void)onDroneBatteryUpdate:(BOOL)newPercentage
+{
+    // ...
 }
 
 @end

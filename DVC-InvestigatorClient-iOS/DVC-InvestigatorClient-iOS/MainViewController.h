@@ -18,11 +18,17 @@
 - (void)onManualOverrideStateChanged:(BOOL)newState;
 @end
 
+@protocol DroneStateDelegate <NSObject>
+- (void)onDroneConnectionUpdate:(BOOL)newState;
+- (void)onDroneBatteryUpdate:(BOOL)newPercentage;
+@end
+
 
 @interface MainViewController : UIViewController <UITextFieldDelegate>
 
 @property (nonatomic, weak) id <ServerConnectionDelegate> serverConnectionDelegate;
 @property (nonatomic, weak) id <ManualOverrideStateDelegate> manualOverrideStateDelegate;
+@property (nonatomic, weak) id <DroneStateDelegate> droneStateDelegate;
 
 @property (nonatomic, strong) IBOutlet UILabel *batteryLabel;
 @property (nonatomic, strong) IBOutlet UIButton *takeoffBt;

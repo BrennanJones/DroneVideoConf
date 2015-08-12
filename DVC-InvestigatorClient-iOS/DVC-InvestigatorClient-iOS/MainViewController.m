@@ -184,29 +184,28 @@
 - (void)socketOnDisconnect
 {
     [_serverConnectionDelegate onDisconnectFromServer];
-    
-    self.serverConnectionStatusLabel.text = @"Not connected to server";
-    self.serverConnectionStatusLabel.textColor = _dvcRed;
-    [self.serverConnectionButton setTitle:@"Connect" forState:UIControlStateNormal];
-    self.serverConnectionButton.enabled = true;
-    self.serverConnectionTextField.enabled = true;
-    
-    _takeoffBt.enabled = false;
-    _landingBt.enabled = false;
-    _emergencyBt.enabled = false;
+    [self handleDisconnectFromServer];
 }
 
 - (void)socketOnError
 {
     [Utility showAlertWithTitle:@"Server Connection Error" withMessage:@"Connection with server failed."];
-    
     [self disconnectFromServer];
-    
+    [self handleDisconnectFromServer];
+}
+
+- (void)handleDisconnectFromServer
+{
     self.serverConnectionStatusLabel.text = @"Not connected to server";
     self.serverConnectionStatusLabel.textColor = _dvcRed;
     [self.serverConnectionButton setTitle:@"Connect" forState:UIControlStateNormal];
     self.serverConnectionButton.enabled = true;
     self.serverConnectionTextField.enabled = true;
+    
+    self.droneConnectionStatusLabel.text = @"Not connected";
+    self.droneConnectionStatusLabel.textColor = _dvcRed;
+    
+    [_batteryLabel setText:@"0%"];
     
     _takeoffBt.enabled = false;
     _landingBt.enabled = false;
@@ -220,6 +219,8 @@
         self.droneConnectionStatusLabel.text = @"Connected";
         self.droneConnectionStatusLabel.textColor = _dvcGreen;
         
+        _takeoffBt.enabled = true;
+        _landingBt.enabled = true;
         _emergencyBt.enabled = true;
     }
     else
