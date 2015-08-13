@@ -210,6 +210,9 @@
     _takeoffBt.enabled = false;
     _landingBt.enabled = false;
     _emergencyBt.enabled = false;
+    
+    _upButton.enabled = false;
+    _downButton.enabled = false;
 }
 
 - (void)socketOnDroneConnectionUpdate:(NSArray *)data
@@ -222,6 +225,9 @@
         _takeoffBt.enabled = true;
         _landingBt.enabled = true;
         _emergencyBt.enabled = true;
+        
+        _upButton.enabled = true;
+        _downButton.enabled = true;
     }
     else
     {
@@ -231,6 +237,9 @@
         _takeoffBt.enabled = false;
         _landingBt.enabled = false;
         _emergencyBt.enabled = false;
+        
+        _upButton.enabled = false;
+        _downButton.enabled = false;
     }
 }
 
