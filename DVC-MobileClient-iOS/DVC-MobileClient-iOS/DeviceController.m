@@ -185,9 +185,6 @@ BOOL sequentialPhotoLoopRunning;
 @property (nonatomic) ARUTILS_Manager_t *ftpListManager;
 @property (nonatomic) ARUTILS_Manager_t *ftpQueueManager;
 
-@property (nonatomic) int8_t cameraPan;
-@property (nonatomic) int8_t cameraTilt;
-
 @property (nonatomic) BOOL cameraOrientationChangeNeeded;
 
 @property (nonatomic, strong) NSThread *sequentialPhotoLoopThread;
@@ -237,7 +234,7 @@ BOOL sequentialPhotoLoopRunning;
         _cameraPan = 0;
         _cameraTilt = 0;
         
-        _cameraOrientationChangeNeeded = NO;
+        _cameraOrientationChangeNeeded = YES;
     }
     
     return self;

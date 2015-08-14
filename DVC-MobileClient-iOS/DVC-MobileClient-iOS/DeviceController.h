@@ -91,6 +91,9 @@ typedef struct
 
 @property (nonatomic) ARDATATRANSFER_Manager_t *dataTransferManager;
 
+@property (nonatomic) int8_t cameraPan;
+@property (nonatomic) int8_t cameraTilt;
+
 - (id)initWithARService:(ARService*)service;
 - (BOOL)start;
 - (void)stop;

@@ -550,6 +550,11 @@ BOOL manualOverrideOn = false;
     args = [[NSArray alloc] initWithObjects:[NSNumber numberWithUnsignedInteger:droneBatteryPercentage], nil];
     [_dvcTabBarController.socket emit:@"DroneBatteryUpdate" withItems:args];
     
+    args = [[NSArray alloc] initWithObjects:@{@"pan": [NSNumber numberWithInt:_dvcTabBarController.deviceController.cameraPan],
+                                              @"tilt": [NSNumber numberWithInt:_dvcTabBarController.deviceController.cameraTilt]
+                                            }, nil];
+    [_dvcTabBarController.socket emit:@"DroneCameraUpdate" withItems:args];
+    
     self.serverConnectionStatusLabel.text = @"Connected to server";
     self.serverConnectionStatusLabel.textColor = _dvcGreen;
     [self.serverConnectionButton setTitle:@"Disconnect" forState:UIControlStateNormal];
@@ -598,6 +603,11 @@ BOOL manualOverrideOn = false;
     {
         [_dvcTabBarController.deviceController setCamTilt:-10];
     }
+    
+    NSArray *args = [[NSArray alloc] initWithObjects:@{@"pan": [NSNumber numberWithInt:_dvcTabBarController.deviceController.cameraPan],
+                                                       @"tilt": [NSNumber numberWithInt:_dvcTabBarController.deviceController.cameraTilt]
+                                                     }, nil];
+    [_dvcTabBarController.socket emit:@"DroneCameraUpdate" withItems:args];
 }
 
 - (void)socketOnManualOverrideStateChanged:(NSArray *)data
