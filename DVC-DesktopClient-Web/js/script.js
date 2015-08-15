@@ -3,8 +3,6 @@
  * script.js
  * Main JavaScript code for DVC web client
  *
- * Written by Brennan Jones
- *
  */
 
 
@@ -160,6 +158,46 @@ jQuery(function()
 		div.prepend(img);
 	});
 
+	/* DRONE STATUSES */
+
+	socket.on('DroneConnectionUpdate', function(droneConnectionState)
+	{
+		console.log('DroneConnectionUpdate: ' + droneConnectionState);
+
+		if (!droneConnectionState)
+	    {
+	    	jQuery('.droneVideoFrameTitle').show();
+	    }
+	});
+
+	socket.on('DroneBatteryUpdate', function(newBatteryPercentage)
+	{
+		console.log('DroneBatteryUpdate: ' + newBatteryPercentage);
+
+		jQuery('.droneBatteryStatus').html("<p>Battery: " + newBatteryPercentage + "%</p>");
+		if (newBatteryPercentage <= 20)
+		{
+			if (newBatteryPercentage <= 10)
+			{
+				jQuery('.droneBatteryStatus p').css('color', 'red');
+			}
+			else
+			{
+				jQuery('.droneBatteryStatus p').css('color', 'orange');
+			}
+		}
+	});
+
+	socket.on('DroneCameraUpdate', function(newCameraPosition)
+	{
+		console.log('DroneCameraUpdate: pan: ' + newCameraPosition['pan'] + ', tilt: ' + newCameraPosition['tilt']);
+
+		var leftPercent = 50 - newCameraPosition['pan'];
+		var topPercent = 50 + newCameraPosition['tilt'];
+		jQuery('.crosshair p').css('left', leftPercent + '%').css('left', '-=33px');
+		jQuery('.crosshair p').css('top', topPercent + '%').css('top', '-=33px');
+	});
+
 	/* OTHER */
 
 	socket.on('ClientDisconnect', function(clientType)
@@ -175,18 +213,34 @@ jQuery(function()
 		    	videoChatWindow.existingCall.close();
 		    }
 	    }
-	})
+	});
 
 
 	/**
 	 * PHONE VIDEO CHAT
 	 */
 
+	/*
+	var numLocalAudioFiles = 0,
+		numLocalVideoFiles = 0,
+		numRemoteAudioFiles = 0,
+		numRemoteVideoFiles = 0;
+
+	var localAudioFiles = {},
+		localVideoFiles = {},
+		remoteAudioFiles = {},
+		remoteVideoFiles = {};
+
+	var localVideoRecorder;
+	var remoteVideoRecorder;
+	*/
+
 	// Compatibility shim
     navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
     var peer;
     var videoChatWindow;
+    //var savedFilesWindow;
 
     // PeerJS object
     //var peer = new Peer('0', { key: 's51s84ud22jwz5mi', debug: 3 });
@@ -223,14 +277,7 @@ jQuery(function()
 	    step2();
     });
 
-    window.onbeforeunload = function()
-    {
-    	if (videoChatWindow)
-    	{
-    		videoChatWindow.close();
-    	}
-	}
-    videoChatWindow = window.open('video_chat_window.html','secondary','width=640,height=480');
+    videoChatWindow = window.open('video_chat_window.html', 'secondary', 'width=640,height=480');
     
     step1();
 
@@ -247,7 +294,6 @@ jQuery(function()
 			    videoChatWindow.desktopVideo.prop('src', URL.createObjectURL(stream));
 
 			    videoChatWindow.localStream = stream;
-			    step2();
 		    }
 	    },
 	    function()
@@ -277,10 +323,99 @@ jQuery(function()
 	    	if (videoChatWindow)
 	    	{
 	    		videoChatWindow.phoneVideo.prop('src', URL.createObjectURL(stream));
+	    		videoChatWindow.remoteStream = stream;
+
+	    		/*
+	    		localVideoRecorder = new MultiStreamRecorder(videoChatWindow.localStream);
+			    localVideoRecorder.video = videoChatWindow.desktopVideo;
+			    localVideoRecorder.audioChannels = 1;
+			    localVideoRecorder.ondataavailable = function (blobs)
+			    {
+			        localAudioFiles[numLocalAudioFiles++] = blobs.audio;
+			        localVideoFiles[numLocalVideoFiles++] = blobs.video;
+			    };
+			    localVideoRecorder.start(60 * 60 * 1000);	// 60 minutes
+
+			    remoteVideoRecorder = new MultiStreamRecorder(videoChatWindow.remoteStream);
+			    localVideoRecorder.video = videoChatWindow.phoneVideo
+			    remoteVideoRecorder.audioChannels = 1;
+			    remoteVideoRecorder.ondataavailable = function (blobs)
+			    {
+			        remoteAudioFiles[numRemoteAudioFiles++] = blobs.audio;
+			        remoteVideoFiles[numRemoteVideoFiles++] = blobs.video;
+			    };
+			    remoteVideoRecorder.start(60 * 60 * 1000);	// 60 minutes
+			    */
 	    	}
 	    });
 
 	    videoChatWindow.existingCall = call;
-	    call.on('close', step2);
+	    call.on('close', function() {
+	    	//localVideoRecorder.stop();
+	    	//remoteVideoRecorder.stop();
+	    });
     }
+
+
+    /**
+     * WINDOW CLOSING
+     */
+
+    videoChatWindow.onbeforeunload = function (e)
+	{
+	    //localVideoRecorder.stop();
+	    //remoteVideoRecorder.stop();
+
+	    videoChatWindow.existingCall.close();
+	};
+
+    window.onbeforeunload = function (e)
+    {
+	    /*e = e || window.event;
+
+	    var message = 'Are you sure you want to leave this page?';
+
+	    // For IE and Firefox prior to version 4
+	    if (e) {
+	        e.returnValue = message;
+	    }
+
+	    // For Safari
+	    return message;*/
+
+	    if (videoChatWindow)
+    	{
+    		videoChatWindow.close();
+    	}
+
+	    /*savedFilesWindow = window.open('saved_files_window.html', 'secondary', 'width=640,height=480');
+
+	    var i;
+	    for (i = 0; i < numLocalAudioFiles; i++)
+	    {
+	    	appendLink(localAudioFiles[i], 'localAudio' + i);
+	    }
+	    for (i = 0; i < numLocalVideoFiles; i++)
+	    {
+	    	appendLink(localVideoFiles[i], 'localVideo' + i);
+	    }
+	    for (i = 0; i < numRemoteAudioFiles; i++)
+	    {
+	    	appendLink(remoteAudioFiles[i], 'remoteAudio' + i);
+	    }
+	    for (i = 0; i < numRemoteVideoFiles; i++)
+	    {
+	    	appendLink(remoteVideoFiles[i], 'remoteVideo' + i);
+	    }*/
+	};
+
+	/*function appendLink(blob, name)
+	{
+        var a = document.createElement('a');
+        a.target = '_blank';
+        a.innerHTML = 'Open Recorded (name: ' + name + ') ' + (blob.type == 'audio/ogg' ? 'Audio' : 'Video') + ' No. ' + (index++) + ' (Size: ' + bytesToSize(blob.size) + ') Time Length: ' + getTimeLength(timeInterval);
+        a.href = URL.createObjectURL(blob);
+        savedFilesWindow.fileListContainer.appendChild(a);
+        savedFilesWindow.fileListContainer.appendChild(document.createElement('hr'));
+    }*/
 });

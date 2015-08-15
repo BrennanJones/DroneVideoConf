@@ -510,7 +510,7 @@ BOOL manualOverrideOn = false;
     }];
     
     [_dvcTabBarController.socket on:@"InvestigatorCommand" callback:^(NSArray* data, void (^ack)(NSArray*)) {
-        NSLog(@"Socket: ManualOverrideCommand");
+        NSLog(@"Socket: InvestigatorCommand");
         [self socketOnInvestigatorCommand:data];
     }];
     
@@ -544,7 +544,7 @@ BOOL manualOverrideOn = false;
     
     [_serverConnectionDelegate onConnectToServer:self.serverConnectionTextField.text];
     
-    NSArray *args = [[NSArray alloc] initWithObjects:[NSNumber numberWithUnsignedInteger:1], nil];
+    NSArray *args = [[NSArray alloc] initWithObjects:[NSNumber numberWithBool:_service != nil], nil];
     [_dvcTabBarController.socket emit:@"DroneConnectionUpdate" withItems:args];
     
     args = [[NSArray alloc] initWithObjects:[NSNumber numberWithUnsignedInteger:droneBatteryPercentage], nil];
