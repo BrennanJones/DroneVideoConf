@@ -74,6 +74,12 @@ BOOL inACall = FALSE;
     
     //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSessionRouteChange:) name:AVAudioSessionRouteChangeNotification object:nil];
     
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didRotateDeviceChangeNotification:)
+                                                 name:UIDeviceOrientationDidChangeNotification
+                                               object:nil];
+    
     self.remoteVideoView =
     [[RTCEAGLVideoView alloc] initWithFrame:self.blackView.bounds];
     self.remoteVideoView.delegate = self;
@@ -109,6 +115,9 @@ BOOL inACall = FALSE;
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.tabBarController.tabBar setBarStyle:UIBarStyleBlack];
         [self.tabBarController.tabBar setTranslucent:YES];
+        
+        NSArray *args = [[NSArray alloc] initWithObjects:@"VideoChatView", nil];
+        [_dvcTabBarController.socket emit:@"MCTabToggle" withItems:args];
     });
 }
 
@@ -184,6 +193,24 @@ BOOL inACall = FALSE;
         default:
             break;
     }
+}
+
+- (void)didRotateDeviceChangeNotification:(NSNotification *)notification
+{
+    UIInterfaceOrientation newOrientation =  [UIApplication sharedApplication].statusBarOrientation;
+    
+    NSArray *args;
+    
+    if (newOrientation == UIInterfaceOrientationLandscapeLeft || newOrientation == UIInterfaceOrientationLandscapeRight)
+    {
+        args = [[NSArray alloc] initWithObjects:@"Landscape", nil];
+    }
+    else
+    {
+        args = [[NSArray alloc] initWithObjects:@"Portrait", nil];
+    }
+    
+    [_dvcTabBarController.socket emit:@"MCOrientationChange" withItems:args];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle
@@ -436,14 +463,21 @@ BOOL inACall = FALSE;
     if (communicatingWithServer && videoCallViewsAreEstablished)
     {
         [_peer swapCaptureDevicePosition];
+        
+        NSArray *args;
+        
         if (_peer.cameraPosition == AVCaptureDevicePositionFront)
         {
             self.localVideoView.transform = CGAffineTransformMakeScale(-1, 1);
+            args = [[NSArray alloc] initWithObjects:@"Front", nil];
         }
         else
         {
             self.localVideoView.transform = CGAffineTransformMakeScale(1, 1);
+            args = [[NSArray alloc] initWithObjects:@"Back", nil];
         }
+        
+        [_dvcTabBarController.socket emit:@"MCCameraSwap" withItems:args];
     }
 }
 
@@ -451,15 +485,22 @@ BOOL inACall = FALSE;
 {
     if (communicatingWithServer)
     {
+        NSArray *args;
+        
         if (remoteViewIsLargeView)
         {
             remoteViewIsLargeView = FALSE;
+            args = [[NSArray alloc] initWithObjects:@"Local", nil];
         }
         else
         {
             remoteViewIsLargeView = TRUE;
+            args = [[NSArray alloc] initWithObjects:@"Remote", nil];
         }
+        
         [self updateVideoViewLayout];
+        
+        [_dvcTabBarController.socket emit:@"MCVideoChatSwapMainViews" withItems:args];
     }
 }
 

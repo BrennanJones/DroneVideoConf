@@ -161,6 +161,9 @@ BOOL manualOverrideOn = false;
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.tabBarController.tabBar setBarStyle:UIBarStyleDefault];
         [self.tabBarController.tabBar setTranslucent:NO];
+        
+        NSArray *args = [[NSArray alloc] initWithObjects:@"StatusesView", nil];
+        [_dvcTabBarController.socket emit:@"MCTabToggle" withItems:args];
     });
 }
 

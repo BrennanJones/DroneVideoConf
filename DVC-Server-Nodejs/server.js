@@ -23,6 +23,7 @@ function handler(request, response)
 
 app.listen(8081);
 
+var serverStartedDate = Date.now();
 console.log('Server started. [' + (new Date()).toString() + ']');
 
 
@@ -47,14 +48,17 @@ var droneCameraPosition = {
 var numTimelinePhotosReceived = 0;
 
 /* DRONE VIDEO */
-var droneVideoWriteStream = filesystem.createWriteStream('DroneVideo_' + Date.now() + '.264');	// file containing the raw H.264 drone video stream from the mobile client
+var droneVideoWriteStream = filesystem.createWriteStream('DroneVideo_' + serverStartedDate + '.264');	// file containing the raw H.264 drone video stream from the mobile client
 
 /* MANUAL OVERRIDE */
 var manualOverrideState = 0;
 
 /* LOG FILE */
-var logFileWriteStream = filesystem.createWriteStream('LogFile_' + Date.now() + '.txt');	// log file of actions taken by users
+var logFileWriteStream = filesystem.createWriteStream('LogFile_' + serverStartedDate + '.txt');	// log file of actions taken by users
 var logStarted = new Date();
+
+/* OTHER */
+var mcCurrentTab = 'Disconnected';
 
 
 io.sockets.on('connection', function(socket)
@@ -92,6 +96,11 @@ io.sockets.on('connection', function(socket)
 			};
 			console.log('DroneCameraUpdate: pan: ' + droneCameraPosition['pan'] + ', tilt: ' + droneCameraPosition['tilt'] + ' [' + (new Date()).toString() + ']');
 			socket.broadcast.emit('DroneCameraUpdate', droneCameraPosition);
+
+			mcCurrentTab = 'Disconnected';
+			console.log('MCTabToggle: ' + mcCurrentTab + ' [' + (new Date()).toString() + ']');
+			logFileWriteStream.write(Date.now() - logStarted + ': MCTabToggle: ' + mcCurrentTab + ' [' + (new Date()).toString() + ']\n');
+			socket.broadcast.emit('MCTabToggle', mcCurrentTab);
 		}
 		else if (clientType == 'Investigator')
 		{
@@ -107,6 +116,7 @@ io.sockets.on('connection', function(socket)
 	socket.emit('DroneBatteryUpdate', droneBatteryPercentage);
 	socket.emit('DroneCameraUpdate', droneCameraPosition);
 	socket.emit('ManualOverrideStateChanged', manualOverrideState);
+	socket.emit('MCTabToggle', mcCurrentTab);
 	
 	
 	/**
@@ -241,7 +251,7 @@ io.sockets.on('connection', function(socket)
 	{
 		console.log('Command: ' + data + ' [' + (new Date()).toString() + ']');
 
-		logFileWriteStream.write(Date.now() - logStarted + ': Command: ' + data + '\n');
+		logFileWriteStream.write(Date.now() - logStarted + ': Command: ' + data + ' [' + (new Date()).toString() + ']\n');
 
 		socket.broadcast.emit('Command', data);
 	});
@@ -255,7 +265,7 @@ io.sockets.on('connection', function(socket)
 
 		if (data == 'Takeoff')
 		{
-			logFileWriteStream.write(Date.now() - logStarted + ': TAKEOFF -- resetting millisecond count to 0.\n');
+			logFileWriteStream.write(Date.now() - logStarted + ': TAKEOFF -- resetting millisecond count to 0. [' + (new Date()).toString() + ']\n');
 			logStarted = new Date();
 		}
 
@@ -304,5 +314,36 @@ io.sockets.on('connection', function(socket)
 		{
 			io.sockets.connected[desktopClientSocketSessionID].emit('DronePhoto', data);
 		}
+	});
+
+
+	/* OTHER */
+
+	socket.on('MCTabToggle', function(data)
+	{
+		console.log('MCTabToggle: ' + data + ' [' + (new Date()).toString() + ']');
+
+		logFileWriteStream.write(Date.now() - logStarted + ': MCTabToggle: ' + data + ' [' + (new Date()).toString() + ']\n');
+		
+		mcCurrentTab = data;
+		socket.broadcast.emit('MCTabToggle', mcCurrentTab);
+	});
+
+	socket.on('MCCameraSwap', function(data)
+	{
+		console.log('MCCameraSwap: ' + data + ' [' + (new Date()).toString() + ']');
+		logFileWriteStream.write(Date.now() - logStarted + ': MCCameraSwap: ' + data + ' [' + (new Date()).toString() + ']\n');
+	});
+
+	socket.on('MCVideoChatSwapMainViews', function(data)
+	{
+		console.log('MCVideoChatSwapMainViews: ' + data + ' [' + (new Date()).toString() + ']');
+		logFileWriteStream.write(Date.now() - logStarted + ': MCVideoChatSwapMainViews: ' + data + ' [' + (new Date()).toString() + ']\n');
+	});
+
+	socket.on('MCOrientationChange', function(data)
+	{
+		console.log('MCOrientationChange: ' + data + ' [' + (new Date()).toString() + ']');
+		logFileWriteStream.write(Date.now() - logStarted + ': MCOrientationChange: ' + data + ' [' + (new Date()).toString() + ']\n');
 	});
 });

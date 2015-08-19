@@ -64,6 +64,9 @@ BOOL videoFrameQueueLoopRunning = false;
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.tabBarController.tabBar setBarStyle:UIBarStyleBlack];
         [self.tabBarController.tabBar setTranslucent:YES];
+        
+        NSArray *args = [[NSArray alloc] initWithObjects:@"DroneVideoView", nil];
+        [_dvcTabBarController.socket emit:@"MCTabToggle" withItems:args];
     });
 }
 
