@@ -760,16 +760,17 @@ BOOL manualOverrideOn = false;
     NSDate *phoneKalmanFilter_lastUpdate = [NSDate date];
     
     NSDate *lastLabelsUpdate = [NSDate date];
+    NSDate *lastLocationUpdateToServer = [NSDate date];
     
     while (droneControlLoopRunning)
     {
-        if ([[NSDate date] timeIntervalSinceDate:lastLabelsUpdate] >= 0.5)
-        {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSString *speedText = [[NSString alloc] initWithFormat:@"%f", droneSpeed];
-                [_droneCurrentSpeedLabel setText:speedText];
-            });
-        }
+//        if ([[NSDate date] timeIntervalSinceDate:lastLabelsUpdate] >= 0.5)
+//        {
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                NSString *speedText = [[NSString alloc] initWithFormat:@"%f", droneSpeed];
+//                [_droneCurrentSpeedLabel setText:speedText];
+//            });
+//        }
         
         if (posDroneSet)
         {
@@ -814,38 +815,49 @@ BOOL manualOverrideOn = false;
             }
         }
         
-        if (posDroneSet && posPhoneSet)
+        if (posDroneSet && posPhoneSet && bearingDroneSet)
         {
-            if (bearingDroneSet)
+//            if ([[NSDate date] timeIntervalSinceDate:lastLabelsUpdate] >= 0.5)
+//            {
+//                dispatch_async(dispatch_get_main_queue(), ^{
+//                    NSString *bearingText = [[NSString alloc] initWithFormat:@"%f", bearingDrone];
+//                    [_bearingDroneLabel setText:bearingText];
+//                    
+//                    NSString *requiredBearingText = [[NSString alloc] initWithFormat:@"%f", requiredBearingDrone];
+//                    [_requiredBearingDroneLabel setText:requiredBearingText];
+//                    
+//                    NSString *distText = [[NSString alloc] initWithFormat:@"%f", distanceApart];
+//                    [_droneToPhoneDistanceLabel setText:distText];
+//                });
+//            }
+            
+            if ([[NSDate date] timeIntervalSinceDate:lastLocationUpdateToServer] >= 2.0 && _dvcTabBarController.socket.connected && _landingBt.enabled)
             {
-                if ([[NSDate date] timeIntervalSinceDate:lastLabelsUpdate] >= 0.5)
-                {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        NSString *bearingText = [[NSString alloc] initWithFormat:@"%f", bearingDrone];
-                        [_bearingDroneLabel setText:bearingText];
-                        
-                        NSString *requiredBearingText = [[NSString alloc] initWithFormat:@"%f", requiredBearingDrone];
-                        [_requiredBearingDroneLabel setText:requiredBearingText];
-                        
-                        NSString *distText = [[NSString alloc] initWithFormat:@"%f", distanceApart];
-                        [_droneToPhoneDistanceLabel setText:distText];
-                    });
-                }
+                NSArray *args = [[NSArray alloc] initWithObjects:@{@"latPhone": [NSNumber numberWithInt:latPhoneEst],
+                                                                   @"lonPhone": [NSNumber numberWithInt:lonPhoneEst],
+                                                                   @"latDrone": [NSNumber numberWithInt:latDroneEst],
+                                                                   @"lonDrone": [NSNumber numberWithInt:lonDroneEst],
+                                                                   @"altDrone": [NSNumber numberWithInt:altDrone],
+                                                                   @"bearingDrone": [NSNumber numberWithInt:bearingDrone],
+                                                                   }, nil];
+                [_dvcTabBarController.socket emit:@"LocationUpdate" withItems:args];
                 
-                if (!manualOverrideOn)
+                lastLocationUpdateToServer = [NSDate date];
+            }
+            
+            if (!manualOverrideOn)
+            {
+                if (altDrone >= droneRequiredAltitudeLowerBound - 0.5 && altDrone <= droneRequiredAltitudeUpperBound + 0.5)
                 {
-                    if (altDrone >= droneRequiredAltitudeLowerBound - 0.5 && altDrone <= droneRequiredAltitudeUpperBound + 0.5)
-                    {
-                        [self droneAdjustBearing];
-                        [self droneFollowTarget];
-                    }
-                    else
-                    {
-                        [_dvcTabBarController.deviceController setYaw:0];
-                        
-                        [_dvcTabBarController.deviceController setFlag:0];
-                        [_dvcTabBarController.deviceController setPitch:0];
-                    }
+                    [self droneAdjustBearing];
+                    [self droneFollowTarget];
+                }
+                else
+                {
+                    [_dvcTabBarController.deviceController setYaw:0];
+                    
+                    [_dvcTabBarController.deviceController setFlag:0];
+                    [_dvcTabBarController.deviceController setPitch:0];
                 }
             }
         }
