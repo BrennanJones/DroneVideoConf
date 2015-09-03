@@ -833,12 +833,12 @@ BOOL manualOverrideOn = false;
             
             if ([[NSDate date] timeIntervalSinceDate:lastLocationUpdateToServer] >= 2.0 && _dvcTabBarController.socket.connected && _landingBt.enabled)
             {
-                NSArray *args = [[NSArray alloc] initWithObjects:@{@"latPhone": [NSNumber numberWithInt:latPhoneEst],
-                                                                   @"lonPhone": [NSNumber numberWithInt:lonPhoneEst],
-                                                                   @"latDrone": [NSNumber numberWithInt:latDroneEst],
-                                                                   @"lonDrone": [NSNumber numberWithInt:lonDroneEst],
-                                                                   @"altDrone": [NSNumber numberWithInt:altDrone],
-                                                                   @"bearingDrone": [NSNumber numberWithInt:bearingDrone],
+                NSArray *args = [[NSArray alloc] initWithObjects:@{@"latPhone": [NSNumber numberWithDouble:latPhoneEst],
+                                                                   @"lonPhone": [NSNumber numberWithDouble:lonPhoneEst],
+                                                                   @"latDrone": [NSNumber numberWithDouble:latDroneEst],
+                                                                   @"lonDrone": [NSNumber numberWithDouble:lonDroneEst],
+                                                                   @"altDrone": [NSNumber numberWithDouble:altDrone],
+                                                                   @"bearingDrone": [NSNumber numberWithDouble:bearingDrone],
                                                                    }, nil];
                 [_dvcTabBarController.socket emit:@"LocationUpdate" withItems:args];
                 
