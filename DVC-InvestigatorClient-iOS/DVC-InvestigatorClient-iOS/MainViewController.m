@@ -213,6 +213,9 @@
     
     _upButton.enabled = false;
     _downButton.enabled = false;
+    
+    _forwardButton.enabled = false;
+    _backButton.enabled = false;
 }
 
 - (void)socketOnDroneConnectionUpdate:(NSArray *)data
@@ -228,6 +231,9 @@
         
         _upButton.enabled = true;
         _downButton.enabled = true;
+        
+        _forwardButton.enabled = true;
+        _backButton.enabled = true;
     }
     else
     {
@@ -240,6 +246,9 @@
         
         _upButton.enabled = false;
         _downButton.enabled = false;
+        
+        _forwardButton.enabled = false;
+        _backButton.enabled = false;
     }
 }
 
@@ -294,13 +303,25 @@
 - (IBAction)upClick:(id)sender
 {
     NSArray *args = [[NSArray alloc] initWithObjects:@"MoveUp", nil];
-    [_dvcTabBarController.socket emit:@"InvestigatorCommand" withItems:args];
+    [_dvcTabBarController.socket emit:@"Command" withItems:args];
 }
 
 - (IBAction)downClick:(id)sender
 {
     NSArray *args = [[NSArray alloc] initWithObjects:@"MoveDown", nil];
-    [_dvcTabBarController.socket emit:@"InvestigatorCommand" withItems:args];
+    [_dvcTabBarController.socket emit:@"Command" withItems:args];
+}
+
+- (IBAction)forwardClick:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"MoveForward", nil];
+    [_dvcTabBarController.socket emit:@"Command" withItems:args];
+}
+
+- (IBAction)backClick:(id)sender
+{
+    NSArray *args = [[NSArray alloc] initWithObjects:@"MoveBack", nil];
+    [_dvcTabBarController.socket emit:@"Command" withItems:args];
 }
 
 @end

@@ -78,7 +78,11 @@ double requiredBearingDrone;
 
 double distanceApart;   // the calculated distance between the drone and the phone
 
+double droneFollowingDistanceInnerBound = 8.0;
+double droneFollowingDistanceOuterBound = 12.0;
+
 double droneSpeed = 0;
+static const double DRONE_MAX_PITCH = 20.0;
 double droneVelocityDirectionAlongXY = 0;
 
 BOOL posPhoneSet = false;
@@ -263,8 +267,8 @@ BOOL manualOverrideOn = false;
                             self.droneConnectionStatusLabel.text = @"Connected";
                             self.droneConnectionStatusLabel.textColor = _dvcGreen;
                             
-                            droneKalmanFilter = alloc_filter_velocity2d(1.0);
-                            phoneKalmanFilter = alloc_filter_velocity2d(1.0);
+                            droneKalmanFilter = alloc_filter_velocity2d(1.5);
+                            phoneKalmanFilter = alloc_filter_velocity2d(1.5);
                             
                             [self initializePhoneGPS];
                             
@@ -590,27 +594,79 @@ BOOL manualOverrideOn = false;
 
 - (void)socketOnCommand:(NSArray *)data
 {
-    if([(NSString *)data[0] isEqualToString:@"CamLeft"])
+    if ([(NSString *)data[0] isEqualToString:@"CamLeft"] ||
+        [(NSString *)data[0] isEqualToString:@"CamRight"] ||
+        [(NSString *)data[0] isEqualToString:@"CamUp"] ||
+        [(NSString *)data[0] isEqualToString:@"CamDown"])
     {
-        [_dvcTabBarController.deviceController setCamPan:-10];
-    }
-    else if([(NSString *)data[0] isEqualToString:@"CamRight"])
-    {
-        [_dvcTabBarController.deviceController setCamPan:10];
-    }
-    else if([(NSString *)data[0] isEqualToString:@"CamUp"])
-    {
-        [_dvcTabBarController.deviceController setCamTilt:10];
-    }
-    else if([(NSString *)data[0] isEqualToString:@"CamDown"])
-    {
-        [_dvcTabBarController.deviceController setCamTilt:-10];
+        if([(NSString *)data[0] isEqualToString:@"CamLeft"])
+        {
+            [_dvcTabBarController.deviceController setCamPan:-10];
+        }
+        else if([(NSString *)data[0] isEqualToString:@"CamRight"])
+        {
+            [_dvcTabBarController.deviceController setCamPan:10];
+        }
+        else if([(NSString *)data[0] isEqualToString:@"CamUp"])
+        {
+            [_dvcTabBarController.deviceController setCamTilt:10];
+        }
+        else if([(NSString *)data[0] isEqualToString:@"CamDown"])
+        {
+            [_dvcTabBarController.deviceController setCamTilt:-10];
+        }
+        
+        NSArray *args = [[NSArray alloc] initWithObjects:@{@"pan": [NSNumber numberWithInt:_dvcTabBarController.deviceController.cameraPan],
+                                                           @"tilt": [NSNumber numberWithInt:_dvcTabBarController.deviceController.cameraTilt]
+                                                         }, nil];
+        [_dvcTabBarController.socket emit:@"DroneCameraUpdate" withItems:args];
     }
     
-    NSArray *args = [[NSArray alloc] initWithObjects:@{@"pan": [NSNumber numberWithInt:_dvcTabBarController.deviceController.cameraPan],
-                                                       @"tilt": [NSNumber numberWithInt:_dvcTabBarController.deviceController.cameraTilt]
-                                                     }, nil];
-    [_dvcTabBarController.socket emit:@"DroneCameraUpdate" withItems:args];
+    else if ([(NSString *)data[0] isEqualToString:@"MoveUp"] ||
+             [(NSString *)data[0] isEqualToString:@"MoveDown"])
+    {
+        if([(NSString *)data[0] isEqualToString:@"MoveUp"])
+        {
+            droneRequiredAltitudeLowerBound += 1.0;
+            droneRequiredAltitudeUpperBound += 1.0;
+        }
+        else if([(NSString *)data[0] isEqualToString:@"MoveDown"])
+        {
+            if (droneRequiredAltitudeLowerBound >= 1.5)
+            {
+                droneRequiredAltitudeLowerBound -= 1.0;
+                droneRequiredAltitudeUpperBound -= 1.0;
+            }
+        }
+        
+        NSArray *args = [[NSArray alloc] initWithObjects:@{@"lowerBound": [NSNumber numberWithInt:droneRequiredAltitudeLowerBound],
+                                                           @"upperBound": [NSNumber numberWithInt:droneRequiredAltitudeUpperBound]
+                                                           }, nil];
+        [_dvcTabBarController.socket emit:@"DroneAltitudeSettingsUpdate" withItems:args];
+    }
+    
+    else if ([(NSString *)data[0] isEqualToString:@"MoveForward"] ||
+             [(NSString *)data[0] isEqualToString:@"MoveBack"])
+    {
+        if([(NSString *)data[0] isEqualToString:@"MoveForward"])
+        {
+            droneFollowingDistanceInnerBound += 1.0;
+            droneFollowingDistanceOuterBound += 1.0;
+        }
+        else if([(NSString *)data[0] isEqualToString:@"MoveBack"])
+        {
+            if (droneFollowingDistanceOuterBound >= 5.0)
+            {
+                droneFollowingDistanceInnerBound -= 1.0;
+                droneFollowingDistanceOuterBound -= 1.0;
+            }
+        }
+        
+        NSArray *args = [[NSArray alloc] initWithObjects:@{@"innerBound": [NSNumber numberWithInt:droneFollowingDistanceInnerBound],
+                                                           @"outerBound": [NSNumber numberWithInt:droneFollowingDistanceOuterBound]
+                                                           }, nil];
+        [_dvcTabBarController.socket emit:@"DroneFollowingDistanceSettingsUpdate" withItems:args];
+    }
 }
 
 - (void)socketOnManualOverrideStateChanged:(NSArray *)data
@@ -647,19 +703,6 @@ BOOL manualOverrideOn = false;
         if (_landingBt.enabled)
         {
             [_dvcTabBarController.deviceController sendLanding];
-        }
-    }
-    else if([(NSString *)data[0] isEqualToString:@"MoveUp"])
-    {
-        droneRequiredAltitudeLowerBound += 0.5;
-        droneRequiredAltitudeUpperBound += 0.5;
-    }
-    else if([(NSString *)data[0] isEqualToString:@"MoveDown"])
-    {
-        if (droneRequiredAltitudeLowerBound >= 0.5)
-        {
-            droneRequiredAltitudeLowerBound -= 0.5;
-            droneRequiredAltitudeUpperBound -= 0.5;
         }
     }
 }
@@ -958,21 +1001,28 @@ BOOL manualOverrideOn = false;
     distanceApartSet = true;
     
     
-    // If the distance is greater than the outer bound, move forward.
-    if (distanceApart > 12.0 && droneProperlyOriented)
+    double pitch = 0;
+    
+    // If the drone is properly oriented, can begin (or continue) following the target.
+    if (droneProperlyOriented)
     {
-        double pitch = 7.0 * (distanceApart - 12.0);
+        // If the distance is greater than the outer bound, move forward.
+        if (distanceApart > droneFollowingDistanceOuterBound)
+        {
+            pitch = fmin(DRONE_MAX_PITCH, 5.0 * (distanceApart - droneFollowingDistanceOuterBound));
+        }
         
-        [_dvcTabBarController.deviceController setFlag:1];
-        [_dvcTabBarController.deviceController setPitch:pitch];
+        // If the distance is less than the inner bound, move backward.
+        else if (distanceApart < droneFollowingDistanceInnerBound)
+        {
+            pitch = fmax(-0.5 * DRONE_MAX_PITCH, -2.5 * (droneFollowingDistanceInnerBound - distanceApart));
+        }
     }
     
-    // Otherwise, stay still.
-    else
-    {
-        [_dvcTabBarController.deviceController setFlag:0];
-        [_dvcTabBarController.deviceController setPitch:0];
-    }
+    // If the distance is between the inner and upper bounds, or the drone is not properly oriented, stay still.
+    
+    [_dvcTabBarController.deviceController setFlag:(pitch == 0) ? 0 : 1];
+    [_dvcTabBarController.deviceController setPitch:pitch];
 }
 
 

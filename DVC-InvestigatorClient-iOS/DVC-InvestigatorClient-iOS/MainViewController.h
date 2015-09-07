@@ -40,6 +40,8 @@
 @property (strong, nonatomic) IBOutlet UILabel *droneConnectionStatusLabel;
 @property (strong, nonatomic) IBOutlet UIButton *upButton;
 @property (strong, nonatomic) IBOutlet UIButton *downButton;
+@property (strong, nonatomic) IBOutlet UIButton *forwardButton;
+@property (strong, nonatomic) IBOutlet UIButton *backButton;
 
 - (IBAction)connectToServerClick:(id)sender;
 
@@ -49,5 +51,8 @@
 
 - (IBAction)upClick:(id)sender;
 - (IBAction)downClick:(id)sender;
+
+- (IBAction)forwardClick:(id)sender;
+- (IBAction)backClick:(id)sender;
 
 @end
