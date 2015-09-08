@@ -26,6 +26,8 @@ app.listen(8081);
 var serverStartedDate = Date.now();
 console.log('Server started. [' + (new Date()).toString() + ']');
 
+filesystem.mkdirSync('./data/' + serverStartedDate);
+
 
 /* PEER */
 var mobileClientPeerID;
@@ -43,19 +45,29 @@ var droneCameraPosition = {
 	'pan': 0,
 	'tilt': 0
 };
+var droneAltitudeSettings = {
+	'lowerBound': 2.0,
+	'upperBound': 4.0
+};
+var droneFollowingDistanceSettings = {
+	'innerBound': 5.0,
+	'outerBound': 7.0
+};
 
 /* DRONE SEQUENTIAL PHOTO TIMELINE */
 var numTimelinePhotosReceived = 0;
 
 /* DRONE VIDEO */
-var droneVideoWriteStream = filesystem.createWriteStream('DroneVideo_' + serverStartedDate + '.264');	// file containing the raw H.264 drone video stream from the mobile client
+var droneVideoWriteStream = filesystem.createWriteStream('data/' + serverStartedDate + '/DroneVideo.264');	// file containing the raw H.264 drone video stream from the mobile client
 
 /* MANUAL OVERRIDE */
 var manualOverrideState = 0;
 
 /* LOG FILE */
-var logFileWriteStream = filesystem.createWriteStream('LogFile_' + serverStartedDate + '.txt');	// log file of actions taken by users
-var logStarted = new Date();
+var logFileWriteStream = filesystem.createWriteStream('data/' + serverStartedDate + '/LogFile.txt');	// log file of actions taken by users
+
+/* LOCATION LOG */
+var locationLogWriteStream = filesystem.createWriteStream('data/' + serverStartedDate + '/LocationLog.txt');
 
 /* OTHER */
 var mcCurrentTab = 'Disconnected';
@@ -97,9 +109,23 @@ io.sockets.on('connection', function(socket)
 			console.log('DroneCameraUpdate: pan: ' + droneCameraPosition['pan'] + ', tilt: ' + droneCameraPosition['tilt'] + ' [' + (new Date()).toString() + ']');
 			socket.broadcast.emit('DroneCameraUpdate', droneCameraPosition);
 
+			droneAltitudeSettings = {
+				'lowerBound': 2.0,
+				'upperBound': 4.0
+			};
+			console.log('DroneAltitudeSettingsUpdate: lowerBound: ' + droneAltitudeSettings['lowerBound'] + ', upperBound: ' + droneAltitudeSettings['upperBound'] + ' [' + (new Date()).toString() + ']');
+			socket.broadcast.emit('DroneAltitudeSettingsUpdate', droneAltitudeSettings);
+
+			droneFollowingDistanceSettings = {
+				'innerBound': 5.0,
+				'outerBound': 7.0
+			};
+			console.log('DroneFollowingDistanceSettingsUpdate: innerBound: ' + droneFollowingDistanceSettings['innerBound'] + ', outerBound: ' + droneFollowingDistanceSettings['outerBound'] + ' [' + (new Date()).toString() + ']');
+			socket.broadcast.emit('DroneFollowingDistanceSettingsUpdate', droneFollowingDistanceSettings);
+
 			mcCurrentTab = 'Disconnected';
 			console.log('MCTabToggle: ' + mcCurrentTab + ' [' + (new Date()).toString() + ']');
-			logFileWriteStream.write(Date.now() - logStarted + ': MCTabToggle: ' + mcCurrentTab + ' [' + (new Date()).toString() + ']\n');
+			logFileWriteStream.write(Date.now() + ', MCTabToggle: ' + mcCurrentTab + ' [' + (new Date()).toString() + ']\n');
 			socket.broadcast.emit('MCTabToggle', mcCurrentTab);
 		}
 		else if (clientType == 'Investigator')
@@ -115,8 +141,10 @@ io.sockets.on('connection', function(socket)
 	socket.emit('DroneConnectionUpdate', droneConnectionState);
 	socket.emit('DroneBatteryUpdate', droneBatteryPercentage);
 	socket.emit('DroneCameraUpdate', droneCameraPosition);
-	socket.emit('ManualOverrideStateChanged', manualOverrideState);
+	socket.emit('DroneAltitudeSettingsUpdate', droneAltitudeSettings);
+	socket.emit('DroneFollowingDistanceSettingsUpdate', droneFollowingDistanceSettings);
 	socket.emit('MCTabToggle', mcCurrentTab);
+	socket.emit('ManualOverrideStateChanged', manualOverrideState);
 	
 	
 	/**
@@ -231,6 +259,22 @@ io.sockets.on('connection', function(socket)
 		droneCameraPosition = data;
 		socket.broadcast.emit('DroneCameraUpdate', droneCameraPosition);
 	});
+
+	socket.on('DroneAltitudeSettingsUpdate', function(data)
+	{
+		console.log('DroneAltitudeSettingsUpdate: lowerBound: ' + data['lowerBound'] + ', upperBound: ' + data['upperBound'] + ' [' + (new Date()).toString() + ']');
+		
+		droneAltitudeSettings = data;
+		socket.broadcast.emit('DroneAltitudeSettingsUpdate', droneAltitudeSettings);
+	});
+
+	socket.on('DroneFollowingDistanceSettingsUpdate', function(data)
+	{
+		console.log('DroneFollowingDistanceSettingsUpdate: innerBound: ' + data['innerBound'] + ', outerBound: ' + data['outerBound'] + ' [' + (new Date()).toString() + ']');
+		
+		droneFollowingDistanceSettings = data;
+		socket.broadcast.emit('DroneFollowingDistanceSettingsUpdate', droneFollowingDistanceSettings);
+	});
 	
 	
 	/* DRONE VIDEO */
@@ -251,7 +295,7 @@ io.sockets.on('connection', function(socket)
 	{
 		console.log('Command: ' + data + ' [' + (new Date()).toString() + ']');
 
-		logFileWriteStream.write(Date.now() - logStarted + ': Command: ' + data + ' [' + (new Date()).toString() + ']\n');
+		logFileWriteStream.write(Date.now() + ', Command: ' + data + ' [' + (new Date()).toString() + ']\n');
 
 		socket.broadcast.emit('Command', data);
 	});
@@ -265,8 +309,7 @@ io.sockets.on('connection', function(socket)
 
 		if (data == 'Takeoff')
 		{
-			logFileWriteStream.write(Date.now() - logStarted + ': TAKEOFF -- resetting millisecond count to 0. [' + (new Date()).toString() + ']\n');
-			logStarted = new Date();
+			logFileWriteStream.write(Date.now() + ', TAKEOFF COMMAND [' + (new Date()).toString() + ']\n');
 		}
 
 		socket.broadcast.emit('InvestigatorCommand', data);
@@ -317,13 +360,29 @@ io.sockets.on('connection', function(socket)
 	});
 
 
-	/* OTHER */
+	/* PHONE & DRONE LOCATION EVENTS */
+
+	socket.on('LocationUpdate', function(data)
+	{
+		locationLogWriteStream.write(Date.now() +
+			', latPhone: ' + data['latPhone'] +
+			', lonPhone: ' +  data['lonPhone'] +
+			', latDrone: ' + data['latDrone'] +
+			', lonDrone: ' + data['lonDrone'] +
+			', altDrone: ' + data['altDrone'] +
+			', bearingDrone: ' + data['bearingDrone'] + ' [' + (new Date()).toString() + ']\n');
+
+		socket.broadcast.emit('LocationUpdate', data);
+	});
+
+
+	/* MC UI EVENTS */
 
 	socket.on('MCTabToggle', function(data)
 	{
 		console.log('MCTabToggle: ' + data + ' [' + (new Date()).toString() + ']');
 
-		logFileWriteStream.write(Date.now() - logStarted + ': MCTabToggle: ' + data + ' [' + (new Date()).toString() + ']\n');
+		logFileWriteStream.write(Date.now() + ', MCTabToggle: ' + data + ' [' + (new Date()).toString() + ']\n');
 		
 		mcCurrentTab = data;
 		socket.broadcast.emit('MCTabToggle', mcCurrentTab);
@@ -332,18 +391,18 @@ io.sockets.on('connection', function(socket)
 	socket.on('MCCameraSwap', function(data)
 	{
 		console.log('MCCameraSwap: ' + data + ' [' + (new Date()).toString() + ']');
-		logFileWriteStream.write(Date.now() - logStarted + ': MCCameraSwap: ' + data + ' [' + (new Date()).toString() + ']\n');
+		logFileWriteStream.write(Date.now() + ', MCCameraSwap: ' + data + ' [' + (new Date()).toString() + ']\n');
 	});
 
 	socket.on('MCVideoChatSwapMainViews', function(data)
 	{
 		console.log('MCVideoChatSwapMainViews: ' + data + ' [' + (new Date()).toString() + ']');
-		logFileWriteStream.write(Date.now() - logStarted + ': MCVideoChatSwapMainViews: ' + data + ' [' + (new Date()).toString() + ']\n');
+		logFileWriteStream.write(Date.now() + ', MCVideoChatSwapMainViews: ' + data + ' [' + (new Date()).toString() + ']\n');
 	});
 
 	socket.on('MCOrientationChange', function(data)
 	{
 		console.log('MCOrientationChange: ' + data + ' [' + (new Date()).toString() + ']');
-		logFileWriteStream.write(Date.now() - logStarted + ': MCOrientationChange: ' + data + ' [' + (new Date()).toString() + ']\n');
+		logFileWriteStream.write(Date.now() + ', MCOrientationChange: ' + data + ' [' + (new Date()).toString() + ']\n');
 	});
 });

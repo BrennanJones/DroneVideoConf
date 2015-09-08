@@ -10,6 +10,7 @@
         <script type="text/javascript" src="/lib/js/jquery.min.js"></script>
     	<script type="text/javascript" src="/lib/js/peer.min.js"></script>
         
+        <div class="phoneVideoContainer-border"></div>
         <div class="phoneVideoContainer">
             <video class="phoneVideo" autoplay></video>
             <video class="desktopVideo" muted="true" autoplay></video>
@@ -20,6 +21,7 @@
             {
                 window.phoneVideo = jQuery('.phoneVideo');
                 window.desktopVideo = jQuery('.desktopVideo');
+                window.phoneVideoContainerBorder = jQuery('.phoneVideoContainer-border');
             });
         </script>
     </body>

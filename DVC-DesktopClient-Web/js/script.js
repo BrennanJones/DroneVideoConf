@@ -20,45 +20,151 @@ jQuery(function()
 	var camRightButton = jQuery('#camRightButton');
 	var camUpButton = jQuery('#camUpButton');
 	var camDownButton = jQuery('#camDownButton');
+
+	function camButtonPress(button)
+	{
+		if (button == 'left')
+		{
+			camLeftButton.css('opacity', 1.00);
+			camLeftButton.css('content', 'url(/images/buttons/cam-arrows/left_highlighted.png)');
+			socket.emit('Command', 'CamLeft');
+		}
+		else if (button == 'right')
+		{
+			camRightButton.css('opacity', 1.00);
+			camRightButton.css('content', 'url(/images/buttons/cam-arrows/right_highlighted.png)');
+			socket.emit('Command', 'CamRight');
+		}
+		else if (button == 'up')
+		{
+			camUpButton.css('opacity', 1.00);
+			camUpButton.css('content', 'url(/images/buttons/cam-arrows/up_highlighted.png)');
+			socket.emit('Command', 'CamUp');
+		}
+		else if (button == 'down')
+		{
+			camDownButton.css('opacity', 1.00);
+			camDownButton.css('content', 'url(/images/buttons/cam-arrows/down_highlighted.png)');
+			socket.emit('Command', 'CamDown');
+		}
+
+		setTimeout(function () {
+    		camLeftButton.css('opacity', 0.5);
+			camRightButton.css('opacity', 0.5);
+			camUpButton.css('opacity', 0.5);
+			camDownButton.css('opacity', 0.5);
+
+			camLeftButton.css('content', 'url(/images/buttons/cam-arrows/left.png)');
+			camRightButton.css('content', 'url(/images/buttons/cam-arrows/right.png)');
+			camUpButton.css('content', 'url(/images/buttons/cam-arrows/up.png)');
+			camDownButton.css('content', 'url(/images/buttons/cam-arrows/down.png)');
+    	}, 100);
+	}
 	
 	camLeftButton.on('click', function()
 	{
-		socket.emit('Command', 'CamLeft');
+		camButtonPress('left');
 	});
 
 	camRightButton.on('click', function()
 	{
-		socket.emit('Command', 'CamRight');
+		camButtonPress('right');
 	});
 
 	camUpButton.on('click', function()
 	{
-		socket.emit('Command', 'CamUp');
+		camButtonPress('up');
 	});
 
 	camDownButton.on('click', function()
 	{
-		socket.emit('Command', 'CamDown');
+		camButtonPress('down');
 	});
 
 	jQuery('body').keydown(function(e)
 	{
 		if (e.which == 37) // left
 		{
-	    	socket.emit('Command', 'CamLeft');
+	    	camButtonPress('left');
 	  	}
 	  	else if (e.which == 39) // right
 	  	{
-	    	socket.emit('Command', 'CamRight');
+	    	camButtonPress('right');
 	  	}
 	  	else if (e.which == 38) // up
 	  	{
-	  		socket.emit('Command', 'CamUp');
+	  		camButtonPress('up');
 	  	}
 	  	else if (e.which == 40) // down
 	  	{
-	  		socket.emit('Command', 'CamDown');
+	  		camButtonPress('down');
 	  	}
+	});
+
+
+	var altitudeSettingIncreaseButton = jQuery('.droneAltitudeSettingIncreaseButton');
+	var altitudeSettingDecreaseButton = jQuery('.droneAltitudeSettingDecreaseButton');
+	var followingDistanceSettingIncreaseButton = jQuery('.droneFollowingDistanceSettingIncreaseButton');
+	var followingDistanceSettingDecreaseButton = jQuery('.droneFollowingDistanceSettingDecreaseButton');
+
+	function settingButtonPress(button)
+	{
+		if (button == 'altitudeIncrease')
+		{
+			altitudeSettingIncreaseButton.css('opacity', 1.00);
+			jQuery('.droneAltitudeSettingIncreaseButton p').css('color', 'red');
+			socket.emit('Command', 'MoveUp');
+		}
+		else if (button == 'altitudeDecrease')
+		{
+			altitudeSettingDecreaseButton.css('opacity', 1.00);
+			jQuery('.droneAltitudeSettingDecreaseButton p').css('color', 'red');
+			socket.emit('Command', 'MoveDown');
+		}
+		else if (button == 'followingDistanceIncrease')
+		{
+			followingDistanceSettingIncreaseButton.css('opacity', 1.00);
+			jQuery('.droneFollowingDistanceSettingIncreaseButton p').css('color', 'red');
+			socket.emit('Command', 'MoveBack');
+		}
+		else if (button == 'followingDistanceDecrease')
+		{
+			followingDistanceSettingDecreaseButton.css('opacity', 1.00);
+			jQuery('.droneFollowingDistanceSettingDecreaseButton p').css('color', 'red');
+			socket.emit('Command', 'MoveForward');
+		}
+
+		setTimeout(function () {
+    		altitudeSettingIncreaseButton.css('opacity', 0.7);
+			altitudeSettingDecreaseButton.css('opacity', 0.7);
+			followingDistanceSettingIncreaseButton.css('opacity', 0.7);
+			followingDistanceSettingDecreaseButton.css('opacity', 0.7);
+
+			jQuery('.droneAltitudeSettingIncreaseButton p').css('color', 'white');
+			jQuery('.droneAltitudeSettingDecreaseButton p').css('color', 'white');
+			jQuery('.droneFollowingDistanceSettingIncreaseButton p').css('color', 'white');
+			jQuery('.droneFollowingDistanceSettingDecreaseButton p').css('color', 'white');
+    	}, 100);
+	}
+
+	altitudeSettingIncreaseButton.on('click', function()
+	{
+		settingButtonPress('altitudeIncrease');
+	});
+
+	altitudeSettingDecreaseButton.on('click', function()
+	{
+		settingButtonPress('altitudeDecrease');
+	});
+
+	followingDistanceSettingIncreaseButton.on('click', function()
+	{
+		settingButtonPress('followingDistanceIncrease');
+	});
+
+	followingDistanceSettingDecreaseButton.on('click', function()
+	{
+		settingButtonPress('followingDistanceDecrease');
 	});
 	
 	
@@ -198,6 +304,43 @@ jQuery(function()
 		jQuery('.crosshair p').css('top', topPercent + '%').css('top', '-=33px');
 	});
 
+	socket.on('DroneAltitudeSettingsUpdate', function(newAltitudeSettings)
+	{
+		console.log('DroneAltitudeSettingsUpdate: lowerBound: ' + newAltitudeSettings['lowerBound'] + ', upperBound: ' + newAltitudeSettings['upperBound']);
+
+		jQuery('.droneAltitudeSettingStatus').html("<p>ALTITUDE SETTING: " + ((newAltitudeSettings['lowerBound'] + newAltitudeSettings['upperBound']) / 2) + " m</p>");
+	});
+
+	socket.on('DroneFollowingDistanceSettingsUpdate', function(newFollowingDistanceSettings)
+	{
+		console.log('DroneFollowingDistanceSettingsUpdate: innerBound: ' + newFollowingDistanceSettings['innerBound'] + ', outerBound: ' + newFollowingDistanceSettings['outerBound']);
+
+		jQuery('.droneFollowingDistanceSettingStatus').html("<p>FOLLOWING DISTANCE SETTING: " + ((newFollowingDistanceSettings['innerBound'] + newFollowingDistanceSettings['outerBound']) / 2) + " m</p>");
+	});
+
+	socket.on('MCTabToggle', function(newSelectedTab)
+	{
+		console.log('MCTabToggle: ' + newSelectedTab);
+
+		if (videoChatWindow != undefined && videoChatWindow.phoneVideoContainerBorder != undefined)
+		{
+			videoChatWindow.phoneVideoContainerBorder.css('opacity', 0.0);
+		}
+		jQuery('.droneVideoFrameContainer-border').css('opacity', 0.0);
+
+		if (newSelectedTab == 'VideoChatView')
+		{
+			if (videoChatWindow != undefined && videoChatWindow.phoneVideoContainerBorder != undefined)
+			{
+				videoChatWindow.phoneVideoContainerBorder.css('opacity', 0.75);
+			}
+		}
+		else if (newSelectedTab == 'DroneVideoView')
+		{
+			jQuery('.droneVideoFrameContainer-border').css('opacity', 0.75);
+		}
+	});
+
 	/* OTHER */
 
 	socket.on('ClientDisconnect', function(clientType)
@@ -220,27 +363,11 @@ jQuery(function()
 	 * PHONE VIDEO CHAT
 	 */
 
-	/*
-	var numLocalAudioFiles = 0,
-		numLocalVideoFiles = 0,
-		numRemoteAudioFiles = 0,
-		numRemoteVideoFiles = 0;
-
-	var localAudioFiles = {},
-		localVideoFiles = {},
-		remoteAudioFiles = {},
-		remoteVideoFiles = {};
-
-	var localVideoRecorder;
-	var remoteVideoRecorder;
-	*/
-
 	// Compatibility shim
     navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
     var peer;
     var videoChatWindow;
-    //var savedFilesWindow;
 
     // PeerJS object
     //var peer = new Peer('0', { key: 's51s84ud22jwz5mi', debug: 3 });
@@ -324,36 +451,10 @@ jQuery(function()
 	    	{
 	    		videoChatWindow.phoneVideo.prop('src', URL.createObjectURL(stream));
 	    		videoChatWindow.remoteStream = stream;
-
-	    		/*
-	    		localVideoRecorder = new MultiStreamRecorder(videoChatWindow.localStream);
-			    localVideoRecorder.video = videoChatWindow.desktopVideo;
-			    localVideoRecorder.audioChannels = 1;
-			    localVideoRecorder.ondataavailable = function (blobs)
-			    {
-			        localAudioFiles[numLocalAudioFiles++] = blobs.audio;
-			        localVideoFiles[numLocalVideoFiles++] = blobs.video;
-			    };
-			    localVideoRecorder.start(60 * 60 * 1000);	// 60 minutes
-
-			    remoteVideoRecorder = new MultiStreamRecorder(videoChatWindow.remoteStream);
-			    localVideoRecorder.video = videoChatWindow.phoneVideo
-			    remoteVideoRecorder.audioChannels = 1;
-			    remoteVideoRecorder.ondataavailable = function (blobs)
-			    {
-			        remoteAudioFiles[numRemoteAudioFiles++] = blobs.audio;
-			        remoteVideoFiles[numRemoteVideoFiles++] = blobs.video;
-			    };
-			    remoteVideoRecorder.start(60 * 60 * 1000);	// 60 minutes
-			    */
 	    	}
 	    });
 
 	    videoChatWindow.existingCall = call;
-	    call.on('close', function() {
-	    	//localVideoRecorder.stop();
-	    	//remoteVideoRecorder.stop();
-	    });
     }
 
 
@@ -363,59 +464,14 @@ jQuery(function()
 
     videoChatWindow.onbeforeunload = function (e)
 	{
-	    //localVideoRecorder.stop();
-	    //remoteVideoRecorder.stop();
-
 	    videoChatWindow.existingCall.close();
 	};
 
     window.onbeforeunload = function (e)
     {
-	    /*e = e || window.event;
-
-	    var message = 'Are you sure you want to leave this page?';
-
-	    // For IE and Firefox prior to version 4
-	    if (e) {
-	        e.returnValue = message;
-	    }
-
-	    // For Safari
-	    return message;*/
-
 	    if (videoChatWindow)
     	{
     		videoChatWindow.close();
     	}
-
-	    /*savedFilesWindow = window.open('saved_files_window.html', 'secondary', 'width=640,height=480');
-
-	    var i;
-	    for (i = 0; i < numLocalAudioFiles; i++)
-	    {
-	    	appendLink(localAudioFiles[i], 'localAudio' + i);
-	    }
-	    for (i = 0; i < numLocalVideoFiles; i++)
-	    {
-	    	appendLink(localVideoFiles[i], 'localVideo' + i);
-	    }
-	    for (i = 0; i < numRemoteAudioFiles; i++)
-	    {
-	    	appendLink(remoteAudioFiles[i], 'remoteAudio' + i);
-	    }
-	    for (i = 0; i < numRemoteVideoFiles; i++)
-	    {
-	    	appendLink(remoteVideoFiles[i], 'remoteVideo' + i);
-	    }*/
 	};
-
-	/*function appendLink(blob, name)
-	{
-        var a = document.createElement('a');
-        a.target = '_blank';
-        a.innerHTML = 'Open Recorded (name: ' + name + ') ' + (blob.type == 'audio/ogg' ? 'Audio' : 'Video') + ' No. ' + (index++) + ' (Size: ' + bytesToSize(blob.size) + ') Time Length: ' + getTimeLength(timeInterval);
-        a.href = URL.createObjectURL(blob);
-        savedFilesWindow.fileListContainer.appendChild(a);
-        savedFilesWindow.fileListContainer.appendChild(document.createElement('hr'));
-    }*/
 });

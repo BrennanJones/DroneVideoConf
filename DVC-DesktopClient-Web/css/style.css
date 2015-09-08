@@ -5,15 +5,36 @@ body
 	margin: 0;
 }
 
+p
+{
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 
 .droneVideoFrameContainer
 {
 	position:fixed;
-    top:0;
+    top: 0;
     left: 0;
     width:100%;
     height:100%;
     background: #000;
+}
+
+.droneVideoFrameContainer-border
+{
+	box-shadow:0px 0px 0px 15px green inset;
+	width:100%;
+    height:100%;
+	z-index: 100;
+	position:absolute;
+	opacity: 0.75;
+	pointer-events: none;
 }
 
 .droneVideoFrameCanvas
@@ -44,7 +65,7 @@ body
 {
 	text-align: center;
 	font-family: sans-serif;
-	font-size: 24px;
+	font-size: 30px;
 	font-weight: bold;
 	color: #FFF;
 	width: 100%;
@@ -66,10 +87,146 @@ body
 {
 	text-align: right;
 	font-family: sans-serif;
-	font-size: 18px;
+	font-size: 28px;
 	color: #FFF;
 	width: 100%;
 	position: absolute;
+	padding-top: 15px;
+	padding-right: 15px;
+}
+
+
+.droneAltitudeSettingStatus
+{
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	opacity: 0.7;
+	z-index: 2;
+}
+
+.droneAltitudeSettingStatus p
+{
+	text-align: left;
+	font-family: sans-serif;
+	font-size: 30px;
+	color: #FFF;
+	width: 100%;
+	position: absolute;
+	padding-top: 15px;
+	padding-left: 15px;
+	pointer-events: none;
+}
+
+.droneAltitudeSettingIncreaseButton
+{
+	/*width: 100%;
+	height: 100%;*/
+	position: absolute;
+	opacity: 0.7;
+	z-index: 2;
+	top: 15px;
+	left: 600px;
+}
+
+.droneAltitudeSettingIncreaseButton p
+{
+	text-align: left;
+	font-family: sans-serif;
+	font-size: 33px;
+	color: #FFF;
+	position: absolute;
+	/*padding-top: 15px;
+	padding-left: 600px;*/
+}
+
+.droneAltitudeSettingDecreaseButton
+{
+	/*width: 100%;
+	height: 100%;*/
+	position: absolute;
+	opacity: 0.7;
+	z-index: 2;
+	top: 15px;
+	left: 635px;
+}
+
+.droneAltitudeSettingDecreaseButton p
+{
+	text-align: left;
+	font-family: sans-serif;
+	font-size: 33px;
+	color: #FFF;
+	position: absolute;
+	/*padding-top: 15px;
+	padding-left: 635px;*/
+}
+
+
+.droneFollowingDistanceSettingStatus
+{
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	opacity: 0.7;
+	z-index: 2;
+	pointer-events: none;
+}
+
+.droneFollowingDistanceSettingStatus p
+{
+	text-align: left;
+	font-family: sans-serif;
+	font-size: 30px;
+	color: #FFF;
+	width: 100%;
+	position: absolute;
+	padding-top: 55px;
+	padding-left: 15px;
+}
+
+.droneFollowingDistanceSettingIncreaseButton
+{
+	/*width: 100%;
+	height: 100%;*/
+	position: absolute;
+	opacity: 0.7;
+	z-index: 2;
+	top: 55px;
+	left: 600px;
+}
+
+.droneFollowingDistanceSettingIncreaseButton p
+{
+	text-align: left;
+	font-family: sans-serif;
+	font-size: 33px;
+	color: #FFF;
+	position: absolute;
+	/*padding-top: 55px;
+	padding-left: 600px;*/
+}
+
+.droneFollowingDistanceSettingDecreaseButton
+{
+	/*width: 100%;
+	height: 100%;*/
+	position: absolute;
+	opacity: 0.7;
+	z-index: 2;
+	top: 55px;
+	left: 635px;
+}
+
+.droneFollowingDistanceSettingDecreaseButton p
+{
+	text-align: left;
+	font-family: sans-serif;
+	font-size: 33px;
+	color: #FFF;
+	position: absolute;
+	/*padding-top: 55px;
+	padding-left: 635px;*/
 }
 
 
@@ -98,21 +255,23 @@ body
 .camControlButton
 {
 	position: absolute;
-	opacity: 0.75;
+	opacity: 0.5;
 	z-index: 2;
 }
 
 #camLeftButton
 {
 	content: url(/images/buttons/cam-arrows/left.png);
-	left: -55px;
+	/*left: -55px;*/
+	left: -40px;
 	top: calc(50% - 96px);
 }
 
 #camRightButton
 {
 	content: url(/images/buttons/cam-arrows/right.png);
-	right:-55px;
+	/*right:-55px;*/
+	right:-40px;
 	top: calc(50% - 96px);
 }
 
@@ -120,25 +279,37 @@ body
 {
 	content: url(/images/buttons/cam-arrows/up.png);
 	left: calc(50% - 96px);
-	top: -55px;
+	/*top: -55px;*/
+	top:-40px;
 }
 
 #camDownButton
 {
 	content: url(/images/buttons/cam-arrows/down.png);
 	left: calc(50% - 96px);
-	bottom: -55px;
+	/*bottom: -55px;*/
+	bottom: -40px;
 }
 
 
 .phoneVideoContainer
 {
 	position:fixed;
-    top:0;
+    top: 0;
     left: 0;
     width:100%;
     height:100%;
 	background-color: #000;
+}
+
+.phoneVideoContainer-border
+{
+	box-shadow:0px 0px 0px 15px green inset;
+	width:100%;
+    height:100%;
+	z-index: 100;
+	position:absolute;
+	opacity: 0.75;
 }
 
 .phoneVideo
