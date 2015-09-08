@@ -79,7 +79,7 @@ double requiredBearingDrone;
 double distanceApart;   // the calculated distance between the drone and the phone
 
 double droneFollowingDistanceInnerBound = 8.0;
-double droneFollowingDistanceOuterBound = 12.0;
+double droneFollowingDistanceOuterBound = 10.0;
 
 double droneSpeed = 0;
 static const double DRONE_MAX_PITCH = 20.0;
@@ -648,14 +648,14 @@ BOOL manualOverrideOn = false;
     else if ([(NSString *)data[0] isEqualToString:@"MoveForward"] ||
              [(NSString *)data[0] isEqualToString:@"MoveBack"])
     {
-        if([(NSString *)data[0] isEqualToString:@"MoveForward"])
+        if([(NSString *)data[0] isEqualToString:@"MoveBack"])
         {
             droneFollowingDistanceInnerBound += 1.0;
             droneFollowingDistanceOuterBound += 1.0;
         }
-        else if([(NSString *)data[0] isEqualToString:@"MoveBack"])
+        else if([(NSString *)data[0] isEqualToString:@"MoveForward"])
         {
-            if (droneFollowingDistanceOuterBound >= 5.0)
+            if (droneFollowingDistanceInnerBound >= 5.0)
             {
                 droneFollowingDistanceInnerBound -= 1.0;
                 droneFollowingDistanceOuterBound -= 1.0;
@@ -956,7 +956,7 @@ BOOL manualOverrideOn = false;
         {
             if ((angle >= 0 && angle < M_PI) || angle < -1*M_PI)
             {
-                [_dvcTabBarController.deviceController setYaw:35];
+                [_dvcTabBarController.deviceController setYaw:50];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [_droneYawDirectionLabel setText:@"Right"];
@@ -964,7 +964,7 @@ BOOL manualOverrideOn = false;
             }
             else if ((angle < 0 && angle >= -1*M_PI) || angle >= M_PI)
             {
-                [_dvcTabBarController.deviceController setYaw:-35];
+                [_dvcTabBarController.deviceController setYaw:-50];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [_droneYawDirectionLabel setText:@"Left"];
@@ -1009,13 +1009,13 @@ BOOL manualOverrideOn = false;
         // If the distance is greater than the outer bound, move forward.
         if (distanceApart > droneFollowingDistanceOuterBound)
         {
-            pitch = fmin(DRONE_MAX_PITCH, 5.0 * (distanceApart - droneFollowingDistanceOuterBound));
+            pitch = fmin(DRONE_MAX_PITCH, 6.0 * (distanceApart - droneFollowingDistanceOuterBound));
         }
         
         // If the distance is less than the inner bound, move backward.
         else if (distanceApart < droneFollowingDistanceInnerBound)
         {
-            pitch = fmax(-0.5 * DRONE_MAX_PITCH, -2.5 * (droneFollowingDistanceInnerBound - distanceApart));
+            pitch = fmax(-1 * DRONE_MAX_PITCH, -6.0 * (droneFollowingDistanceInnerBound - distanceApart));
         }
     }
     

@@ -179,7 +179,6 @@
                                         </variation>
                                         <connections>
                                             <action selector="forwardClick:" destination="h7l-W5-mPq" eventType="touchUpInside" id="cWy-LR-p3s"/>
-                                            <action selector="upClick:" destination="h7l-W5-mPq" eventType="touchUpInside" id="b81-bZ-YxI"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iDi-bq-VKa">
@@ -202,7 +201,6 @@
                                         </variation>
                                         <connections>
                                             <action selector="backClick:" destination="h7l-W5-mPq" eventType="touchUpInside" id="sWb-EF-daR"/>
-                                            <action selector="downClick:" destination="h7l-W5-mPq" eventType="touchUpInside" id="wV9-0u-JAg"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -401,7 +399,7 @@
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="HBS-Lw-UVX">
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="HBS-Lw-UVX">
                                 <rect key="frame" x="145" y="28" width="51" height="31"/>
                                 <connections>
                                     <action selector="manualOverrideSwitchValueChanged:" destination="TPD-hW-o9V" eventType="valueChanged" id="QAo-gO-g3w"/>
@@ -625,7 +623,7 @@
                                     <action selector="takeoffClick:" destination="h7l-W5-mPq" eventType="touchUpInside" id="9bg-XG-ya4"/>
                                 </connections>
                             </button>
-                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="ASB-MS-LXH">
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="ASB-MS-LXH">
                                 <rect key="frame" x="202" y="31" width="20" height="20"/>
                             </activityIndicatorView>
                         </subviews>
