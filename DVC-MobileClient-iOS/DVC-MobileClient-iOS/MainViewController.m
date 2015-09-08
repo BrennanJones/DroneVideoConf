@@ -562,6 +562,16 @@ BOOL manualOverrideOn = false;
                                             }, nil];
     [_dvcTabBarController.socket emit:@"DroneCameraUpdate" withItems:args];
     
+    args = [[NSArray alloc] initWithObjects:@{@"lowerBound": [NSNumber numberWithInt:droneRequiredAltitudeLowerBound],
+                                              @"upperBound": [NSNumber numberWithInt:droneRequiredAltitudeUpperBound]
+                                            }, nil];
+    [_dvcTabBarController.socket emit:@"DroneAltitudeSettingsUpdate" withItems:args];
+    
+    args = [[NSArray alloc] initWithObjects:@{@"innerBound": [NSNumber numberWithInt:droneFollowingDistanceInnerBound],
+                                              @"outerBound": [NSNumber numberWithInt:droneFollowingDistanceOuterBound]
+                                            }, nil];
+    [_dvcTabBarController.socket emit:@"DroneFollowingDistanceSettingsUpdate" withItems:args];
+    
     self.serverConnectionStatusLabel.text = @"Connected to server";
     self.serverConnectionStatusLabel.textColor = _dvcGreen;
     [self.serverConnectionButton setTitle:@"Disconnect" forState:UIControlStateNormal];
@@ -627,12 +637,15 @@ BOOL manualOverrideOn = false;
     {
         if([(NSString *)data[0] isEqualToString:@"MoveUp"])
         {
-            droneRequiredAltitudeLowerBound += 1.0;
-            droneRequiredAltitudeUpperBound += 1.0;
+            if (droneRequiredAltitudeUpperBound <= 20.0)
+            {
+                droneRequiredAltitudeLowerBound += 1.0;
+                droneRequiredAltitudeUpperBound += 1.0;
+            }
         }
         else if([(NSString *)data[0] isEqualToString:@"MoveDown"])
         {
-            if (droneRequiredAltitudeLowerBound >= 1.5)
+            if (droneRequiredAltitudeLowerBound >= 2.0)
             {
                 droneRequiredAltitudeLowerBound -= 1.0;
                 droneRequiredAltitudeUpperBound -= 1.0;
@@ -650,8 +663,11 @@ BOOL manualOverrideOn = false;
     {
         if([(NSString *)data[0] isEqualToString:@"MoveBack"])
         {
-            droneFollowingDistanceInnerBound += 1.0;
-            droneFollowingDistanceOuterBound += 1.0;
+            if (droneFollowingDistanceOuterBound <= 20.0)
+            {
+                droneFollowingDistanceInnerBound += 1.0;
+                droneFollowingDistanceOuterBound += 1.0;
+            }
         }
         else if([(NSString *)data[0] isEqualToString:@"MoveForward"])
         {
