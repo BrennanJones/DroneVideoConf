@@ -31,6 +31,8 @@
 @property (nonatomic, weak) id <DroneStateDelegate> droneStateDelegate;
 
 @property (nonatomic, strong) IBOutlet UILabel *batteryLabel;
+@property (strong, nonatomic) IBOutlet UILabel *altitudeSettingLabel;
+@property (strong, nonatomic) IBOutlet UILabel *fdSettingLabel;
 @property (nonatomic, strong) IBOutlet UIButton *takeoffBt;
 @property (nonatomic, strong) IBOutlet UIButton *landingBt;
 @property (strong, nonatomic) IBOutlet UIButton *emergencyBt;

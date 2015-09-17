@@ -155,6 +155,16 @@
         [_manualOverrideStateDelegate onManualOverrideStateChanged:[(NSNumber *)data[0] boolValue]];
     }];
     
+    [_dvcTabBarController.socket on:@"DroneAltitudeSettingsUpdate" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+        NSLog(@"Socket: DroneAltitudeSettingsUpdate");
+        [self socketOnDroneAltitudeSettingsUpdate:data];
+    }];
+    
+    [_dvcTabBarController.socket on:@"DroneFollowingDistanceSettingsUpdate" callback:^(NSArray* data, void (^ack)(NSArray*)) {
+        NSLog(@"Socket: DroneFollowingDistanceSettingsUpdate");
+        [self socketOnDroneFollowingDistanceSettingsUpdate:data];
+    }];
+    
     [_dvcTabBarController.socket connect];
 }
 
@@ -206,6 +216,8 @@
     self.droneConnectionStatusLabel.textColor = _dvcRed;
     
     [_batteryLabel setText:@"0%"];
+    [_altitudeSettingLabel setText:@"0"];
+    [_fdSettingLabel setText:@"0"];
     
     _takeoffBt.enabled = false;
     _landingBt.enabled = false;
@@ -256,6 +268,26 @@
 {
     NSString *text = [[NSString alloc] initWithFormat:@"%d%%", [(NSNumber *)data[0] unsignedIntegerValue]];
     [_batteryLabel setText:text];
+}
+
+- (void)socketOnDroneAltitudeSettingsUpdate:(NSArray *)data
+{
+    NSNumber *lowerBound = (NSNumber *)([(NSDictionary *)(data[0]) objectForKey:@"lowerBound"]);
+    NSNumber *upperBound = (NSNumber *)([(NSDictionary *)(data[0]) objectForKey:@"upperBound"]);
+    int value = ([lowerBound intValue] + [upperBound intValue]) /  2;
+    
+    NSString *text = [[NSString alloc] initWithFormat:@"%d", value];
+    [_altitudeSettingLabel setText:text];
+}
+
+- (void)socketOnDroneFollowingDistanceSettingsUpdate:(NSArray *)data
+{
+    NSNumber *innerBound = (NSNumber *)([(NSDictionary *)(data[0]) objectForKey:@"innerBound"]);
+    NSNumber *outerBound = (NSNumber *)([(NSDictionary *)(data[0]) objectForKey:@"outerBound"]);
+    int value = ([innerBound intValue] + [outerBound intValue]) /  2;
+    
+    NSString *text = [[NSString alloc] initWithFormat:@"%d", value];
+    [_fdSettingLabel setText:text];
 }
 
 
